@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2A5C10D2-1EF9-4B94-806E-0C72FA1CF17C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ScribeSharp</RootNamespace>
+    <AssemblyName>ScribeSharp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ContextProviders\ContextProviderBase.cs" />
+    <Compile Include="Contracts\LogPolicy.cs" />
+    <Compile Include="Filters\OrFilter.cs" />
+    <Compile Include="Filters\AndFilter.cs" />
+    <Compile Include="Filters\DelegateLogEventFilter.cs" />
+    <Compile Include="Contracts\ILogEventFilter.cs" />
+    <Compile Include="Filters\LogEventSourceFilter.cs" />
+    <Compile Include="Filters\LogEventTypeFilter.cs" />
+    <Compile Include="Filters\MinimumLogSeverityFilter.cs" />
+    <Compile Include="Filters\LogSeverityFilter.cs" />
+    <Compile Include="Contracts\ILogEventFormatter.cs" />
+    <Compile Include="Formatters\JsonLogEventFormatter.cs" />
+    <Compile Include="Formatters\XmlLogEventFormatter.cs" />
+    <Compile Include="Formatters\SimpleLogEventFormatter.cs" />
+    <Compile Include="LogException.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="Writers\AggregateLogWriter.cs" />
+    <Compile Include="AutoLoggers\AutoLoggerBase.cs" />
+    <Compile Include="AutoLoggers\DateTimeChangedAutoLogger.cs" />
+    <Compile Include="ContextProviders\CachedCurrentProcess.cs" />
+    <Compile Include="ContextProviders\ApplicationNameLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\AppDomainIdLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\AppDomainNameLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\OsUserNameLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\OsVersionDescriptionLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\OsVersionLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\DelegateLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\EntryAssemblyLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\ExecutingAssemblyLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\ClrVersionLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\ProcessNameLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\TerminalServerSessionIdLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\MachineNameLogEntryContextProvider.cs" />
+    <Compile Include="EmptyArray.cs" />
+    <Compile Include="Writers\BufferedLogWriter.cs" />
+    <Compile Include="Writers\ConsoleLogWriter.cs" />
+    <Compile Include="Writers\LogWriterBase.cs" />
+    <Compile Include="Writers\TextLogWriter.cs" />
+    <Compile Include="Writers\StreamLogWriter.cs" />
+    <Compile Include="Writers\ListLogWriter.cs" />
+    <Compile Include="Writers\WindowsEventLogWriter.cs" />
+    <Compile Include="Writers\TraceLogWriter.cs" />
+    <Compile Include="Writers\DebugLogWriter.cs" />
+    <Compile Include="Writers\ForwardingLogWriter.cs" />
+    <Compile Include="Contracts\ILogClock.cs" />
+    <Compile Include="Contracts\ILogEntryContextProvider.cs" />
+    <Compile Include="Contracts\ILogEntryPool.cs" />
+    <Compile Include="Contracts\ILogger.cs" />
+    <Compile Include="Contracts\ILogWriter.cs" />
+    <Compile Include="Contracts\IPool.cs" />
+    <Compile Include="LogEvent.cs" />
+    <Compile Include="LogEventPool.cs" />
+    <Compile Include="LogEventSeverity.cs" />
+    <Compile Include="LogEventType.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="ContextProviders\ProcessIdLogEntryContextProvider.cs" />
+    <Compile Include="LogWriterException.cs" />
+    <Compile Include="Pool.cs" />
+    <Compile Include="PoolPolicy.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ContextProviders\ThreadNameLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\ThreadPrincipalLogEntryContextProvider.cs" />
+    <Compile Include="ContextProviders\ThreadIdLogEntryContextProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\AsyncVoidAnalyzer.0.2.0.0\analyzers\dotnet\cs\AsyncVoidAnalyzer.dll" />
+    <Analyzer Include="..\packages\Microsoft.AnalyzerPowerPack.1.1.0\analyzers\dotnet\cs\Microsoft.AnalyzerPowerPack.Common.dll" />
+    <Analyzer Include="..\packages\Microsoft.AnalyzerPowerPack.1.1.0\analyzers\dotnet\cs\Microsoft.AnalyzerPowerPack.CSharp.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
