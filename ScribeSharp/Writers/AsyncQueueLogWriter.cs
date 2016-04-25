@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ScribeSharp.Writers
 {
-	public sealed class BufferedLogWriter : LogWriterBase
+	public sealed class AsyncQueueLogWriter : LogWriterBase
 	{
 
 		#region Fields
@@ -23,11 +23,11 @@ namespace ScribeSharp.Writers
 		#endregion
 
 		#region Constructors
-		public BufferedLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout) : this(logWriter, batchSize, writeTimeout, null)
+		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout) : this(logWriter, batchSize, writeTimeout, null)
 		{
 		}
 
-		public BufferedLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILogEventFilter filter) : base(filter)
+		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILogEventFilter filter) : base(filter)
 		{
 			if (logWriter == null) throw new ArgumentNullException(nameof(logWriter));
 

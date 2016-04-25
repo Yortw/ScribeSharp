@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoolSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace ScribeSharp.Writers
 
 		public ListLogWriter(IList<LogEvent> events, int maximumCapacity, ILogEventFilter filter) : base(filter)
 		{
+			if (events == null) throw new ArgumentNullException(nameof(events));
 			if (maximumCapacity <= 0) throw new ArgumentOutOfRangeException(nameof(maximumCapacity), "maximumCapacity must be greater than zero.");
 
 			_MaximumCapacity = maximumCapacity;
@@ -33,16 +35,10 @@ namespace ScribeSharp.Writers
 			{
 				Factory = (pool) => new LogEvent(),
 				InitializationPolicy = PooledItemInitialization.Return,
-				MaximumPoolSize = (uint)maximumCapacity,
+				MaximumPoolSize = maximumCapacity,
 				ReinitializeObject = (entry) =>
 				{
-					entry.DateTime = DateTime.Now;
-					entry.EventName = null;
-					entry.EventSeverity = LogEventSeverity.Information;
-					entry.EventType = LogEventType.ApplicationEvent;
-					entry.Properties.Clear();
-					entry.Source = null;
-					entry.SourceMethod = null;
+					entry.Clear();
 				}
 			});
 		}
@@ -65,7 +61,7 @@ namespace ScribeSharp.Writers
 			{
 				var item = _Events[0];
 				_Events.RemoveAt(0);
-				_Pool.Return(item);
+				_Pool.Add(item);
 			}
 
 			var newEntry = _Pool.Take();

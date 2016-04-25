@@ -13,8 +13,6 @@ namespace ScribeSharp
 		{
 			using (var stream = new System.IO.MemoryStream())
 			{
-				System.Xml.XmlTextWriter w;
-			
 				_Serialiser.Serialize(stream, logEvent);
 				stream.Seek(0, System.IO.SeekOrigin.Begin);
 				return System.Text.UTF8Encoding.UTF8.GetString(stream.GetBuffer());

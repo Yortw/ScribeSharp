@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6c583a51-a8ef-459b-a8c7-d2c95f152f48</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ScribeSharp</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\AutoLoggerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AppDomainIdLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AppDomainNameLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ApplicationNameLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\CachedCurrentProcess.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ClrVersionLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ContextProviderBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\DelegateLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\EntryAssemblyLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ExecutingAssemblyLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\FixedStringLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\MachineNameLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\OSUserNameLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\OSVersionDescriptionLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\OSVersionLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ProcessIdLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ProcessNameLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\TerminalServerSessionIdLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ThreadIdLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ThreadNameLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ThreadPrincipalLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEntryPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEventFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEventFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\IPropertyRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\LoggedJobToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmptyArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\AndFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\DelegateLogEventFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\FilterConditionStyle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\MessageContainsTextFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\PropertyValueFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\LogEventSourceFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\HasPropertyFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\LogEventTypeFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\LogSeverityFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\MinimumLogSeverityFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\OrFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formatters\JsonLogEventFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formatters\MinimalLogEventFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formatters\SimpleLogEventFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formatters\XmlLogEventFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UtcSystemClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogEventPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogEventSeverity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogEventType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogWriterException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LocalSystemClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MinTimeClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfoCommon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\ToStringRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\XmlPropertyRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\AggregateLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\AsyncQueueLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\ConsoleLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\DebugLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\ForwardingLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\ListLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\LogWriterBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\StreamLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\TextLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\TraceLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\WindowsEventLogWriter.cs" />
+  </ItemGroup>
+</Project>

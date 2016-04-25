@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoolSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,11 +16,7 @@ namespace ScribeSharp
 					InitializationPolicy = PooledItemInitialization.AsyncReturn,
 					ReinitializeObject = (pooledEntry) =>
 					{
-						pooledEntry.Value.DateTime = DateTime.Now;
-						pooledEntry.Value.EventName = null;
-						pooledEntry.Value.EventType = LogEventType.ApplicationEvent;
-						pooledEntry.Value.EventSeverity = LogEventSeverity.Information;
-						pooledEntry.Value.Properties.Clear();
+						pooledEntry.Value.Clear();
 					},
 					MaximumPoolSize = 100
 				} 

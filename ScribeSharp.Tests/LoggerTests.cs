@@ -165,6 +165,178 @@ namespace ScribeSharp.Tests
 
 		#endregion
 
+		#region BeginLoggedJob Tests
+
+		[TestMethod]
+		public void Logger_BeginLoggedJob_ReturnsNonNullToken()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+			Assert.IsNotNull(logger.BeginLoggedJob("Test", jobId));
+		}
+
+		[TestMethod]
+		public void Logger_BeginLoggedJob_WritesStartAndStop()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+			using (var loggedJob = logger.BeginLoggedJob("Test", jobId))
+			{
+			}
+
+			Assert.AreEqual(2, list.Count);
+
+			Assert.AreEqual(LogEventSeverity.Information, list[0].EventSeverity);
+			Assert.AreEqual(LogEventType.Start, list[0].EventType);
+			Assert.AreEqual(jobId, list[0].Properties["Job Id"]);
+
+			Assert.AreEqual(LogEventSeverity.Information, list[1].EventSeverity);
+			Assert.AreEqual(LogEventType.Completed, list[1].EventType);
+			Assert.AreEqual(jobId, list[1].Properties["Job Id"]);
+		}
+
+		[TestMethod]
+		public void Logger_BeginLoggedJob_WritesExceptions()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+			using (var loggedJob = logger.BeginLoggedJob("Test", jobId))
+			{
+				loggedJob.SetFailure(new InvalidOperationException());
+			}
+
+			Assert.AreEqual(3, list.Count);
+
+			Assert.AreEqual(LogEventSeverity.Information, list[0].EventSeverity);
+			Assert.AreEqual(LogEventType.Start, list[0].EventType);
+			Assert.AreEqual(jobId, list[0].Properties["Job Id"]);
+
+			Assert.AreEqual(LogEventSeverity.Error, list[1].EventSeverity);
+			Assert.AreEqual(LogEventType.Failure, list[1].EventType);
+			Assert.AreEqual(jobId, list[1].Properties["Job Id"]);
+
+			Assert.AreEqual(LogEventSeverity.Error, list[2].EventSeverity);
+			Assert.AreEqual(LogEventType.Completed, list[2].EventType);
+			Assert.AreEqual(jobId, list[2].Properties["Job Id"]);
+		}
+
+		[TestMethod]
+		public void Logger_BeginLoggedJob_RecordsDuration()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+			using (var loggedJob = logger.BeginLoggedJob("Test", jobId))
+			{
+			}
+
+			Assert.AreEqual(2, list.Count);
+			Assert.IsTrue(list[1].Properties.ContainsKey("Duration"));
+			Assert.IsFalse(String.IsNullOrWhiteSpace(list[1].Properties["Duration"].ToString()));
+		}
+
+		#endregion
+
+		#region ExecuteLoggedJob Tests
+
+		[TestMethod]
+		[ExpectedException(typeof(System.ArgumentNullException))]
+		public void Logger_ExecuteLoggedJob_ThrowsOnNullJob()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+
+			logger.ExecuteLoggedJob(null, "Test", jobId);
+		}
+
+		[TestMethod]
+		public void Logger_ExecuteLoggedJob_ExecutesJob()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			bool wasExecuted = false;
+			var jobId = Guid.NewGuid().ToString();
+
+			logger.ExecuteLoggedJob(() =>
+			{
+				wasExecuted = true;
+			},
+			"Test", jobId);
+
+			Assert.AreEqual(true, wasExecuted);
+		}
+
+		[TestMethod]
+		public void Logger_ExecuteLoggedJob_LogsExceptions()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+			logger.ExecuteLoggedJob(() =>
+			{
+				throw new InvalidOperationException();
+			},
+			"Test", jobId);
+
+			Assert.AreEqual(3, list.Count);
+
+			Assert.AreEqual(LogEventSeverity.Information, list[0].EventSeverity);
+			Assert.AreEqual(LogEventType.Start, list[0].EventType);
+			Assert.AreEqual(jobId, list[0].Properties["Job Id"]);
+
+			Assert.AreEqual(LogEventSeverity.Error, list[1].EventSeverity);
+			Assert.AreEqual(LogEventType.Failure, list[1].EventType);
+			Assert.AreEqual(jobId, list[1].Properties["Job Id"]);
+
+			Assert.AreEqual(LogEventSeverity.Error, list[2].EventSeverity);
+			Assert.AreEqual(LogEventType.Completed, list[2].EventType);
+			Assert.AreEqual(jobId, list[2].Properties["Job Id"]);
+		}
+
+		[TestMethod]
+		public void Logger_ExecuteLoggedJob_IncludesAdditionalProperties()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+
+			logger.ExecuteLoggedJob(
+				() =>
+				{
+				},
+				"Test", jobId,
+				new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("Additional Property", "123") }
+			);
+
+			Assert.IsTrue(list[0].Properties.ContainsKey("Additional Property"));
+			Assert.AreEqual("123", list[0].Properties["Additional Property"]);
+
+			Assert.IsTrue(list[1].Properties.ContainsKey("Additional Property"));
+			Assert.AreEqual("123", list[1].Properties["Additional Property"]);
+		}
+
+		#endregion
+
 		#region Private Support Methods
 
 		private static LogPolicy GetSimpleListPolicy()

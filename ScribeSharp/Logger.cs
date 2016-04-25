@@ -9,13 +9,15 @@ namespace ScribeSharp
 {
 	public class Logger : ILogger
 	{
-		//TODO: Implement filters on logwriters - tests
 		//TODO: Logger decorator for adding extra context?
 		//TODO: Log timed operations?
 		//TODO: Log operation stacks? recursive?
 		//TODO: Call contexts? Async/thread/logical?
 		//TODO: Property renderers?
 		//TODO: Internal error handling
+		//TODO: Json serialiser
+		//TODO: Pool background thread
+		//TODO: Buffered logger background thread
 
 		#region Fields
 

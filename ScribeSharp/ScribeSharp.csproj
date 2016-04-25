@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PoolSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PoolSharp.1.0.0\lib\net40\PoolSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +58,11 @@
     <Compile Include="Formatters\XmlLogEventFormatter.cs" />
     <Compile Include="Formatters\SimpleLogEventFormatter.cs" />
     <Compile Include="LogException.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="Writers\AggregateLogWriter.cs" />
     <Compile Include="AutoLoggers\AutoLoggerBase.cs" />
@@ -73,7 +82,7 @@
     <Compile Include="ContextProviders\TerminalServerSessionIdLogEntryContextProvider.cs" />
     <Compile Include="ContextProviders\MachineNameLogEntryContextProvider.cs" />
     <Compile Include="EmptyArray.cs" />
-    <Compile Include="Writers\BufferedLogWriter.cs" />
+    <Compile Include="Writers\AsyncQueueLogWriter.cs" />
     <Compile Include="Writers\ConsoleLogWriter.cs" />
     <Compile Include="Writers\LogWriterBase.cs" />
     <Compile Include="Writers\TextLogWriter.cs" />
@@ -88,7 +97,6 @@
     <Compile Include="Contracts\ILogEntryPool.cs" />
     <Compile Include="Contracts\ILogger.cs" />
     <Compile Include="Contracts\ILogWriter.cs" />
-    <Compile Include="Contracts\IPool.cs" />
     <Compile Include="LogEvent.cs" />
     <Compile Include="LogEventPool.cs" />
     <Compile Include="LogEventSeverity.cs" />
@@ -96,8 +104,6 @@
     <Compile Include="Logger.cs" />
     <Compile Include="ContextProviders\ProcessIdLogEntryContextProvider.cs" />
     <Compile Include="LogWriterException.cs" />
-    <Compile Include="Pool.cs" />
-    <Compile Include="PoolPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContextProviders\ThreadNameLogEntryContextProvider.cs" />
     <Compile Include="ContextProviders\ThreadPrincipalLogEntryContextProvider.cs" />
@@ -110,6 +116,12 @@
     <Analyzer Include="..\packages\AsyncVoidAnalyzer.0.2.0.0\analyzers\dotnet\cs\AsyncVoidAnalyzer.dll" />
     <Analyzer Include="..\packages\Microsoft.AnalyzerPowerPack.1.1.0\analyzers\dotnet\cs\Microsoft.AnalyzerPowerPack.Common.dll" />
     <Analyzer Include="..\packages\Microsoft.AnalyzerPowerPack.1.1.0\analyzers\dotnet\cs\Microsoft.AnalyzerPowerPack.CSharp.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

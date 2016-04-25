@@ -29,7 +29,7 @@ namespace ScribeSharp
 		/// <summary>
 		/// Sets or returns the human readable text or message associated with this event.
 		/// </summary>
-		public string EventName { get; internal set; }
+		public string EventName { get; set; }
 
 		/// <summary>
 		/// Sets or returns the date and time at which this event occurred.
@@ -39,12 +39,12 @@ namespace ScribeSharp
 		/// <summary>
 		/// Sets or returns a value from the <see cref="LogEventSeverity"/> determining how important this event is.
 		/// </summary>
-		public LogEventSeverity EventSeverity { get; internal set; } = LogEventSeverity.Information;
+		public LogEventSeverity EventSeverity { get; set; } = LogEventSeverity.Information;
 
 		/// <summary>
 		/// Sets or returns a value from the <see cref="LogEventType"/> determining the generic type of this event.
 		/// </summary>
-		public LogEventType EventType { get; internal set; } = LogEventType.ApplicationEvent;
+		public LogEventType EventType { get; set; } = LogEventType.ApplicationEvent;
 
 		/// <summary>
 		/// Sets or returns a dictionay of key value pairs, where each key is a 'property name'. Used to add additional structured data to an event.
@@ -81,6 +81,20 @@ namespace ScribeSharp
 				return (T)this.Properties[propertyName];
 			else
 				return defaultValue;
+		}
+
+		/// <summary>
+		/// Clears or returns all properties of this object to their defaults, so the instance can be re-used for a new event without worrying about stale data.
+		/// </summary>
+		public virtual void Clear()
+		{
+			DateTime = DateTimeOffset.MinValue;
+			EventName = null;
+			EventSeverity = LogEventSeverity.Information;
+			EventType = LogEventType.ApplicationEvent;
+			Properties?.Clear();
+			Source = null;
+			SourceMethod = null;
 		}
 
 		#region Clone Methods
