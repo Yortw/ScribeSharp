@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\AutoLoggerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\StackTraceLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AppDomainIdLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AppDomainNameLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ApplicationNameLogEntryContextProvider.cs" />

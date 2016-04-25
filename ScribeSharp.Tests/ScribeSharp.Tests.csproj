@@ -56,8 +56,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AsyncQueueLogWriterTests.cs" />
     <Compile Include="AggregateLogWriterTests.cs" />
-    <Compile Include="ConsoleLogWriterTests.cs" />
     <Compile Include="ListLogWriterTests.cs" />
     <Compile Include="LoggerTests.cs" />
     <Compile Include="LogWriterBaseTests.cs" />

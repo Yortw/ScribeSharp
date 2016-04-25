@@ -17,6 +17,8 @@ namespace ScribeSharp.Writers
 
 		#region Fields
 
+		private static readonly TimeSpan InfiniteTimespan = TimeSpan.FromMilliseconds(-1);
+
 		private ILogWriter _LogWriter;
 		private System.Collections.Concurrent.ConcurrentQueue<LogEvent> _BufferedLogEvents;
 		private System.Threading.ManualResetEvent _WriteBufferedEventsSignal;
@@ -40,9 +42,10 @@ namespace ScribeSharp.Writers
 		/// Partial constructor.
 		/// </summary>
 		/// <param name="logWriter">The log writer to forward events to from the background thread. If multiple output locations are required, usea  <see cref="AggregateLogWriter"/> instance.</param>
-		/// <param name="batchSize">The number of items in the queue before they are actually passed to <paramref name="logWriter"/>.</param>
-		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <param ref="batchSize"/>.</param>
+		/// <param name="batchSize">The number of items in the queue before they are actually passed to <paramref name="logWriter"/>. Specify 1 to have entries written immediately.</param>
+		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <param ref="batchSize"/>. Specify <see cref="TimeSpan.Zero"/> to have entries written immediately, or a time span with a negative value to have no timeout applied.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="logWriter"/> is null.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="batchSize"/> is less than or equal to zero.</exception>
 		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout) : this(logWriter, batchSize, writeTimeout, null)
 		{
 		}
@@ -55,15 +58,17 @@ namespace ScribeSharp.Writers
 		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <param ref="batchSize"/>.</param>
 		/// <param name="filter">An <see cref="ILogEventFilter"/> to apply to events. Only events that pass the filter will be written. If null, no filtering is performed.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="logWriter"/> is null.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="batchSize"/> is less than or equal to zero.</exception>
 		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILogEventFilter filter) : base(filter)
 		{
 			if (logWriter == null) throw new ArgumentNullException(nameof(logWriter));
+			if (batchSize <= 0) throw new ArgumentOutOfRangeException(nameof(batchSize));
 
 			_BatchSize = batchSize;
 			_WriteTimeout = writeTimeout;
 
 			if (writeTimeout.TotalMilliseconds > 0)
-				_BufferTimeoutTimer = new System.Threading.Timer((reserved) => SetWriteEventsSignal(), null, TimeSpan.Zero, TimeSpan.Zero);
+				_BufferTimeoutTimer = new System.Threading.Timer((reserved) => SetWriteEventsSignal(), null, InfiniteTimespan, InfiniteTimespan);
 
 			_WriteBufferedEventsSignal = new System.Threading.ManualResetEvent(false);
 			_BufferedLogEvents = new System.Collections.Concurrent.ConcurrentQueue<LogEvent>();
@@ -101,7 +106,7 @@ namespace ScribeSharp.Writers
 		{
 			get
 			{
-				return false;
+				return _LogWriter.RequiresSynchronization;
 			}
 		}
 
@@ -157,7 +162,7 @@ namespace ScribeSharp.Writers
 
 		private void StartTimeoutTimer()
 		{
-			_BufferTimeoutTimer?.Change(TimeSpan.Zero, _WriteTimeout);
+			_BufferTimeoutTimer?.Change(_WriteTimeout, InfiniteTimespan);
 		}
 
 		private void SetWriteEventsSignal()
@@ -168,7 +173,7 @@ namespace ScribeSharp.Writers
 
 		private void StopWriteTimeoutTimer()
 		{
-			_BufferTimeoutTimer?.Change(TimeSpan.Zero, TimeSpan.Zero);
+			_BufferTimeoutTimer?.Change(InfiniteTimespan, InfiniteTimespan);
 		}
 
 		private void BackgroundWriteEvents()
