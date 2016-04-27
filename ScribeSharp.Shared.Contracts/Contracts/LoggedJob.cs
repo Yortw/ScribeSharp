@@ -11,12 +11,12 @@ namespace ScribeSharp
 	/// Implements <see cref="IDisposable"/> pattern for easy tracking of job start and end, as well as additional methods and properties for easily logging events that will be related to the job in the log file.
 	/// </summary>
 	/// <remarks>
-	/// <para>Typically a <see cref="LoggedJobToken"/> is created by calling <see cref="ILogger.BeginLoggedJob(string, string)"/> or one of it's overloads. The job should be completed by calling the <see cref="Dispose"/> method.</para>
+	/// <para>Typically a <see cref="LoggedJob"/> is created by calling <see cref="ILogger.BeginLoggedJob(string, string)"/> or one of it's overloads. The job should be completed by calling the <see cref="Dispose"/> method.</para>
 	/// <para>Call the <see cref="SetFailure(Exception)"/> method to record exceptions/failures that occur.</para>
 	/// <para>Use the <see cref="Logger"/> property to log events and have them include the job details.</para>
 	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification="Really there is no 'value' based equality for this type, reference equality is correct.")]
-	public struct LoggedJobToken : IDisposable
+	public sealed class LoggedJob : IDisposable
 	{
 
 		#region Fields
@@ -26,43 +26,21 @@ namespace ScribeSharp
 
 		private string _JobName;
 		private string _JobId;
-		private IEnumerable<KeyValuePair<string, object>> _Properties;
+		private KeyValuePair<string, object>[] _Properties;
 		private Exception _Exception;
 		private System.Diagnostics.Stopwatch _Stopwatch;
+		private ILoggedJobPool _ParentPool;
+		private bool _Cancelled;
 
 		#endregion
 
 		#region Constructors
 
 		/// <summary>
-		/// Full constructor.
+		/// Default constructor.
 		/// </summary>
-		/// <param name="logger">The logger associated with the job.</param>
-		/// <param name="jobName">The name/type/description of the job running.</param>
-		/// <param name="jobId">A unique identifier to apply to the job.</param>
-		/// <param name="properties">An additional set of property to be included on all log entries related to this job.</param>
-		public LoggedJobToken(ILogger logger, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties)
+		public LoggedJob()
 		{
-			if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-			_Stopwatch = new System.Diagnostics.Stopwatch();
-			_Logger = logger;
-			_JobId = jobId;
-			_JobName = jobName;
-			_Properties = GetExtendedProperties(properties,
-				new KeyValuePair<string, object>("Job Name", jobName),
-				new KeyValuePair<string, object>("Job Id", jobId)
-			).ToArray();
-			_JobLogger = null;
-			_Exception = null;
-
-			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
-				eventSeverity: LogEventSeverity.Information,
-				eventType: LogEventType.Start,
-				properties: _Properties
-			);
-
-			_Stopwatch.Start();
 		}
 
 		#endregion
@@ -99,6 +77,43 @@ namespace ScribeSharp
 		#region Public Methods
 
 		/// <summary>
+		/// Initialises this instance with values relating to a particular job.
+		/// </summary>
+		/// <param name="logger">The logger associated with the job.</param>
+		/// <param name="jobName">The name/type/description of the job running.</param>
+		/// <param name="jobId">A unique identifier to apply to the job.</param>
+		/// <param name="properties">An additional set of property to be included on all log entries related to this job.</param>
+		/// <param name="parentPool">Either null, or pool instance the job should be returned to when complete, so this instance can be reused.</param>
+		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="logger"/> or <paramref name="jobName"/> arguments are null.</exception>
+		/// <exception cref="ArgumentException">Thrown if the <paramref name="jobName"/> argument is empty or only whitespace.</exception>
+		public void Initialize(ILogger logger, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties, ILoggedJobPool parentPool)
+		{
+			if (logger == null) throw new ArgumentNullException(nameof(logger));
+			if (jobName == null) throw new ArgumentNullException(nameof(jobName));
+			if (String.IsNullOrWhiteSpace(jobName)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, jobName), nameof(jobName));
+
+			if (String.IsNullOrWhiteSpace(jobId)) jobId = Guid.NewGuid().ToString();
+
+			_ParentPool = parentPool;
+			_Stopwatch = new System.Diagnostics.Stopwatch();
+			_Logger = logger;
+			_JobId = jobId;
+			_JobName = jobName;
+			_Properties = GetExtendedProperties(properties,
+				new KeyValuePair<string, object>("Job Name", jobName),
+				new KeyValuePair<string, object>("Job Id", jobId)
+			).ToArray();
+
+			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
+				eventSeverity: LogEventSeverity.Information,
+				eventType: LogEventType.Start,
+				properties: _Properties
+			);
+
+			_Stopwatch.Start();
+		}
+
+		/// <summary>
 		/// Records a failure associated with the job. Will also cause the job completion message to be written with an error severity instead of information.
 		/// </summary>
 		/// <param name="exception">The exception representing the failure.</param>
@@ -116,8 +131,30 @@ namespace ScribeSharp
 			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFailureEventMessage, _JobName, _JobId, exception.GetType().FullName + ":" + exception.Message),
 				eventSeverity: LogEventSeverity.Error,
 				eventType: LogEventType.Failure,
-				properties: GetExtendedProperties(_Properties, new KeyValuePair<string, object>("Exception", exception))
+				properties: GetExtendedProperties(_Properties, new KeyValuePair<string, object>("Exception", exception)).ToArray()
 			);
+		}
+
+		/// <summary>
+		/// Clears or resets all internal state of this instance so it can be reused.
+		/// </summary>
+		public void Reset()
+		{
+			_Logger = null;
+			_JobLogger = null;
+			_JobName = null;
+			_JobId = null;
+			_Exception = null;
+			_Properties = null;
+			_Stopwatch.Reset();
+		}
+
+		/// <summary>
+		/// Marks the job as cancelled, changing the event written when the job completes.
+		/// </summary>
+		public void Cancel()
+		{
+			_Cancelled = true;
 		}
 
 		#endregion
@@ -125,19 +162,24 @@ namespace ScribeSharp
 		#region IDisposable
 
 		/// <summary>
-		/// Stops timing and writes the job completed event.
+		/// Stops timing and writes the job completed event. If a parent pool was supplied, returns the item to the pool.
 		/// </summary>
 		public void Dispose()
 		{
 			_Stopwatch.Stop();
 
 			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
-				eventSeverity: _Exception == null ? LogEventSeverity.Information : LogEventSeverity.Error,
-				eventType: LogEventType.Completed,
-				properties: GetExtendedProperties(_Properties,
-				new KeyValuePair<string, object>("Exception", _Exception),
-				new KeyValuePair<string, object>("Duration", _Stopwatch.Elapsed))
+				eventSeverity: _Exception == null ? (_Cancelled ? LogEventSeverity.Warning : LogEventSeverity.Information) : LogEventSeverity.Error,
+				eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
+				properties: GetExtendedProperties(
+					_Properties,
+					new KeyValuePair<string, object>("Exception", _Exception),
+					new KeyValuePair<string, object>("Duration", _Stopwatch.Elapsed),
+					new KeyValuePair<string, object>("Outcome", _Exception != null ? Properties.Resources.FailedOutcome : (_Cancelled ? Properties.Resources.CancelledOutcome : Properties.Resources.CompletedOutcome))
+				).ToArray()
 			);
+
+			_ParentPool?.Add(this);
 		}
 
 		#endregion

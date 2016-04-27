@@ -7,4 +7,7 @@
   <Include Path="globalizationrules.ruleset" Action="Default" />
   <Include Path="managedminimumrules.ruleset" Action="Default" />
   <Include Path="minimumrecommendedrules.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1004" Action="None" />
+  </Rules>
 </RuleSet>

@@ -74,7 +74,7 @@ namespace ScribeSharp.Tests
 			var policy = GetSimpleListPolicy(list);
 			var logger = new Logger(policy);
 			var propValue = System.Guid.NewGuid();
-			logger.WriteEvent("Log this!", properties: new Dictionary<string, object>() { { "Test Id", propValue } });
+			logger.WriteEvent("Log this!", properties: new KeyValuePair<string, object>("Test Id", propValue));
 			Assert.IsTrue(list[0].Properties.ContainsKey("Test Id"));
 			Assert.AreEqual(propValue, list[0].Properties["Test Id"]);
 		}
@@ -289,12 +289,22 @@ namespace ScribeSharp.Tests
 			var policy = GetSimpleListPolicy(list);
 			var logger = new Logger(policy);
 
+			bool exceptionWasRethrown = false;
 			var jobId = Guid.NewGuid().ToString();
-			logger.ExecuteLoggedJob(() =>
+			try
 			{
-				throw new InvalidOperationException();
-			},
-			"Test", jobId);
+				logger.ExecuteLoggedJob(() =>
+				{
+					throw new InvalidOperationException();
+				},
+				"Test", jobId);
+			}
+			catch (InvalidOperationException)
+			{
+				exceptionWasRethrown = true;
+			}
+
+			Assert.AreEqual(true, exceptionWasRethrown);
 
 			Assert.AreEqual(3, list.Count);
 

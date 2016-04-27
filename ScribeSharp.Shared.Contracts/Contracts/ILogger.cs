@@ -26,8 +26,7 @@ namespace ScribeSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		void WriteEvent(string eventName, 
 			LogEventSeverity eventSeverity = LogEventSeverity.Information, 
-			LogEventType eventType = LogEventType.ApplicationEvent, 
-			IEnumerable<KeyValuePair<string, object>> properties = null,
+			LogEventType eventType = LogEventType.ApplicationEvent,
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerFilePath] 
 #endif
@@ -39,7 +38,8 @@ namespace ScribeSharp
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerLineNumber] 
 #endif
-			int sourceLineNumber = 0);
+			int sourceLineNumber = 0,
+			params KeyValuePair<string, object>[] properties);
 
 		/// <summary>
 		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
@@ -67,11 +67,29 @@ namespace ScribeSharp
 		#region CreateChildLogger Overloads
 
 		/// <summary>
+		/// Creates a new <see cref="ILogger"/> implementation which wraps this one, using the full type name of <typeparam name="T"/> as the source.
+		/// </summary>
+		/// <returns>An implementation of <see cref="ILogger"/> with the specified source applied.</returns>
+		ILogger CreateChildLogger<T>();
+		/// <summary>
+		/// Creates a new <see cref="ILogger"/> implementation which wraps this one, using the full type name of <typeparam name="T"/> as the source.
+		/// </summary>
+		/// <param name="contextProviders">A set of <see cref="ILogEventContextProvider"/> instances used to add additional information to log events before they are written to the <see cref="ILogWriter"/>.</param>
+		/// <returns>An implementation of <see cref="ILogger"/> with the specified source applied.</returns>
+		ILogger CreateChildLogger<T>(IEnumerable<ILogEventContextProvider> contextProviders);
+		/// <summary>
 		/// Creates a new <see cref="ILogger"/> implementation which wraps this one, but with an alternate source.
 		/// </summary>
 		/// <param name="source">The source to apply to all log event entries. If null, the inner source or system supplied source will be used.</param>
 		/// <returns>An implementation of <see cref="ILogger"/> with the specified source applied.</returns>
 		ILogger CreateChildLogger(string source);
+		/// <summary>
+		/// Creates a new <see cref="ILogger"/> implementation which wraps this one, but with an alternate source.
+		/// </summary>
+		/// <param name="source">The source to apply to all log event entries. If null, the inner source or system supplied source will be used.</param>
+		/// <param name="contextProviders">A set of <see cref="ILogEventContextProvider"/> instances used to add additional information to log events before they are written to the <see cref="ILogWriter"/>.</param>
+		/// <returns>An implementation of <see cref="ILogger"/> with the specified source applied.</returns>
+		ILogger CreateChildLogger(string source, IEnumerable<ILogEventContextProvider> contextProviders);
 		/// <summary>
 		/// Creates a new <see cref="ILogger"/> implementation which wraps this one, applying the supplied policy to log events before forwarding them to this logger for processing.
 		/// </summary>
@@ -86,6 +104,9 @@ namespace ScribeSharp
 		/// <summary>
 		/// Executes the specified action as a logged job, including start/completed events, associated errors and the total duration.
 		/// </summary>
+		/// <remarks>
+		/// <para>Errors that occur within the job (action) are re-thrown, and need to be caught by the caller unless they want them to be unhandled (or caught further up the call stack). The exceptions will be logged and the job status updated, even though the exception is re-thrown.</para>
+		/// </remarks>
 		/// <param name="job">A <see cref="Action"/> to execute.</param>
 		/// <param name="jobName">A name/type/descriptio of the job, i.e "Process message".</param>
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
@@ -95,6 +116,9 @@ namespace ScribeSharp
 		/// <summary>
 		/// Executes the specified action as a logged job, including start/completed events, associated errors and the total duration.
 		/// </summary>
+		/// <remarks>
+		/// <para>Errors that occur within the job (action) are re-thrown, and need to be caught by the caller unless they want them to be unhandled (or caught further up the call stack). The exceptions will be logged and the job status updated, even though the exception is re-thrown.</para>
+		/// </remarks>
 		/// <param name="job">A <see cref="Action"/> to execute.</param>
 		/// <param name="jobName">A name/type/descriptio of the job, i.e "Process message".</param>
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
@@ -107,21 +131,21 @@ namespace ScribeSharp
 		#region BeginLoggedJob Overloads
 
 		/// <summary>
-		/// Returns a <see cref="LoggedJobToken"/> that can be used to track a job, including start, completed and failure events, along with duration.
+		/// Returns a <see cref="LoggedJob"/> that can be used to track a job, including start, completed and failure events, along with duration.
 		/// </summary>
 		/// <param name="jobName">A name/type/descriptio of the job, i.e "Process message".</param>
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
-		/// <returns>A <see cref="LoggedJobToken"/> instance for this specified job.</returns>
-		LoggedJobToken BeginLoggedJob(string jobName, string jobId);
+		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
+		LoggedJob BeginLoggedJob(string jobName, string jobId);
 
 		/// <summary>
-		/// Returns a <see cref="LoggedJobToken"/> that can be used to track a job, including start, completed and failure events, along with duration.
+		/// Returns a <see cref="LoggedJob"/> that can be used to track a job, including start, completed and failure events, along with duration.
 		/// </summary>
 		/// <param name="jobName">A name/type/descriptio of the job, i.e "Process message".</param>
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
-		/// <returns>A <see cref="LoggedJobToken"/> instance for this specified job.</returns>
-		LoggedJobToken BeginLoggedJob(string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties);
+		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
+		LoggedJob BeginLoggedJob(string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties);
 
 		#endregion
 
@@ -130,7 +154,7 @@ namespace ScribeSharp
 		/// </summary>
 		/// <remarks>
 		/// <para>Defaults to true.</para>
-		/// <para>If false then no log events are written regardless of other settings and calling the <see cref="WriteEvent(string, LogEventSeverity, LogEventType, IEnumerable{KeyValuePair{string, object}}, string, string, int)"/> overloads returns quickly without doing any work. If true, events are written based on the logger configuration.</para>
+		/// <para>If false then no log events are written regardless of other settings and calling the <see cref="WriteEvent(string, LogEventSeverity, LogEventType, string, string, int, KeyValuePair{string, object}[])"/> overloads returns quickly without doing any work. If true, events are written based on the logger configuration.</para>
 		/// </remarks>
 		bool IsEnabled { get; set; }
 

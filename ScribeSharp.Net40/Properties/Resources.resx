@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CancelledOutcome" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="CompletedOutcome" xml:space="preserve">
+    <value>Completed</value>
+  </data>
   <data name="DateTimeChangedLogEventText" xml:space="preserve">
     <value>System date/time changed. New time is {0}</value>
+  </data>
+  <data name="FailedOutcome" xml:space="preserve">
+    <value>Failed</value>
   </data>
   <data name="GenericLogExceptionMessage" xml:space="preserve">
     <value>Unexpected error in logging system.</value>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoolSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,6 +65,7 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
+			logEvent.Clone(logEvent);
 			_Logger.WriteEvent(logEvent, logEvent.Source, logEvent.SourceMethod);
 		}
 

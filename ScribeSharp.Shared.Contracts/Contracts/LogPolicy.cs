@@ -41,5 +41,23 @@ namespace ScribeSharp
 		/// Sets or returns the source to apply to all log events written by associated loggers. If null, the system will attempt to automatically apply a source.
 		/// </summary>
 		public string Source { get; set; }
+		/// <summary>
+		/// Sets or returns the maximum size of the object pool used for <see cref="LogEvent"/> instances.
+		/// </summary>
+		/// <remarks>
+		/// <para>Larger pool sizes decrease the total number of allocations and reduce the chance of garbage collection, but risk consuming more memory.
+		/// Larger values should also be used when buffering, async or queued log writers are used. Use a value of zero to allow the pool an unlimited capacity, or a negative value to prevent pooling.</para>
+		/// <para>The default value is zero, so the pool will grow as large as needed.</para>
+		/// </remarks>
+		public int LogEventPoolCapacity { get; set; }
+		/// <summary>
+		/// Sets or returns the maximum size of the object pool used for <see cref="LoggedJob"/> instances.
+		/// </summary>
+		/// <remarks>
+		/// <para>Larger pool sizes decrease the total number of allocations and reduce the chance of garbage collection, but risk consuming more memory.
+		/// Larger values should also be used when buffering, async or queued log writers are used. Use a value of zero to allow the pool an unlimited capacity, or a negative value to prevent pooling.</para>
+		/// <para>The default value is zero, so the pool will grow as large as needed.</para>
+		/// </remarks>
+		public int JobPoolCapacity { get; set; }
 	}
 }

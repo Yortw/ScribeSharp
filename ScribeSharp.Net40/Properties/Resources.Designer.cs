@@ -61,11 +61,38 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        internal static string CancelledOutcome {
+            get {
+                return ResourceManager.GetString("CancelledOutcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        internal static string CompletedOutcome {
+            get {
+                return ResourceManager.GetString("CompletedOutcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to System date/time changed. New time is {0}.
         /// </summary>
         internal static string DateTimeChangedLogEventText {
             get {
                 return ResourceManager.GetString("DateTimeChangedLogEventText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed.
+        /// </summary>
+        internal static string FailedOutcome {
+            get {
+                return ResourceManager.GetString("FailedOutcome", resourceCulture);
             }
         }
         

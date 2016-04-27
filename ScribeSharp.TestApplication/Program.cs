@@ -23,13 +23,22 @@ namespace ScribeSharp.TestApplication
 
 			logger.WriteEvent("Error", eventSeverity: LogEventSeverity.Error);
 
-			var props = new Dictionary<string, object>() { { "Test1", "Test2" }, { "Test2", new TestProperty() } };
+			var props = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("Test1", "Test2"), new KeyValuePair<string, object>("Test2", new TestProperty()) };
 			logger.WriteEvent("Test", properties: props);
+
+			var childLogger = logger.CreateChildLogger("childlogger");
+			childLogger.WriteEvent("Child logger test.");
+
+			logger.WriteEvent("Test", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent);
+			logger.WriteEvent("Test1", LogEventSeverity.Diagnostic);
+			logger.WriteEvent("Test1", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent, new KeyValuePair<string, object>("Test2", "Test2"));
 
 			logger.WriteEvent("Stopped");
 
 			Console.ReadLine();
 		}
+
+
 	}
 
 	public class TestProperty
