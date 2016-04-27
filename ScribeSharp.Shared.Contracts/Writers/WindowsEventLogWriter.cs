@@ -11,6 +11,9 @@ namespace ScribeSharp.Writers
 	public sealed class WindowsEventLogWriter : LogWriterBase, IDisposable
 	{
 
+		//See https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx for 
+		//limitations and issues with event log.
+
 		#region Fields
 
 		private ILogEventFormatter _EventFormatter;
@@ -46,6 +49,7 @@ namespace ScribeSharp.Writers
 			if (String.IsNullOrWhiteSpace(eventSourceName)) throw new ArgumentException(nameof(eventSourceName) + " cannot be empty or whitespace.", nameof(eventSourceName));
 
 			_EventFormatter = eventFormatter;
+			eventSourceName = SafeEventSourceName(eventSourceName);
 
 			if (createEventLog)
 			{
@@ -127,6 +131,11 @@ namespace ScribeSharp.Writers
 		#endregion
 
 		#region Private Methods
+
+		private static string SafeEventSourceName(string sourceName)
+		{
+			return sourceName.Substring(0, Math.Min(sourceName.Length, 212)).Replace("<", "_").Replace(">", "_");
+		}
 
 		private static short LogEventToWindowsEventCategory(LogEvent logEvent)
 		{
