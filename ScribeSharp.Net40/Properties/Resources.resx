@@ -136,19 +136,22 @@
     <value>Error writing log event to output location.</value>
   </data>
   <data name="JobFailureEventMessage" xml:space="preserve">
-    <value>Job {0} ({1}) failed; {2}.</value>
+    <value>{0} ({1}) failed; {2}.</value>
   </data>
   <data name="JobFinishedEventMessage" xml:space="preserve">
-    <value>Job {0} ({1}) completed.</value>
+    <value>{0} ({1}) completed.</value>
   </data>
   <data name="JobIdPropertyName" xml:space="preserve">
-    <value>Job Id</value>
+    <value>Job ID</value>
   </data>
   <data name="JobNamePropertyName" xml:space="preserve">
     <value>Job Name</value>
   </data>
   <data name="JobStartedEventMessage" xml:space="preserve">
-    <value>Job {0} ({1} started.</value>
+    <value>{0} ({1} started.</value>
+  </data>
+  <data name="ParentJobIdPropertyName" xml:space="preserve">
+    <value>Parent Job ID</value>
   </data>
   <data name="PropertyCannotBeEmptyOrWhitespace" xml:space="preserve">
     <value>{0} cannot be empty or only white space.</value>

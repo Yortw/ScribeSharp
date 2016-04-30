@@ -100,8 +100,8 @@ namespace ScribeSharp
 			_JobId = jobId;
 			_JobName = jobName;
 			_Properties = GetExtendedProperties(properties,
-				new KeyValuePair<string, object>("Job Name", jobName),
-				new KeyValuePair<string, object>("Job Id", jobId)
+				new KeyValuePair<string, object>(Properties.Resources.JobNamePropertyName, jobName),
+				new KeyValuePair<string, object>(Properties.Resources.JobIdPropertyName, jobId)
 			).ToArray();
 
 			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
@@ -157,6 +157,41 @@ namespace ScribeSharp
 			_Cancelled = true;
 		}
 
+		#region CreateChildJob Overloads
+
+		/// <summary>
+		/// Creates a new job from the same pool, using the same logger and original properties as well as the new properties provided, and with a "Parent Job ID" property containing the Id of this job for correlation purposes.
+		/// </summary>
+		/// <param name="jobName">The name or type of the job to create.</param>
+		/// <param name="jobId">A unique id of the job used to correlate log entries.</param>
+		/// <returns>A <see cref="LoggedJob"/> instance used to track the job and log related entries.</returns>
+		public LoggedJob CreateChildJob(string jobName, string jobId)
+		{
+			return CreateChildJob(jobName, jobId, null);
+		}
+
+		/// <summary>
+		/// Creates a new job from the same pool, using the same logger and original properties as well as the new properties provided, and with a "Parent Job ID" property containing the Id of this job for correlation purposes.
+		/// </summary>
+		/// <param name="jobName">The name or type of the job to create.</param>
+		/// <param name="jobId">A unique id of the job used to correlate log entries.</param>
+		/// <param name="properties">Null, or a collection key value pairs to associate with the child job.</param>
+		/// <returns>A <see cref="LoggedJob"/> instance used to track the job and log related entries.</returns>
+		public LoggedJob CreateChildJob(string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties)
+		{
+			var retVal = _ParentPool?.Take() ?? new LoggedJob();
+			IEnumerable<KeyValuePair<string, object>> allProperties = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>(Properties.Resources.ParentJobIdPropertyName, this._JobId) };
+			if (properties != null)
+				allProperties = allProperties.Union(GetNonJobProperties(properties));
+			if (_Properties != null)
+				allProperties = allProperties.Union(GetNonJobProperties(_Properties));
+
+			retVal.Initialize(_Logger, jobName, jobId, allProperties, _ParentPool);
+			return retVal;
+		}
+
+		#endregion
+
 		#endregion
 
 		#region IDisposable
@@ -185,6 +220,16 @@ namespace ScribeSharp
 		#endregion
 
 		#region Private Methods
+
+		private IEnumerable<KeyValuePair<string, object>> GetNonJobProperties(IEnumerable<KeyValuePair<string, object>> properties)
+		{
+			return (from p
+							in properties
+							where p.Key != Properties.Resources.JobIdPropertyName
+								&& p.Key != Properties.Resources.JobNamePropertyName
+								&& p.Key != Properties.Resources.ParentJobIdPropertyName
+							select p);
+		}
 
 		private static IEnumerable<KeyValuePair<string, object>> GetExtendedProperties(IEnumerable<KeyValuePair<string, object>> properties, params KeyValuePair<string, object>[] additonalProperties)
 		{

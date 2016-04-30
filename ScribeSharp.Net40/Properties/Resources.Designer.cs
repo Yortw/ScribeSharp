@@ -115,7 +115,7 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Job {0} ({1}) failed; {2}..
+        ///   Looks up a localized string similar to {0} ({1}) failed; {2}..
         /// </summary>
         internal static string JobFailureEventMessage {
             get {
@@ -124,7 +124,7 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Job {0} ({1}) completed..
+        ///   Looks up a localized string similar to {0} ({1}) completed..
         /// </summary>
         internal static string JobFinishedEventMessage {
             get {
@@ -133,7 +133,7 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Job Id.
+        ///   Looks up a localized string similar to Job ID.
         /// </summary>
         internal static string JobIdPropertyName {
             get {
@@ -151,11 +151,20 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Job {0} ({1} started..
+        ///   Looks up a localized string similar to {0} ({1} started..
         /// </summary>
         internal static string JobStartedEventMessage {
             get {
                 return ResourceManager.GetString("JobStartedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent Job ID.
+        /// </summary>
+        internal static string ParentJobIdPropertyName {
+            get {
+                return ResourceManager.GetString("ParentJobIdPropertyName", resourceCulture);
             }
         }
         
