@@ -17,28 +17,26 @@ namespace ScribeSharp.TestApplication
 			};
 			var logger = new Logger(policy);
 
-			logger.WriteEvent("Started");
+			logger.WriteEventWithSource("Started");
 
-			logger.WriteEvent("Test", LogEventSeverity.Information);
+			logger.WriteEventWithSource("Test", LogEventSeverity.Information);
 
-			logger.WriteEvent("Error", eventSeverity: LogEventSeverity.Error);
+			logger.WriteEventWithSource("Error", eventSeverity: LogEventSeverity.Error);
 
 			var props = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("Test1", "Test2"), new KeyValuePair<string, object>("Test2", new TestProperty()) };
-			logger.WriteEvent("Test", properties: props);
+			logger.WriteEventWithSource("Test", properties: props);
 
 			var childLogger = logger.CreateChildLogger("childlogger");
-			childLogger.WriteEvent("Child logger test.");
+			childLogger.WriteEventWithSource("Child logger test.");
 
-			logger.WriteEvent("Test", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent);
-			logger.WriteEvent("Test1", LogEventSeverity.Diagnostic);
-			//logger.WriteEvent("Test1", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent, new KeyValuePair<string, object>("Test2", "Test2"));
+			logger.WriteEventWithSource("Test", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent);
+			logger.WriteEventWithSource("Test1", LogEventSeverity.Diagnostic);
+			logger.WriteEvent("Test1", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent, new KeyValuePair<string, object>("Test2", "Test2"));
 
-			logger.WriteEvent("Stopped");
+			logger.WriteEventWithSource("Stopped");
 
 			Console.ReadLine();
 		}
-
-
 	}
 
 	public class TestProperty

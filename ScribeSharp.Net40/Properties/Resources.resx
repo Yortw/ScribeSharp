@@ -153,6 +153,9 @@
   <data name="ParentJobIdPropertyName" xml:space="preserve">
     <value>Parent Job ID</value>
   </data>
+  <data name="PropertyCannotBeEmpty" xml:space="preserve">
+    <value>{0} cannot be empty.</value>
+  </data>
   <data name="PropertyCannotBeEmptyOrWhitespace" xml:space="preserve">
     <value>{0} cannot be empty or only white space.</value>
   </data>

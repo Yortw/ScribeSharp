@@ -66,7 +66,7 @@ namespace ScribeSharp.Writers
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
 			logEvent.Clone(logEvent);
-			_Logger.WriteEvent(logEvent, logEvent.Source, logEvent.SourceMethod);
+			_Logger.WriteEventWithSource(logEvent, logEvent.Source, logEvent.SourceMethod);
 		}
 
 		#endregion

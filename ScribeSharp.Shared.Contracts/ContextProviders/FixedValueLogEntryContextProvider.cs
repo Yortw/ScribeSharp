@@ -7,11 +7,11 @@ namespace ScribeSharp.ContextProviders
 	/// <summary>
 	/// Applies a property with a specified name and string value.
 	/// </summary>
-	public sealed class FixedStringLogEntryContextProvider : ContextProviderBase
+	public sealed class FixedValueLogEntryContextProvider : ContextProviderBase
 	{
 
 		private string _PropertyName;
-		private string _PropertyValue;
+		private object _PropertyValue;
 
 		/// <summary>
 		/// Applies a property with the specified name and string value.
@@ -20,7 +20,7 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="propertyValue">The value of the property to apply.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="propertyName"/> is null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="propertyName"/> is empty or only whitespace.</exception>
-		public FixedStringLogEntryContextProvider(string propertyName, string propertyValue) : this(propertyName, propertyValue, null)
+		public FixedValueLogEntryContextProvider(string propertyName, object propertyValue) : this(propertyName, propertyValue, null)
 		{
 		}
 
@@ -32,7 +32,7 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="filter">An optional <see cref="ILogEventFilter"/> used to decide if this property should be applied or not.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="propertyName"/> is null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="propertyName"/> is empty or only whitespace.</exception>
-		public FixedStringLogEntryContextProvider(string propertyName, string propertyValue, ILogEventFilter filter) : base(filter)
+		public FixedValueLogEntryContextProvider(string propertyName, object propertyValue, ILogEventFilter filter) : base(filter)
 		{
 			if (_PropertyName == null) throw new ArgumentNullException(nameof(propertyName));
 			if (String.IsNullOrWhiteSpace(propertyName)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(propertyName)));
@@ -42,22 +42,12 @@ namespace ScribeSharp.ContextProviders
 		}
 
 		/// <summary>
-		/// Returns the property name provided via the constructor.
+		/// Adds a property with the name and the value supplied via the constructor.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return _PropertyName;
-			}
-		}
-
-		/// <summary>
-		/// Returns the property value provided via the constructor.
-		/// </summary>
-		public override object GetValue()
-		{
-			return _PropertyValue;
+			AddProperty(logEvent.Properties, _PropertyName, _PropertyValue);
 		}
 	}
 }

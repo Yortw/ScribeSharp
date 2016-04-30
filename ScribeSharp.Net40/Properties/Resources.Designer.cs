@@ -169,6 +169,15 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} cannot be empty..
+        /// </summary>
+        internal static string PropertyCannotBeEmpty {
+            get {
+                return ResourceManager.GetString("PropertyCannotBeEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} cannot be empty or only white space..
         /// </summary>
         internal static string PropertyCannotBeEmptyOrWhitespace {

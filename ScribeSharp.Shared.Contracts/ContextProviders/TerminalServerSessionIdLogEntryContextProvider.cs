@@ -22,23 +22,12 @@ namespace ScribeSharp.ContextProviders
 		public TerminalServerSessionIdLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Terminal Server Session Id".
+		/// Adds a property with the name "Terminal Server Session Id" and the value of System.Diagnostics.Process.GetCurrentProcess().SessionId.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Terminal Server Session Id";
-			}
-		}
-
-		/// <summary>
-		/// Returns the current terminal server session id.
-		/// </summary>
-		/// <returns>A string containing the current terminal server session id.</returns>
-		public override object GetValue()
-		{
-			return System.Diagnostics.Process.GetCurrentProcess().SessionId;
+			AddProperty(logEvent.Properties, "Terminal Server Session Id", CachedCurrentProcess.CurrentProcess.SessionId);
 		}
 	}
 }

@@ -21,23 +21,12 @@ namespace ScribeSharp.ContextProviders
 		public AppDomainNameLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "AppDomain Name".
+		/// Adds an "AppDomain Name" property containing the AppDomain.CurrentDomain.FriendlyName value.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "AppDomain Name";
-			}
-		}
-
-		/// <summary>
-		/// Returns AppDomain.CurrentDomain.FriendlyName.
-		/// </summary>
-		/// <returns>Returns the friendly name of the current app domain.</returns>
-		public override object GetValue()
-		{
-			return AppDomain.CurrentDomain.FriendlyName;
+			AddProperty(logEvent.Properties, "AppDomain Name", AppDomain.CurrentDomain.FriendlyName);
 		}
 	}
 }

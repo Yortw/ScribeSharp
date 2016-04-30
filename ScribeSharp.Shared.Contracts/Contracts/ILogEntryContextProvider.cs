@@ -1,21 +1,12 @@
-﻿namespace ScribeSharp
+﻿using System.Collections.Generic;
+
+namespace ScribeSharp
 {
 	/// <summary>
 	/// Interface for components that can automatically apply additional properties (context) to <see cref="LogEvent"/> instances.
 	/// </summary>
 	public interface ILogEventContextProvider
 	{
-		/// <summary>
-		/// Returns the name of the property to add.
-		/// </summary>
-		string PropertyName { get; }
-		/// <summary>
-		/// Returns the value of the property to add.
-		/// </summary>
-		/// <returns>The value of the property to add.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-		object GetValue();
-
 		/// <summary>
 		/// A <see cref="ILogEventFilter"/> used to determine if the property should be added.
 		/// </summary>
@@ -24,5 +15,10 @@
 		/// </remarks>
 		ILogEventFilter Filter { get; }
 
+		/// <summary>
+		/// Called by the system to ask this context provider to add any properties it wants to apply.
+		/// </summary>
+		/// <param name="logEvent">The <see cref="LogEvent"/> to add properties to.</param>
+		void AddProperties(LogEvent logEvent);
 	}
 }

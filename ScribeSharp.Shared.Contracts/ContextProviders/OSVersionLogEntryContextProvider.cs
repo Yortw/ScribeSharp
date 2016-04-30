@@ -10,6 +10,9 @@ namespace ScribeSharp.ContextProviders
 	/// </summary>
 	public sealed class OSVersionLogEventContextProvider : ContextProviderBase
 	{
+
+		private string _OSVersion;
+
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
@@ -21,23 +24,12 @@ namespace ScribeSharp.ContextProviders
 		public OSVersionLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "OS Version".
+		/// Adds a property with the name "OS Version" and the value of Environment.OSVersion.Version converted to a string.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "OS Version";
-			}
-		}
-
-		/// <summary>
-		/// Returns <see cref="Environment.OSVersion"/> converted to a string.
-		/// </summary>
-		/// <returns>A string containing the OS version number as a string.</returns>
-		public override object GetValue()
-		{
-			return Environment.OSVersion.Version.ToString();
+			AddProperty(logEvent.Properties, "OS Version", (_OSVersion = Environment.OSVersion.Version.ToString()));
 		}
 	}
 }

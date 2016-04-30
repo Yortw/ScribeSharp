@@ -59,6 +59,7 @@
     <Compile Include="AsyncQueueLogWriterTests.cs" />
     <Compile Include="AggregateLogWriterTests.cs" />
     <Compile Include="ListLogWriterTests.cs" />
+    <Compile Include="LogCallContextTests.cs" />
     <Compile Include="LoggerTests.cs" />
     <Compile Include="RethrowErrorHandlerTests.cs" />
     <Compile Include="SuppressingErrorHandlerTests.cs" />

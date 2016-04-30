@@ -21,23 +21,12 @@ namespace ScribeSharp.ContextProviders
 		public ApplicationNameLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Application Name".
+		/// Adds an "Application Name" property containing the AppDomain.CurrentDomain.ApplicationIdentity.FullName value.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Application Name";
-			}
-		}
-
-		/// <summary>
-		/// Returns AppDomain.CurrentDomain.ApplicationIdentity.FullName.
-		/// </summary>
-		/// <returns>Returns the full name of the application.</returns>
-		public override object GetValue()
-		{
-			return AppDomain.CurrentDomain.ApplicationIdentity.FullName;
+			AddProperty(logEvent.Properties, "Application Name", AppDomain.CurrentDomain.ApplicationIdentity.FullName);
 		}
 	}
 }

@@ -23,23 +23,12 @@ namespace ScribeSharp.ContextProviders
 		public ClrVersionLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returs "CLR Version".
+		/// Adds an "CLR Version" property containing the Environment.Version value.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "CLR Version";
-			}
-		}
-
-		/// <summary>
-		/// Returns <see cref="Environment.Version"/> as a string.
-		/// </summary>
-		/// <returns>A string containing the CLR version.</returns>
-		public override object GetValue()
-		{
-			return _Version ?? (_Version = Environment.Version.ToString());
+			AddProperty(logEvent.Properties, "CLR Version", _Version ?? (_Version = Environment.Version.ToString()));
 		}
 	}
 }

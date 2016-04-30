@@ -41,17 +41,27 @@ namespace ScribeSharp.ContextProviders
 		}
 
 		/// <summary>
-		/// The name of the property to apply.
+		/// Called by the system to ask this context provider to add any properties it wants to apply.
 		/// </summary>
-		public abstract string PropertyName
+		/// <param name="logEvent">The <see cref="LogEvent"/> to add properties to.</param>
+		public void AddProperties(LogEvent logEvent)
 		{
-			get;
+			if ((_Filter?.ShouldProcess(logEvent) ?? true))
+				AddPropertiesCore(logEvent);
 		}
 
 		/// <summary>
-		/// The value of the property to apply.
+		/// Called when a log event requires properties added and the filter provided via the constructor has accepted the log event.
 		/// </summary>
-		/// <returns>A loosley typed value.</returns>
-		public abstract object GetValue();
+		/// <param name="logEvent">The <see cref="LogEvent"/> to apply properties to.</param>
+		protected abstract void AddPropertiesCore(LogEvent logEvent);
+
+		protected static void AddProperty(IDictionary<string, object> properties, string propertyName, object value)
+		{
+			//if (_HasPropertyRenderers)
+			//	properties[propertyName] = RenderProperty(value);
+			//else
+				properties.AddIfNotExists(propertyName, value);
+		}
 	}
 }

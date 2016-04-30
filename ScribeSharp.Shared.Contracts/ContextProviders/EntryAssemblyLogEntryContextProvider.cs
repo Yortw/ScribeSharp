@@ -25,23 +25,12 @@ namespace ScribeSharp.ContextProviders
 		public EntryAssemblyLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Entry Assembly Name".
+		/// Adds a property with the "Entry Assembly Name" and the value of Assembly.GetEntryAssembly().FullName.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Entry Assembly Name";
-			}
-		}
-
-		/// <summary>
-		/// Returns Assembly.GetEntryAssembly().FullName;
-		/// </summary>
-		/// <returns>A string containing the name of the assembly that started the app.</returns>
-		public override object GetValue()
-		{
-			return _AssemblyName ?? (_AssemblyName = Assembly.GetEntryAssembly().FullName);
+			AddProperty(logEvent.Properties, "Entry Assembly Name", _AssemblyName ?? (_AssemblyName = Assembly.GetEntryAssembly().FullName));
 		}
 	}
 }

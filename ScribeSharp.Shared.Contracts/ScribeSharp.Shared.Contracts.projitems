@@ -11,6 +11,10 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\AutoLoggerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DictionaryExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImmutableStack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogCallContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\StackTraceLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AppDomainIdLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AppDomainNameLogEntryContextProvider.cs" />
@@ -21,7 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\DelegateLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\EntryAssemblyLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\ExecutingAssemblyLogEntryContextProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\FixedStringLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\FixedValueLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\MachineNameLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\OSUserNameLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\OSVersionDescriptionLogEntryContextProvider.cs" />

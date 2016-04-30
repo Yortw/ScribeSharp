@@ -166,6 +166,166 @@ namespace ScribeSharp.Tests
 
 		#endregion
 
+		#region WriteEventWithSource Tests
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_SetsSource()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.Source = null;
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.IsTrue(list.Last().Source.EndsWith("LoggerTests.cs"));
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_SetsSourceMethod()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.Source = null;
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual("Logger_WriteEventWithSource_SetsSourceMethod", list.Last().SourceMethod);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_SetsSourceLineNumber()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.Source = null;
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual(203, list.Last().SourceLineNumber);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_CallsLogWriter()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual(1, list.Count);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_DoesNotCallLogWriterWhenDisabled()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+			logger.IsEnabled = false;
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual(0, list.Count);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_LogsPassedProperties()
+		{
+			var list = new List<LogEvent>(1);
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+			var propValue = System.Guid.NewGuid();
+			logger.WriteEventWithSource("Log this!", properties: new KeyValuePair<string, object>("Test Id", propValue));
+			Assert.IsTrue(list[0].Properties.ContainsKey("Test Id"));
+			Assert.AreEqual(propValue, list[0].Properties["Test Id"]);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_PerformanceCheck()
+		{
+			int testIterations = 100;
+			TimeSpan maxTime = TimeSpan.FromMilliseconds(10); // This is generous, to allow for variations caused by things outside the logging system (GC/CLR/OS etc)
+			var list = new List<LogEvent>(1);
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+			var sw = new System.Diagnostics.Stopwatch();
+			sw.Start();
+			for (int cnt = 0; cnt < testIterations; cnt++)
+			{
+				logger.WriteEventWithSource($"Log this {cnt.ToString()}!");
+			}
+			sw.Stop();
+			Assert.IsTrue(sw.ElapsedMilliseconds < maxTime.TotalMilliseconds, $"Logging 100 simple calls took more than {maxTime.ToString()}");
+			System.Diagnostics.Trace.WriteLine($"Logging 100 simple calls took {maxTime.ToString()}");
+		}
+
+		[TestCategory("Logger")]
+		[ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_ThrowsOnNullLogEvent()
+		{
+			var list = new List<LogEvent>(1);
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource((LogEvent)null);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_UsesFilter()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.Filter = new Filters.LogSeverityFilter(LogEventSeverity.Warning);
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual(0, list.Count);
+			logger.WriteEventWithSource("Log this!", eventSeverity: LogEventSeverity.Warning);
+			Assert.AreEqual(1, list.Count);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_UsesLogClock()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var myEpoch = new DateTimeOffset(635968343126200923, TimeSpan.Zero);
+			policy.Clock = new MockLogClock(myEpoch);
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual(myEpoch, list[0].DateTime);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_UsesContext()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.MachineNameLogEventContextProvider() };
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!");
+			Assert.AreEqual(Environment.MachineName, list[0].Properties["Machine Name"]);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEventWithSource_UsesContextFilter()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.MachineNameLogEventContextProvider(new Filters.LogSeverityFilter(LogEventSeverity.Warning)) };
+			var logger = new Logger(policy);
+			logger.WriteEventWithSource("Log this!", eventSeverity: LogEventSeverity.Information);
+			Assert.IsFalse(list[0].Properties.ContainsKey("Machine Name"));
+			logger.WriteEventWithSource("Log this!", eventSeverity: LogEventSeverity.Warning);
+			Assert.AreEqual(Environment.MachineName, list[1].Properties["Machine Name"]);
+		}
+
+		#endregion
+
 		#region BeginLoggedJob Tests
 
 		[TestMethod]
@@ -391,7 +551,7 @@ namespace ScribeSharp.Tests
 
 		[TestCategory("Logger")]
 		[TestMethod]
-		public void Logger_ErrorHandling_WriteEventCallsErrorHandler()
+		public void Logger_ErrorHandling_WriteEventWithSourceCallsErrorHandler()
 		{
 			var wasCalled = false;
 			var list = new List<LogEvent>();
@@ -401,7 +561,7 @@ namespace ScribeSharp.Tests
 			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
 			var logger = new Logger(policy);
 
-			logger.WriteEvent("Log this!");
+			logger.WriteEventWithSource("Log this!");
 
 			Assert.AreEqual(wasCalled, true);
 		}
@@ -416,7 +576,7 @@ namespace ScribeSharp.Tests
 			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
 			var logger = new Logger(policy);
 
-			logger.WriteEvent("Log this!");
+			logger.WriteEventWithSource("Log this!");
 		}
 
 
@@ -431,7 +591,7 @@ namespace ScribeSharp.Tests
 			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
 			var logger = new Logger(policy);
 
-			logger.WriteEvent("Log this!");
+			logger.WriteEventWithSource("Log this!");
 		}
 
 		#endregion

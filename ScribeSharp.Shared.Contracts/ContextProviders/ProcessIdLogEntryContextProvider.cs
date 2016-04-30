@@ -24,23 +24,12 @@ namespace ScribeSharp.ContextProviders
 		public ProcessIdLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Process Id".
+		/// Adds a property with the name "Process Id" and the value of Environment.OSVersion.Version converted to a string.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Process Id";
-			}
-		}
-
-		/// <summary>
-		/// Returns a string containing the id of the current process.
-		/// </summary>
-		/// <returns>A string containing the id of the current process.</returns>
-		public override object GetValue()
-		{
-			return _ProcessId ?? (_ProcessId = CachedCurrentProcess.CurrentProcess.Id);
+			AddProperty(logEvent.Properties, "Process Id", _ProcessId ?? (_ProcessId = CachedCurrentProcess.CurrentProcess.Id));
 		}
 	}
 }

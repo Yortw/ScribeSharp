@@ -58,9 +58,9 @@ namespace ScribeSharp
 				{
 					var list = new List<ILogEventContextProvider>(2);
 					if (!String.IsNullOrWhiteSpace(Properties.Resources.JobNamePropertyName))
-						list.Add(new ContextProviders.FixedStringLogEntryContextProvider(Properties.Resources.JobNamePropertyName, _JobName));
+						list.Add(new ContextProviders.FixedValueLogEntryContextProvider(Properties.Resources.JobNamePropertyName, _JobName));
 					if (!String.IsNullOrWhiteSpace(Properties.Resources.JobNamePropertyName))
-						list.Add(new ContextProviders.FixedStringLogEntryContextProvider(Properties.Resources.JobIdPropertyName, _JobId));
+						list.Add(new ContextProviders.FixedValueLogEntryContextProvider(Properties.Resources.JobIdPropertyName, _JobId));
 
 					_JobLogger = _Logger.CreateChildLogger(new LogPolicy()
 					{
@@ -104,7 +104,7 @@ namespace ScribeSharp
 				new KeyValuePair<string, object>(Properties.Resources.JobIdPropertyName, jobId)
 			).ToArray();
 
-			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
+			_Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
 				eventSeverity: LogEventSeverity.Information,
 				eventType: LogEventType.Start,
 				properties: _Properties
@@ -128,7 +128,7 @@ namespace ScribeSharp
 			if (_Exception == null)
 				_Exception = exception;
 
-			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFailureEventMessage, _JobName, _JobId, exception.GetType().FullName + ":" + exception.Message),
+			_Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFailureEventMessage, _JobName, _JobId, exception.GetType().FullName + ":" + exception.Message),
 				eventSeverity: LogEventSeverity.Error,
 				eventType: LogEventType.Failure,
 				properties: GetExtendedProperties(_Properties, new KeyValuePair<string, object>("Exception", exception)).ToArray()
@@ -203,7 +203,7 @@ namespace ScribeSharp
 		{
 			_Stopwatch.Stop();
 
-			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
+			_Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
 				eventSeverity: _Exception == null ? (_Cancelled ? LogEventSeverity.Warning : LogEventSeverity.Information) : LogEventSeverity.Error,
 				eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
 				properties: GetExtendedProperties(

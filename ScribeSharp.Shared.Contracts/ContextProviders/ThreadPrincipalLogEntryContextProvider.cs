@@ -21,23 +21,12 @@ namespace ScribeSharp.ContextProviders
 		public ThreadPrincipalLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Return "Thread Principal".
+		/// Adds a property with the name "Thread Principal" and the value of System.Threading.Thread.CurrentPrincipal.Identity.Name.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Thread Principal";
-			}
-		}
-
-		/// <summary>
-		/// The name of the current principal identity for the current thread.
-		/// </summary>
-		/// <returns>A string containing the name of the current principal identity for the current thread.</returns>
-		public override object GetValue()
-		{
-			return System.Threading.Thread.CurrentPrincipal.Identity.Name;
+			AddProperty(logEvent.Properties, "Thread Principal", System.Threading.Thread.CurrentPrincipal.Identity.Name);
 		}
 	}
 }

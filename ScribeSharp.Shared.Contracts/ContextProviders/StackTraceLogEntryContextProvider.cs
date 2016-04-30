@@ -25,23 +25,12 @@ namespace ScribeSharp.ContextProviders
 		public StackTraceLogEntryContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Stacktrace".
+		/// Adds a property with the name "Stacktrace" and the value of System.Diagnostics.StackTrace(true).ToString().
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Stacktrace";
-			}
-		}
-
-		/// <summary>
-		/// Returns System.Diagnostics.StackTrace(true).ToString().
-		/// </summary>
-		/// <returns>The string representation of the current stack trace.</returns>
-		public override object GetValue()
-		{
-			return new System.Diagnostics.StackTrace(true).ToString();
+			AddProperty(logEvent.Properties, "Stacktrace", new System.Diagnostics.StackTrace(true).ToString());
 		}
 	}
 }

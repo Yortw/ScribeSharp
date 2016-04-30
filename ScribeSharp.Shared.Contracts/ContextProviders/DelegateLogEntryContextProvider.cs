@@ -43,23 +43,12 @@ namespace ScribeSharp.ContextProviders
 		}
 
 		/// <summary>
-		/// Returns the property name configured via the constructor.
+		/// Adds a property with the name and the value of the function supplied via the constructor.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return _PropertyName;
-			}
-		}
-
-		/// <summary>
-		/// Calls the function provided in the constructor and returns it's value.
-		/// </summary>
-		/// <returns>The value of the configured function.</returns>
-		public override object GetValue()
-		{
-			return _RequestContextValueCallback();
+			AddProperty(logEvent.Properties, _PropertyName, _RequestContextValueCallback());
 		}
 	}
 }

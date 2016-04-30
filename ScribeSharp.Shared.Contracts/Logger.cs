@@ -15,12 +15,16 @@ namespace ScribeSharp
 	public class Logger : ILogger, IDisposable
 	{
 		//TODO: Call contexts? Async/thread/logical?
+		//TODO: First chance filters?
+		//TODO: Log exceptions?
+		//TODO: Logger.WriteFormat?
 		//TODO: Property renderers? JsonRenderer
 		//TODO: Message renderer separate to log event renderer/property renderer?
-		//TODO: Json serialiser
 		//TODO: Single filtering writer instead of base class?
 		//TODO: Level switch
 		//TODO: Pooled/Recycling text writer?
+		//TODO: Json serialiser
+		//TODO: Logger extension methods?
 
 		#region Fields
 
@@ -52,7 +56,7 @@ namespace ScribeSharp
 		{
 			if (policy == null) throw new ArgumentNullException(nameof(policy));
 			if (policy.LogWriter == null) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeNull, "policy.LogWriter"), nameof(policy));
-
+			
 			_ErrorHandler = policy.ErrorHandler ?? SuppressingErrorHandler.DefaultInstance;
 			_EntryPool = new LogEventPool(policy.LogEventPoolCapacity);
 			_JobPool = new LoggedJobPool(policy.JobPoolCapacity);
@@ -82,6 +86,74 @@ namespace ScribeSharp
 
 		#region WriteEvent Overloads
 
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		/// <param name="eventType">A <see cref="LogEventType"/> to assign to the written log entry. The defaultvalue if <see cref="LogEventType.ApplicationEvent"/>.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
+		public void WriteEvent(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent, params KeyValuePair<string, object>[] properties)
+		{
+
+			try
+			{
+				if (!IsEnabled) return;
+
+				using (var pooledLogEvent = _EntryPool.Take())
+				{
+					var logEvent = pooledLogEvent.Value;
+					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, logEvent);
+
+					UnsafeWriteEvent(logEvent, null, null, -1);
+				}
+			}
+			catch (StackOverflowException) { throw; }
+			catch (LogException lex)
+			{
+				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
+					throw;
+			}
+			catch (Exception ex)
+			{
+				var wrappedException = new LogException(ex.Message, ex);
+				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
+					throw wrappedException;
+			}
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="logEvent">The <see cref="LogEvent"/> instance containing data to write.</param>
+		public void WriteEvent(LogEvent logEvent)
+		{
+			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
+
+			try
+			{
+				if (!IsEnabled) return;
+
+				UnsafeWriteEvent(logEvent, null, null, -1);
+			}
+			catch (StackOverflowException) { throw; }
+			catch (LogException lex)
+			{
+				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
+					throw;
+			}
+			catch (Exception ex)
+			{
+				var wrappedException = new LogException(ex.Message, ex);
+				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
+					throw wrappedException;
+			}
+		}
+
+		#endregion
+
+		#region WriteEventWithSource Overloads
 
 		/// <summary>
 		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
@@ -94,7 +166,7 @@ namespace ScribeSharp
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
-		public void WriteEvent(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent,
+		public void WriteEventWithSource(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent,
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerFilePath] 
 #endif
@@ -106,7 +178,7 @@ namespace ScribeSharp
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerLineNumber] 
 #endif
-			int sourceLineNumber = 0,
+			int sourceLineNumber = -1,
 			params KeyValuePair<string, object>[] properties)
 		{
 			try
@@ -116,22 +188,7 @@ namespace ScribeSharp
 				using (var pooledLogEvent = _EntryPool.Take())
 				{
 					var logEvent = pooledLogEvent.Value;
-					logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
-					logEvent.EventName = eventName ?? String.Empty;
-					logEvent.EventSeverity = eventSeverity;
-					logEvent.EventType = eventType;
-
-					if (Utils.Any<KeyValuePair<string, object>>(properties))
-					{
-						var eventProperties = (logEvent.Properties = logEvent.Properties ?? new Dictionary<string, object>());
-						foreach (var property in properties)
-						{
-							if (_HasPropertyRenderers)
-								eventProperties[property.Key] = RenderProperty(property.Value);
-							else
-								eventProperties[property.Key] = property.Value;
-						}
-					}
+					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, logEvent);
 
 					UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
 				}
@@ -157,7 +214,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
-		public void WriteEvent(LogEvent logEvent,
+		public void WriteEventWithSource(LogEvent logEvent,
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerFilePath] 
 #endif
@@ -169,13 +226,16 @@ namespace ScribeSharp
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerLineNumber] 
 #endif
-			int sourceLineNumber = 0)
+			int sourceLineNumber = -1)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
 			try
 			{
 				if (!IsEnabled) return;
+
+				if (logEvent.DateTime == DateTimeOffset.MinValue)
+					logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
 
 				UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
 			}
@@ -363,7 +423,7 @@ namespace ScribeSharp
 		/// </summary>
 		/// <remarks>
 		/// <para>Defaults to true.</para>
-		/// <para>If false then no log events are written regardless of other settings and calling the <see cref="WriteEvent(string, LogEventSeverity, LogEventType, string, string, int, KeyValuePair{string, object}[])"/> overloads returns quickly without doing any work. If true, events are written based on the logger configuration.</para>
+		/// <para>If false then no log events are written regardless of other settings and calling the <see cref="WriteEventWithSource(string, LogEventSeverity, LogEventType, string, string, int, KeyValuePair{string, object}[])"/> overloads returns quickly without doing any work. If true, events are written based on the logger configuration.</para>
 		/// </remarks>
 		public bool IsEnabled
 		{
@@ -413,14 +473,7 @@ namespace ScribeSharp
 			var properties = logEvent.Properties;
 			for (int cnt = 0; cnt < _ContextProviders.Length; cnt++)
 			{
-				provider = _ContextProviders[cnt];
-				if (!properties.ContainsKey(provider.PropertyName) && (provider?.Filter?.ShouldProcess(logEvent) ?? true))
-				{
-					if (_HasPropertyRenderers)
-						properties[provider.PropertyName] = RenderProperty(provider.GetValue());
-					else
-						properties[provider.PropertyName] = provider.GetValue();
-				}
+				_ContextProviders[cnt].AddProperties(logEvent);
 			}
 		}
 
@@ -438,17 +491,34 @@ namespace ScribeSharp
 
 		#region Private Methods
 
+		private void InitialiseLogEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, KeyValuePair<string, object>[] properties, LogEvent logEvent)
+		{
+			logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
+			logEvent.EventName = eventName ?? String.Empty;
+			logEvent.EventSeverity = eventSeverity;
+			logEvent.EventType = eventType;
+
+			if (Utils.Any<KeyValuePair<string, object>>(properties))
+			{
+				var eventProperties = (logEvent.Properties = logEvent.Properties ?? new Dictionary<string, object>());
+				foreach (var property in properties)
+				{
+					if (_HasPropertyRenderers)
+						eventProperties[property.Key] = RenderProperty(property.Value);
+					else
+						eventProperties[property.Key] = property.Value;
+				}
+			}
+		}
+
 		private void UnsafeWriteEvent(LogEvent logEvent, string source, string sourceMethod, int sourceLineNumber)
 		{
-			if (logEvent.DateTime == DateTimeOffset.MinValue)
-				logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
-
 			if (String.IsNullOrEmpty(logEvent.Source))
 				logEvent.Source = _Source ?? source;
 
 			if (String.IsNullOrWhiteSpace(logEvent.SourceMethod))
 				logEvent.SourceMethod = sourceMethod;
-			if (logEvent.SourceLineNumber == 0)
+			if (logEvent.SourceLineNumber < 0)
 				logEvent.SourceLineNumber = sourceLineNumber;
 
 			FillProperties(logEvent);

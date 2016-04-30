@@ -21,23 +21,12 @@ namespace ScribeSharp.ContextProviders
 		public MachineNameLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Machine Name".
+		/// Adds a property with the name "Machine Name" and the value of Environment.MachineName.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Machine Name";
-			}
-		}
-
-		/// <summary>
-		/// Returns a string cotaining the netbios name of the local machine.
-		/// </summary>
-		/// <returns>A string cotaining the netbios name of the local machine.</returns>
-		public override object GetValue()
-		{
-			return Environment.MachineName;
+			AddProperty(logEvent.Properties, "Machine Name", Environment.MachineName);
 		}
 	}
 }

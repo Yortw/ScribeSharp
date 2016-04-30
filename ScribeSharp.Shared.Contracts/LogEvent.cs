@@ -69,7 +69,7 @@ namespace ScribeSharp
 		/// <summary>
 		/// Sets or returns the line number with the source code of the source method that initially created the log event (or called the WriteEvent method that created it).
 		/// </summary>
-		public int SourceLineNumber { get; set; }
+		public int SourceLineNumber { get; set; } = -1;
 
 		#endregion
 
@@ -102,6 +102,7 @@ namespace ScribeSharp
 			Properties?.Clear();
 			Source = null;
 			SourceMethod = null;
+			SourceLineNumber = -1;
 		}
 
 		#region Clone Methods
@@ -138,7 +139,9 @@ namespace ScribeSharp
 			destination.EventSeverity = this.EventSeverity;
 			destination.EventType = this.EventType;
 			destination.Source = this.Source;
+			destination.SourceLineNumber = this.SourceLineNumber;
 			destination.SourceMethod = this.SourceMethod;
+
 			if (this.Properties != null)
 				destination.Properties = new Dictionary<string, object>(this.Properties);
 			else

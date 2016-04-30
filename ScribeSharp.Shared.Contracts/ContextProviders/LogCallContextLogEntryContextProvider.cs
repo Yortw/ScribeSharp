@@ -6,27 +6,31 @@ using System.Text;
 namespace ScribeSharp.ContextProviders
 {
 	/// <summary>
-	/// Sets a property called "OS User" containing the name of the current user according to the OS.
+	/// Adds all properties currently in the <see cref="LogCallContext.CurrentProperties"/>.
 	/// </summary>
-	public sealed class OSUserNameLogEventContextProvider : ContextProviderBase
+	public sealed class LogCallContextLogEntryContextProvider : ContextProviderBase
 	{
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public OSUserNameLogEventContextProvider() : base() { }
+		public LogCallContextLogEntryContextProvider() : base() { }
 		/// <summary>
 		/// Full constructor.
 		/// </summary>
 		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to determine if the property should be added or not.</param>
-		public OSUserNameLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
+		public LogCallContextLogEntryContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Adds a property with the name "OS User" and the value of Environment.UserDomainName and Environment.UserName separated by a back slash.
+		/// Adds all properties currently in the <see cref="LogCallContext.CurrentProperties"/>.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			AddProperty(logEvent.Properties, "OS User", (Environment.UserDomainName ?? String.Empty) + "\\" + Environment.UserName);
+			foreach (var property in LogCallContext.CurrentProperties)
+			{
+				AddProperty(logEvent.Properties, property.Key, property.Value);
+			}
 		}
+
 	}
 }

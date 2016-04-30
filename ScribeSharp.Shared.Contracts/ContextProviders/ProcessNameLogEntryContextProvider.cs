@@ -24,23 +24,12 @@ namespace ScribeSharp.ContextProviders
 		public ProcessNameLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Process Name".
+		/// Adds a property with the name "Process Name" and the value of System.Diagnostics.Process.GetCurrentProcess().ProcessName.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Process Name";
-			}
-		}
-
-		/// <summary>
-		/// Returns the current process name.
-		/// </summary>
-		/// <returns>A string containing the current process name.</returns>
-		public override object GetValue()
-		{
-			return _ProcessName ?? (_ProcessName = CachedCurrentProcess.CurrentProcess.MachineName);
+			AddProperty(logEvent.Properties, "Process Name", _ProcessName ?? (_ProcessName = CachedCurrentProcess.CurrentProcess.ProcessName));
 		}
 	}
 }

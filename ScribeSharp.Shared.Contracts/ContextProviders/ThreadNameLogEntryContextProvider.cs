@@ -21,24 +21,13 @@ namespace ScribeSharp.ContextProviders
 		public ThreadNameLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Thread Name".
+		/// Adds a property with the name "Thread Name" and either the name or the id of the current managed thread.
 		/// </summary>
-		public override string PropertyName
-		{
-			get
-			{
-				return "Thread Name";
-			}
-		}
-
-		/// <summary>
-		/// The name of the current thread, or if no name is assigned then the current managed thread id.
-		/// </summary>
-		/// <returns>A string containing the thread name.</returns>
-		public override object GetValue()
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			var currentThread = System.Threading.Thread.CurrentThread;
-			return String.IsNullOrWhiteSpace(currentThread.Name) ? currentThread.ManagedThreadId.ToString(System.Globalization.CultureInfo.InvariantCulture) : currentThread.Name;
+			AddProperty(logEvent.Properties, "Thread Name", String.IsNullOrWhiteSpace(currentThread.Name) ? currentThread.ManagedThreadId.ToString(System.Globalization.CultureInfo.InvariantCulture) : currentThread.Name);
 		}
 	}
 }

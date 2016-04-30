@@ -35,7 +35,7 @@ namespace ScribeSharp.AutoLoggers
 
 		private void SystemEvents_TimeChanged(object sender, EventArgs e)
 		{
-			Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.InvariantCulture, Properties.Resources.DateTimeChangedLogEventText, DateTimeOffset.Now.ToString("G", System.Globalization.CultureInfo.InvariantCulture)), LogEventSeverity.Warning, LogEventType.SystemEvent);
+			Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.InvariantCulture, Properties.Resources.DateTimeChangedLogEventText, DateTimeOffset.Now.ToString("G", System.Globalization.CultureInfo.InvariantCulture)), LogEventSeverity.Warning, LogEventType.SystemEvent);
 		}
 	}
 }

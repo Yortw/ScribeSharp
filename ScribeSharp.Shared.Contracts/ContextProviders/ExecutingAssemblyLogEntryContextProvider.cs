@@ -22,23 +22,12 @@ namespace ScribeSharp.ContextProviders
 		public CallingAssemblyLogEventContextProvider(ILogEventFilter filter) : base(filter) { }
 
 		/// <summary>
-		/// Returns "Calling Assembly".
+		/// Adds a property with the "Calling Assembly" and the value of Assembly.GetCallingAssembly().FullName.
 		/// </summary>
-		public override string PropertyName
+		/// <param name="logEvent">The log event to apply the property to.</param>
+		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			get
-			{
-				return "Calling Assembly";
-			}
-		}
-
-		/// <summary>
-		/// Returns Assembly.GetCallingAssembly().FullName.
-		/// </summary>
-		/// <returns>A string containing the calling assembly name.</returns>
-		public override object GetValue()
-		{
-			return Assembly.GetCallingAssembly().FullName;
+			AddProperty(logEvent.Properties, "Calling Assembly", Assembly.GetCallingAssembly().FullName);
 		}
 	}
 }
