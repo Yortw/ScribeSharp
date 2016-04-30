@@ -12,6 +12,7 @@ namespace ScribeSharp.Tests
 	{
 
 		[TestMethod]
+		[TestCategory("LogWriterBase")]
 		public void LogWriterBase_WriteEvent_UsesFilter()
 		{
 			var logWriter = new MockLogWriter(new Filters.LogSeverityFilter(LogEventSeverity.Error));
@@ -25,6 +26,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("LogWriterBase")]
 		public void LogWriterBase_WriteEvent_WorksWithNullFilter()
 		{
 			var logWriter = new MockLogWriter(null);

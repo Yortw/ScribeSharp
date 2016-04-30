@@ -31,7 +31,7 @@ namespace ScribeSharp.TestApplication
 
 			logger.WriteEvent("Test", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent);
 			logger.WriteEvent("Test1", LogEventSeverity.Diagnostic);
-			logger.WriteEvent("Test1", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent, new KeyValuePair<string, object>("Test2", "Test2"));
+			//logger.WriteEvent("Test1", LogEventSeverity.Diagnostic, LogEventType.ScheduledEvent, new KeyValuePair<string, object>("Test2", "Test2"));
 
 			logger.WriteEvent("Stopped");
 

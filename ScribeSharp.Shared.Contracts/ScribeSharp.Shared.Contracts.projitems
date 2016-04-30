@@ -40,6 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEventFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILoggingErrorHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IPropertyRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LoggedJob.cs" />
@@ -61,6 +62,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\SimpleLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\XmlLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggedJobPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RethrowErrorHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SuppressingErrorHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UtcSystemClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogEventPool.cs" />

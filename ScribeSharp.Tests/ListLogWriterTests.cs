@@ -13,6 +13,7 @@ namespace ScribeSharp.Tests
 	{
 
 		[TestMethod]
+		[TestCategory("ListLogWriter")]
 		public void ListLogWriter_Write_WritesToList()
 		{
 			var list = new List<LogEvent>(10);
@@ -26,6 +27,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("ListLogWriter")]
 		public void ListLogWriter_Write_EnforcesCapacity()
 		{
 			var list = new List<LogEvent>(5);
@@ -42,6 +44,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("ListLogWriter")]
 		public void ListLogWriter_Write_UsesFilter()
 		{
 			var list = new List<LogEvent>(10);
@@ -59,6 +62,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("ListLogWriter")]
 		[TestMethod]
 		public void ListLogWriter_Constructor_ThrowsOnNullList()
 		{
@@ -66,6 +70,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[TestCategory("ListLogWriter")]
 		[TestMethod]
 		public void ListLogWriter_Constructor_ThrowsOnInvalidCapacity()
 		{

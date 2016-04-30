@@ -347,6 +347,55 @@ namespace ScribeSharp.Tests
 
 		#endregion
 
+		#region Error Handling Tests
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_ErrorHandling_WriteEventCallsErrorHandler()
+		{
+			var wasCalled = false;
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ErrorHandler = new SuppressingErrorHandler();
+			policy.ErrorHandler.Error += (sender, args) => wasCalled = true;
+			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
+			var logger = new Logger(policy);
+
+			logger.WriteEvent("Log this!");
+
+			Assert.AreEqual(wasCalled, true);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_ErrorHandling_DoesNotThrowWhenSuppressed()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ErrorHandler = new SuppressingErrorHandler();
+			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
+			var logger = new Logger(policy);
+
+			logger.WriteEvent("Log this!");
+		}
+
+
+		[ExpectedException(typeof(LogException))]
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_ErrorHandling_ThrowsLogExceptionWhenNotSuppressed()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ErrorHandler = new RethrowErrorHandler();
+			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
+			var logger = new Logger(policy);
+
+			logger.WriteEvent("Log this!");
+		}
+
+		#endregion
+
 		#region Private Support Methods
 
 		private static LogPolicy GetSimpleListPolicy()

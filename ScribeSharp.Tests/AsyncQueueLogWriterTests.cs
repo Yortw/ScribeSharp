@@ -13,25 +13,28 @@ namespace ScribeSharp.Tests
 	{
 		
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void AsyncQueueLogWriterTests_Constructor_ThrowsOnNullChildren()
 		{
-			var logWriter = new AsyncQueueLogWriter(null, 1, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(null, 1, TimeSpan.Zero, null);
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void AsyncQueueLogWriterTests_Constructor_ThrowsOnInvalidBatchSize()
 		{
-			var logWriter = new AsyncQueueLogWriter(new MockLogWriter(), 0, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(new MockLogWriter(), 0, TimeSpan.Zero, null);
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		public void AsyncQueueLogWriterTests_WriteEvent_WritesToChild()
 		{
 			var events = new List<LogEvent>(10);
 			var childWriter = new ListLogWriter(events, 10);
-			var logWriter = new AsyncQueueLogWriter(childWriter, 1, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(childWriter, 1, TimeSpan.Zero, null);
 			var logEvent = new LogEvent() { EventName = "Test" };
 			logWriter.Write(logEvent);
 			System.Threading.Thread.Sleep(250);
@@ -40,11 +43,12 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		public void AggregateLogWriter_WriteEvent_WritesToChildOnBatchSizeReached()
 		{
 			var events = new List<LogEvent>(10);
 			var child = new ListLogWriter(events, 10);
-			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero, null);
 
 			for (int cnt = 0; cnt < 5; cnt++)
 			{
@@ -66,11 +70,12 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		public void AggregateLogWriter_WriteEvent_WritesAfterTimeoutIfBatchSizeNotReached()
 		{
 			var events = new List<LogEvent>(10);
 			var child = new ListLogWriter(events, 10);
-			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.FromSeconds(1));
+			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.FromSeconds(1), null);
 
 			for (int cnt = 0; cnt < 5; cnt++)
 			{
@@ -88,11 +93,12 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		public void AggregateLogWriter_WriteEvent_FlushesOnDispose()
 		{
 			var events = new List<LogEvent>(10);
 			var child = new ListLogWriter(events, 10);
-			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero, null);
 
 			for (int cnt = 0; cnt < 5; cnt++)
 			{
@@ -108,20 +114,22 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		public void AggregateLogWriter_RequiresSynchronisation_IsTrueIfChildRequires()
 		{
 			var child = new MockLogWriter();
 			child.SetRequiresSynchronisation(true);
-			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero, null);
 
 			Assert.AreEqual(true, logWriter.RequiresSynchronization);
 		}
 
 		[TestMethod]
+		[TestCategory("AsyncQueueLogWriter")]
 		public void AggregateLogWriter_RequiresSynchronisation_IsFalseIfChildDoesNotRequires()
 		{
 			var child = new MockLogWriter();
-			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero);
+			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero, null);
 
 			Assert.AreEqual(false, logWriter.RequiresSynchronization);
 		}

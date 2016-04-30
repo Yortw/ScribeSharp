@@ -42,6 +42,10 @@ namespace ScribeSharp
 		/// </summary>
 		public string Source { get; set; }
 		/// <summary>
+		/// Sets or returns the error handler to use when an error occurs within the logging system.
+		/// </summary>
+		public ILoggingErrorHandler ErrorHandler { get; set; }
+		/// <summary>
 		/// Sets or returns the maximum size of the object pool used for <see cref="LogEvent"/> instances.
 		/// </summary>
 		/// <remarks>

@@ -60,6 +60,8 @@
     <Compile Include="AggregateLogWriterTests.cs" />
     <Compile Include="ListLogWriterTests.cs" />
     <Compile Include="LoggerTests.cs" />
+    <Compile Include="RethrowErrorHandlerTests.cs" />
+    <Compile Include="SuppressingErrorHandlerTests.cs" />
     <Compile Include="LogWriterBaseTests.cs" />
     <Compile Include="MockLogClock.cs" />
     <Compile Include="MockLogWriter.cs" />

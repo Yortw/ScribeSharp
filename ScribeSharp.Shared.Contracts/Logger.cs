@@ -18,8 +18,9 @@ namespace ScribeSharp
 		//TODO: Call contexts? Async/thread/logical?
 		//TODO: Property renderers? JsonRenderer
 		//TODO: Message renderer separate to log event renderer/property renderer?
-		//TODO: Internal error handling
 		//TODO: Json serialiser
+		//TODO: Single filtering writer instead of base class?
+		//TODO: Level switch
 
 		#region Fields
 
@@ -30,7 +31,7 @@ namespace ScribeSharp
 		private readonly ILogWriter _LogWriter;
 		private readonly ILogEventContextProvider[] _ContextProviders;
 		private readonly IDictionary<Type, IPropertyRenderer> _PropertyRenderers;
-		private static readonly IDictionary<string, object> EmptyProperties = new Dictionary<string, object>(0);
+		private readonly ILoggingErrorHandler _ErrorHandler;
 		private readonly string _Source;
 
 		private bool _HasPropertyRenderers;
@@ -47,11 +48,12 @@ namespace ScribeSharp
 		/// <remarks>
 		/// <para>The <paramref name="policy"/> should not be changed after being provided to the logger. Values from the policy are cached or copied before use and will not change even if the policy is updated after the logger is constructed.</para>
 		/// </remarks>
-		public Logger(LogPolicy policy) 
+		public Logger(LogPolicy policy)
 		{
 			if (policy == null) throw new ArgumentNullException(nameof(policy));
 			if (policy.LogWriter == null) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeNull, "policy.LogWriter"), nameof(policy));
 
+			_ErrorHandler = policy.ErrorHandler ?? SuppressingErrorHandler.DefaultInstance;
 			_EntryPool = new LogEventPool(policy.LogEventPoolCapacity);
 			_JobPool = new LoggedJobPool(policy.JobPoolCapacity);
 
@@ -107,29 +109,44 @@ namespace ScribeSharp
 			int sourceLineNumber = 0,
 			params KeyValuePair<string, object>[] properties)
 		{
-			if (!IsEnabled) return;
-
-			using (var pooledLogEvent = _EntryPool.Take())
+			try
 			{
-				var logEvent = pooledLogEvent.Value;
-				logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
-				logEvent.EventName = eventName ?? String.Empty;
-				logEvent.EventSeverity = eventSeverity;
-				logEvent.EventType = eventType;
-				
-				if (Utils.Any<KeyValuePair<string, object>>(properties))
-				{
-					logEvent.Properties = new Dictionary<string, object>();
-					foreach (var property in properties)
-					{
-						if (_HasPropertyRenderers)
-							logEvent.Properties[property.Key] = RenderProperty(property.Value);
-						else
-							logEvent.Properties[property.Key] = property.Value;
-					}
-				}
+				if (!IsEnabled) return;
 
-				WriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
+				using (var pooledLogEvent = _EntryPool.Take())
+				{
+					var logEvent = pooledLogEvent.Value;
+					logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
+					logEvent.EventName = eventName ?? String.Empty;
+					logEvent.EventSeverity = eventSeverity;
+					logEvent.EventType = eventType;
+
+					if (Utils.Any<KeyValuePair<string, object>>(properties))
+					{
+						var eventProperties = (logEvent.Properties = logEvent.Properties ?? new Dictionary<string, object>());
+						foreach (var property in properties)
+						{
+							if (_HasPropertyRenderers)
+								eventProperties[property.Key] = RenderProperty(property.Value);
+							else
+								eventProperties[property.Key] = property.Value;
+						}
+					}
+
+					UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
+				}
+			}
+			catch (StackOverflowException) { throw; }
+			catch (LogException lex)
+			{
+				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
+					throw;
+			}
+			catch (Exception ex)
+			{
+				var wrappedException = new LogException(ex.Message, ex);
+				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
+					throw wrappedException;
 			}
 		}
 
@@ -154,37 +171,25 @@ namespace ScribeSharp
 #endif
 			int sourceLineNumber = 0)
 		{
-			if (!IsEnabled) return;
-
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
-			if (logEvent.DateTime == DateTimeOffset.MinValue)
-				logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
-
-			if (String.IsNullOrEmpty(logEvent.Source))
-				logEvent.Source = _Source ?? source;
-
-			if (String.IsNullOrWhiteSpace(logEvent.SourceMethod))
-				logEvent.SourceMethod = sourceMethod;
-			if (logEvent.SourceLineNumber == 0)
-				logEvent.SourceLineNumber = sourceLineNumber;
-
-			FillProperties(logEvent);
-
-			if (logEvent.Properties == null)
-				logEvent.Properties = EmptyProperties;
-
-			if (ShouldLogEvent(logEvent))
+			try
 			{
-				if (_LogWriter.RequiresSynchronization)
-				{
-					lock (this)
-					{
-						UnsynchronisedWrite(logEvent);
-					}
-				}
-				else
-					UnsynchronisedWrite(logEvent);
+				if (!IsEnabled) return;
+
+				UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
+			}
+			catch (StackOverflowException) { throw; }
+			catch (LogException lex)
+			{
+				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
+					throw;
+			}
+			catch (Exception ex)
+			{
+				var wrappedException = new LogException(ex.Message, ex);
+				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
+					throw wrappedException;
 			}
 		}
 
@@ -257,6 +262,7 @@ namespace ScribeSharp
 		{
 			if (policy == null) throw new ArgumentNullException(nameof(policy));
 
+			policy.ErrorHandler = _ErrorHandler;
 			policy.Clock = policy.Clock ?? MinTimeClock.DefaultInstance;
 			if (policy.LogWriter == null)
 				policy.LogWriter = new Writers.ForwardingLogWriter(this);
@@ -381,7 +387,7 @@ namespace ScribeSharp
 		/// </summary>
 		/// <param name="isDisposing">True if the class is being explicitly disposed, false if it is being finalised.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_JobPool")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_EntryPool", Justification="It is disposed, CA just can't tell.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_EntryPool", Justification = "It is disposed, CA just can't tell.")]
 		protected virtual void Dispose(bool isDisposing)
 		{
 			if (isDisposing)
@@ -432,10 +438,39 @@ namespace ScribeSharp
 
 		#region Private Methods
 
+		private void UnsafeWriteEvent(LogEvent logEvent, string source, string sourceMethod, int sourceLineNumber)
+		{
+			if (logEvent.DateTime == DateTimeOffset.MinValue)
+				logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
+
+			if (String.IsNullOrEmpty(logEvent.Source))
+				logEvent.Source = _Source ?? source;
+
+			if (String.IsNullOrWhiteSpace(logEvent.SourceMethod))
+				logEvent.SourceMethod = sourceMethod;
+			if (logEvent.SourceLineNumber == 0)
+				logEvent.SourceLineNumber = sourceLineNumber;
+
+			FillProperties(logEvent);
+
+			if (ShouldLogEvent(logEvent))
+			{
+				if (_LogWriter.RequiresSynchronization)
+				{
+					lock (this)
+					{
+						UnsynchronisedWrite(logEvent);
+					}
+				}
+				else
+					UnsynchronisedWrite(logEvent);
+			}
+		}
+
 		private object RenderProperty(object value)
 		{
 			if (value == null) return null;
-			
+
 			var type = value.GetType();
 			if (_PropertyRenderers.ContainsKey(value.GetType())) return _PropertyRenderers[type].RenderValue(value);
 

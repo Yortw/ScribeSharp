@@ -13,6 +13,7 @@ namespace ScribeSharp.Tests
 	{
 		
 		[TestMethod]
+		[TestCategory("AggregateLogWriter")]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void AggregateLogWriter_Constructor_ThrowsOnNullChildren()
 		{
@@ -20,6 +21,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AggregateLogWriter")]
 		public void AggregateLogWriter_WriteEvent_WritersToMultipleChildren()
 		{
 			var child1 = new MockLogWriter();
@@ -33,6 +35,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AggregateLogWriter")]
 		public void AggregateLogWriter_RequiresSynchronisation_IsTrueIfAnyChildRequires()
 		{
 			var child1 = new MockLogWriter();
@@ -44,6 +47,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("AggregateLogWriter")]
 		public void AggregateLogWriter_RequiresSynchronisation_IsFalseIfNoChildRequires()
 		{
 			var child1 = new MockLogWriter();
