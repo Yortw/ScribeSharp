@@ -22,8 +22,13 @@ namespace ScribeSharp
 		/// <param name="key">The key of the item to add.</param>
 		/// <param name="value">The value of the item to add.</param>
 		/// <returns>A boolean, true if the item was added, else false if the provided key already exists in the dictionary.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix", MessageId = "T")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "V")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "K")]
 		public static bool AddIfNotExists<K, V>(this IDictionary<K, V> dictionary, K key, V value)
 		{
+			if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
+
 			if (!dictionary.ContainsKey(key))
 			{
 				dictionary.Add(key, value);
@@ -40,11 +45,17 @@ namespace ScribeSharp
 		/// <para>This method is not thread safe.</para>
 		/// </remarks>
 		/// <typeparam name="K">The type of key in the dictionary.</typeparam>
+		/// <typeparam name="V">The type of value in the dictionary.</typeparam>
 		/// <param name="dictionary">The dictionary to add to.</param>
 		/// <param name="key">The key of the item to remove.</param>
 		/// <returns>A boolean, true if the item was removed, else false if the provided key already did not exist in the dictionary.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix", MessageId = "T")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "V")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "K")]
 		public static bool RemoveIfExists<K, V>(this IDictionary<K, V> dictionary, K key)
 		{
+			if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
+
 			if (!dictionary.ContainsKey(key))
 			{
 				dictionary.Remove(key);

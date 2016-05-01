@@ -48,6 +48,11 @@ namespace ScribeSharp
 		public LogEventType EventType { get; set; } = LogEventType.ApplicationEvent;
 
 		/// <summary>
+		/// Sets or returns the exception associated with the log event.
+		/// </summary>
+		public Exception Exception { get; set; }
+
+		/// <summary>
 		/// Sets or returns a dictionay of key value pairs, where each key is a 'property name'. Used to add additional structured data to an event.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -99,6 +104,7 @@ namespace ScribeSharp
 			EventName = null;
 			EventSeverity = LogEventSeverity.Information;
 			EventType = LogEventType.ApplicationEvent;
+			Exception = null;
 			Properties?.Clear();
 			Source = null;
 			SourceMethod = null;
@@ -138,6 +144,7 @@ namespace ScribeSharp
 			destination.EventName = this.EventName;
 			destination.EventSeverity = this.EventSeverity;
 			destination.EventType = this.EventType;
+			destination.Exception = this.Exception;
 			destination.Source = this.Source;
 			destination.SourceLineNumber = this.SourceLineNumber;
 			destination.SourceMethod = this.SourceMethod;

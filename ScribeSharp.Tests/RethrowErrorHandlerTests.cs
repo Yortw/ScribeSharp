@@ -40,7 +40,7 @@ namespace ScribeSharp.Tests
 		{
 			bool wasRaised = false;
 			var errorHandler = new RethrowErrorHandler();
-			errorHandler.Error += (sender, args) => wasRaised = true;
+			errorHandler.ErrorOccurred += (sender, args) => wasRaised = true;
 			errorHandler.ReportError(new LogWriterException("Test"));
 			Assert.AreEqual(true, wasRaised);
 		}
@@ -50,7 +50,7 @@ namespace ScribeSharp.Tests
 		public void RethrowErrorHandler_IgnoresRecommendations()
 		{
 			var errorHandler = new RethrowErrorHandler();
-			errorHandler.Error += (sender, args) => args.HandleErrorRecommendation = LoggingErrorPolicy.Suppress;
+			errorHandler.ErrorOccurred += (sender, args) => args.HandleErrorRecommendation = LoggingErrorPolicy.Suppress;
 			Assert.AreEqual(LoggingErrorPolicy.Rethrow, errorHandler.ReportError(new LogWriterException("Test")));
 		}
 

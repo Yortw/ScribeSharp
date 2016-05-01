@@ -14,19 +14,19 @@ namespace ScribeSharp
 		/// Event raised when <see cref="ReportError(Exception)"/> is called.
 		/// </summary>
 		/// <seealso cref="ReportError(Exception)"/>
-		event EventHandler<LoggingErrorEventArgs> Error;
+		event EventHandler<LoggingErrorEventArgs> ErrorOccurred;
 
 		/// <summary>
 		/// Called by logging components to report errors and determine how they should be handled.
 		/// </summary>
 		/// <param name="exception"></param>
-		/// <seealso cref="Error"/>
+		/// <seealso cref="ErrorOccurred"/>
 		LoggingErrorPolicy ReportError(Exception exception);
 
 	}
 
 	/// <summary>
-	/// Event arguments for the <see cref="ILoggingErrorHandler.Error"/> event.
+	/// Event arguments for the <see cref="ILoggingErrorHandler.ErrorOccurred"/> event.
 	/// </summary>
 	public class LoggingErrorEventArgs : EventArgs
 	{

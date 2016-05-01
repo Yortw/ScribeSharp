@@ -24,6 +24,7 @@ namespace ScribeSharp.ContextProviders
 		/// Adds an "AppDomain Id" property containing the AppDomain.CurrentDomain.Id value.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			AddProperty(logEvent.Properties, "AppDomain Id", AppDomain.CurrentDomain.Id);

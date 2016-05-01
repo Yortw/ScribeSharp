@@ -75,7 +75,7 @@ namespace ScribeSharp.Tests
 			var policy = GetSimpleListPolicy(list);
 			var logger = new Logger(policy);
 			var propValue = System.Guid.NewGuid();
-			logger.WriteEvent("Log this!", properties: new KeyValuePair<string, object>("Test Id", propValue));
+			logger.WriteEvent("Log this!", new KeyValuePair<string, object>("Test Id", propValue));
 			Assert.IsTrue(list[0].Properties.ContainsKey("Test Id"));
 			Assert.AreEqual(propValue, list[0].Properties["Test Id"]);
 		}
@@ -571,7 +571,7 @@ namespace ScribeSharp.Tests
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
 			policy.ErrorHandler = new SuppressingErrorHandler();
-			policy.ErrorHandler.Error += (sender, args) => wasCalled = true;
+			policy.ErrorHandler.ErrorOccurred += (sender, args) => wasCalled = true;
 			policy.Filter = new Filters.DelegateLogEventFilter((logEvent) => { throw new InvalidOperationException("Test exception"); });
 			var logger = new Logger(policy);
 

@@ -26,6 +26,7 @@ namespace ScribeSharp.ContextProviders
 		/// Adds an "CLR Version" property containing the Environment.Version value.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			AddProperty(logEvent.Properties, "CLR Version", _Version ?? (_Version = Environment.Version.ToString()));

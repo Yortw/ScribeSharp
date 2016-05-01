@@ -27,9 +27,10 @@ namespace ScribeSharp.ContextProviders
 		/// Adds a property with the name "OS Version" and the value of Environment.OSVersion.Version converted to a string.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
-			AddProperty(logEvent.Properties, "OS Version", (_OSVersion = Environment.OSVersion.Version.ToString()));
+			AddProperty(logEvent.Properties, "OS Version", _OSVersion ?? (_OSVersion = Environment.OSVersion.Version.ToString()));
 		}
 	}
 }

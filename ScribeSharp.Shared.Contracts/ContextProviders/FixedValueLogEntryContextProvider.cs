@@ -45,6 +45,7 @@ namespace ScribeSharp.ContextProviders
 		/// Adds a property with the name and the value supplied via the constructor.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			AddProperty(logEvent.Properties, _PropertyName, _PropertyValue);

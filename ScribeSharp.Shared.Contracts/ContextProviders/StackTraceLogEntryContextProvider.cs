@@ -28,6 +28,7 @@ namespace ScribeSharp.ContextProviders
 		/// Adds a property with the name "Stacktrace" and the value of System.Diagnostics.StackTrace(true).ToString().
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			AddProperty(logEvent.Properties, "Stacktrace", new System.Diagnostics.StackTrace(true).ToString());

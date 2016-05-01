@@ -56,6 +56,12 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="logEvent">The <see cref="LogEvent"/> to apply properties to.</param>
 		protected abstract void AddPropertiesCore(LogEvent logEvent);
 
+		/// <summary>
+		/// Adds the property to the specified dictionary if a property with the same name doesn't already exist.
+		/// </summary>
+		/// <param name="properties">The dictionary to add to.</param>
+		/// <param name="propertyName">The name of the property to add.</param>
+		/// <param name="value">The value of the property to add.</param>
 		protected static void AddProperty(IDictionary<string, object> properties, string propertyName, object value)
 		{
 			//if (_HasPropertyRenderers)

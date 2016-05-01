@@ -17,14 +17,63 @@ namespace ScribeSharp
 		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
 		/// </summary>
 		/// <param name="eventName">The event name or message to write to the log.</param>
+		void WriteEvent(string eventName);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		void WriteEvent(string eventName, params KeyValuePair<string, object>[] properties);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		void WriteEvent(string eventName, Exception exception);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		void WriteEvent(string eventName, Exception exception, params KeyValuePair<string, object>[] properties);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		void WriteEvent(string eventName, LogEventSeverity eventSeverity);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		void WriteEvent(string eventName, LogEventSeverity eventSeverity, params KeyValuePair<string, object>[] properties);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
 		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
 		/// <param name="eventType">A <see cref="LogEventType"/> to assign to the written log entry. The defaultvalue if <see cref="LogEventType.ApplicationEvent"/>.</param>
 		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		void WriteEvent(string eventName,
-			LogEventSeverity eventSeverity = LogEventSeverity.Information,
-			LogEventType eventType = LogEventType.ApplicationEvent,
-			params KeyValuePair<string, object>[] properties);
+		void WriteEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType,	params KeyValuePair<string, object>[] properties);
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		/// <param name="eventType">A <see cref="LogEventType"/> to assign to the written log entry. The defaultvalue if <see cref="LogEventType.ApplicationEvent"/>.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		void WriteEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, Exception exception, params KeyValuePair<string, object>[] properties);
 
 		/// <summary>
 		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
@@ -46,6 +95,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		void WriteEventWithSource(string eventName, 
 			LogEventSeverity eventSeverity = LogEventSeverity.Information, 
@@ -71,6 +121,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		void WriteEventWithSource(LogEvent logEvent,
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerFilePath] 
@@ -147,7 +198,7 @@ namespace ScribeSharp
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="job"/> is null.</exception>
-		void ExecuteLoggedJob(Action job, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties);
+		void ExecuteLoggedJob(Action job, string jobName, string jobId, params KeyValuePair<string, object>[] properties);
 
 		#endregion
 
@@ -168,7 +219,7 @@ namespace ScribeSharp
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
 		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
-		LoggedJob BeginLoggedJob(string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties);
+		LoggedJob BeginLoggedJob(string jobName, string jobId, params KeyValuePair<string, object>[] properties);
 
 		#endregion
 

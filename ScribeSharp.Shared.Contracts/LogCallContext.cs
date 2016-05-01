@@ -48,7 +48,7 @@ namespace ScribeSharp
 		public static IDisposable PushProperties(params KeyValuePair<string, object>[] properties)
 		{
 			if (properties == null) throw new ArgumentNullException(nameof(properties));
-			if (!Utils.Any(properties)) throw new ArgumentException(String.Format(Properties.Resources.PropertyCannotBeEmpty, nameof(properties)), nameof(properties));
+			if (!Utils.Any(properties)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmpty, nameof(properties)), nameof(properties));
 			LogCallContextProperty retVal = null;
 			foreach (var property in properties)
 			{
@@ -86,6 +86,7 @@ namespace ScribeSharp
 		/// <summary>
 		/// Returns an enumerator instance that can be used to enumerate all properties in the current logical call context.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public static IEnumerable<KeyValuePair<string, object>> CurrentProperties
 		{
 			get

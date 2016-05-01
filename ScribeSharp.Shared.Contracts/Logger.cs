@@ -90,13 +90,89 @@ namespace ScribeSharp
 		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
 		/// </summary>
 		/// <param name="eventName">The event name or message to write to the log.</param>
+		public void WriteEvent(string eventName)
+		{
+			WriteEvent(eventName, LogEventSeverity.Information);
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		public void WriteEvent(string eventName, params KeyValuePair<string, object>[] properties)
+		{
+			WriteEvent(eventName, null, properties);
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		public void WriteEvent(string eventName, Exception exception)
+		{
+			WriteEvent(eventName, exception, null);
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		public void WriteEvent(string eventName, Exception exception, params KeyValuePair<string, object>[] properties)
+		{
+			WriteEvent(eventName, exception == null ? LogEventSeverity.Information : LogEventSeverity.Error, LogEventType.ApplicationEvent, exception, properties);
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		public void WriteEvent(string eventName, LogEventSeverity eventSeverity)
+		{
+			WriteEvent(eventName, eventSeverity, null);
+		}
+
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		public void WriteEvent(string eventName, LogEventSeverity eventSeverity, params KeyValuePair<string, object>[] properties)
+		{
+			WriteEvent(eventName, eventSeverity, LogEventType.ApplicationEvent, null, properties);
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
 		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
 		/// <param name="eventType">A <see cref="LogEventType"/> to assign to the written log entry. The defaultvalue if <see cref="LogEventType.ApplicationEvent"/>.</param>
 		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
-		public void WriteEvent(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent, params KeyValuePair<string, object>[] properties)
+		public void WriteEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, params KeyValuePair<string, object>[] properties)
 		{
-			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, null, null, -1, properties);
+			WriteEvent(eventName, eventSeverity, eventType, null, properties);
+		}
+
+		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
+		/// </summary>
+		/// <param name="eventName">The event name or message to write to the log.</param>
+		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
+		/// <param name="eventType">A <see cref="LogEventType"/> to assign to the written log entry. The defaultvalue if <see cref="LogEventType.ApplicationEvent"/>.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
+		public void WriteEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, Exception exception, params KeyValuePair<string, object>[] properties)
+		{
+			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, null, null, -1, properties, exception);
 		}
 
 		/// <summary>
@@ -141,6 +217,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
 		public void WriteEventWithSource(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent,
 #if SUPPORTS_CALLERATTRIBUTES
@@ -157,7 +234,7 @@ namespace ScribeSharp
 			int sourceLineNumber = -1,
 			params KeyValuePair<string, object>[] properties)
 		{
-			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, source, sourceMethod, sourceLineNumber, properties);
+			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, source, sourceMethod, sourceLineNumber, properties, null);
 		}
 
 		/// <summary>
@@ -167,6 +244,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		public void WriteEventWithSource(LogEvent logEvent,
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerFilePath] 
@@ -316,7 +394,7 @@ namespace ScribeSharp
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="job"/> is null.</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public void ExecuteLoggedJob(Action job, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties)
+		public void ExecuteLoggedJob(Action job, string jobName, string jobId, params KeyValuePair<string, object>[] properties)
 		{
 			if (job == null) throw new ArgumentNullException(nameof(jobName));
 
@@ -362,7 +440,7 @@ namespace ScribeSharp
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
 		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
-		public LoggedJob BeginLoggedJob(string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties)
+		public LoggedJob BeginLoggedJob(string jobName, string jobId, params KeyValuePair<string, object>[] properties)
 		{
 			var retVal = _JobPool.Take();
 			retVal.Initialize(this, jobName, jobId, properties, _JobPool);
@@ -422,7 +500,6 @@ namespace ScribeSharp
 
 			if (logEvent.Properties == null) logEvent.Properties = new Dictionary<string, object>(_ContextProviders.Length);
 
-			var properties = logEvent.Properties;
 			for (int cnt = 0; cnt < _ContextProviders.Length; cnt++)
 			{
 				_ContextProviders[cnt].AddProperties(logEvent);
@@ -443,7 +520,7 @@ namespace ScribeSharp
 
 		#region Private Methods
 
-		private void WriteEventWithExplicitSource(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, string source, string sourceMethod, int sourceLineNumber, KeyValuePair<string, object>[] properties)
+		private void WriteEventWithExplicitSource(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, string source, string sourceMethod, int sourceLineNumber, KeyValuePair<string, object>[] properties, Exception exception)
 		{
 			try
 			{
@@ -452,7 +529,7 @@ namespace ScribeSharp
 				using (var pooledLogEvent = _EntryPool.Take())
 				{
 					var logEvent = pooledLogEvent.Value;
-					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, logEvent);
+					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, exception, logEvent);
 
 					UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
 				}
@@ -471,12 +548,13 @@ namespace ScribeSharp
 			}
 		}
 
-		private void InitialiseLogEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, KeyValuePair<string, object>[] properties, LogEvent logEvent)
+		private void InitialiseLogEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, KeyValuePair<string, object>[] properties, Exception exception, LogEvent logEvent)
 		{
 			logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
 			logEvent.EventName = eventName ?? String.Empty;
 			logEvent.EventSeverity = eventSeverity;
 			logEvent.EventType = eventType;
+			logEvent.Exception = exception;
 
 			if (Utils.Any<KeyValuePair<string, object>>(properties))
 			{

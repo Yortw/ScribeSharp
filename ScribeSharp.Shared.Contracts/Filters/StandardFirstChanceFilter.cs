@@ -11,8 +11,14 @@ namespace ScribeSharp.Filters
 	public class StandardFirstChanceFilter : IFirstChanceLogFilter
 	{
 
+		#region Fields
+
 		private LogEventSeverity _MinimumSeverity;
 		private LogEventType[] _AllowedEventTypes;
+
+		#endregion
+
+		#region Constructors
 
 		/// <summary>
 		/// Full constructor.
@@ -40,6 +46,30 @@ namespace ScribeSharp.Filters
 				&& IsEventTypeAllowed(eventType);
 		}
 
+		#endregion
+		
+		#region Public Properties
+
+		/// <summary>
+		/// Sets or returns the minimum severity of event to log.
+		/// </summary>
+		public LogEventSeverity MinimumSeverity
+		{
+			get
+			{
+				return _MinimumSeverity;
+			}
+
+			set
+			{
+				_MinimumSeverity = value;
+			}
+		}
+
+		#endregion
+
+		#region Private Methods
+
 		private bool IsEventTypeAllowed(LogEventType eventType)
 		{
 			if (_AllowedEventTypes == null) return true;
@@ -51,5 +81,8 @@ namespace ScribeSharp.Filters
 
 			return false;
 		}
+
+		#endregion
+
 	}
 }

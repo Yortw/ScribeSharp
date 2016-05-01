@@ -9,6 +9,8 @@ namespace ScribeSharp
 	/// Represents an 'immutable' stack. Each stack operation returns a new stack instance, with all previous and future instances remaining unchanged.
 	/// </summary>
 	/// <typeparam name="T">The type of value to store in the stack, accessed via the <see cref="Head"/> property.</typeparam>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public class ImmutableStack<T> : IEnumerable<T>
 	{
 
@@ -73,6 +75,7 @@ namespace ScribeSharp
 		/// <summary>
 		/// Returns an empty immutable stack. This is a singleton instance that is more efficient that creating new empty instances.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
 		public static ImmutableStack<T> Empty { get; } = new ImmutableStack<T>();
 
 		/// <summary>

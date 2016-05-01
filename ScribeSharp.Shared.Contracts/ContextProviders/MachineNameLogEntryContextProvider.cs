@@ -24,6 +24,7 @@ namespace ScribeSharp.ContextProviders
 		/// Adds a property with the name "Machine Name" and the value of Environment.MachineName.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			AddProperty(logEvent.Properties, "Machine Name", Environment.MachineName);

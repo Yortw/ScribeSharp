@@ -86,6 +86,7 @@ namespace ScribeSharp
 		/// <param name="parentPool">Either null, or pool instance the job should be returned to when complete, so this instance can be reused.</param>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="logger"/> or <paramref name="jobName"/> arguments are null.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="jobName"/> argument is empty or only whitespace.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void Initialize(ILogger logger, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties, ILoggedJobPool parentPool)
 		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -177,7 +178,7 @@ namespace ScribeSharp
 		/// <param name="jobId">A unique id of the job used to correlate log entries.</param>
 		/// <param name="properties">Null, or a collection key value pairs to associate with the child job.</param>
 		/// <returns>A <see cref="LoggedJob"/> instance used to track the job and log related entries.</returns>
-		public LoggedJob CreateChildJob(string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties)
+		public LoggedJob CreateChildJob(string jobName, string jobId, params KeyValuePair<string, object>[] properties)
 		{
 			var retVal = _ParentPool?.Take() ?? new LoggedJob();
 			IEnumerable<KeyValuePair<string, object>> allProperties = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>(Properties.Resources.ParentJobIdPropertyName, this._JobId) };
@@ -221,7 +222,7 @@ namespace ScribeSharp
 
 		#region Private Methods
 
-		private IEnumerable<KeyValuePair<string, object>> GetNonJobProperties(IEnumerable<KeyValuePair<string, object>> properties)
+		private static IEnumerable<KeyValuePair<string, object>> GetNonJobProperties(IEnumerable<KeyValuePair<string, object>> properties)
 		{
 			return (from p
 							in properties

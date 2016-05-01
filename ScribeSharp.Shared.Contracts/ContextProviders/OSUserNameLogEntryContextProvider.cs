@@ -24,6 +24,7 @@ namespace ScribeSharp.ContextProviders
 		/// Adds a property with the name "OS User" and the value of Environment.UserDomainName and Environment.UserName separated by a back slash.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent)
 		{
 			AddProperty(logEvent.Properties, "OS User", (Environment.UserDomainName ?? String.Empty) + "\\" + Environment.UserName);

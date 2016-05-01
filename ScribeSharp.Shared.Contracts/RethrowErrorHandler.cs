@@ -14,18 +14,20 @@ namespace ScribeSharp
 		/// <summary>
 		/// Raised when the <see cref="ReportError(Exception)"/> method is called.
 		/// </summary>
-		public event EventHandler<LoggingErrorEventArgs> Error;
+		public event EventHandler<LoggingErrorEventArgs> ErrorOccurred;
 
 		/// <summary>
-		/// Raises the <see cref="Error"/> event, but always returns <see cref="LoggingErrorPolicy.Rethrow"/>.
+		/// Raises the <see cref="ErrorOccurred"/> event, but always returns <see cref="LoggingErrorPolicy.Rethrow"/>.
 		/// </summary>
 		/// <param name="exception">The exception that occurred.</param>
 		/// <returns>Returns <see cref="LoggingErrorPolicy.Rethrow"/>.</returns>
 		public LoggingErrorPolicy ReportError(Exception exception)
 		{
+			if (exception == null) throw new ArgumentNullException(nameof(exception));
+
 			System.Diagnostics.Trace.WriteLine("Logging Error: " + exception.ToString(), "loggingerror");
 
-			Error?.Invoke(this, new LoggingErrorEventArgs(exception));
+			ErrorOccurred?.Invoke(this, new LoggingErrorEventArgs(exception));
 
 			return LoggingErrorPolicy.Rethrow;
 		}
@@ -35,7 +37,7 @@ namespace ScribeSharp
 		/// </summary>
 		public static RethrowErrorHandler DefaultInstance
 		{
-			get { return s_DefaultInstance = (s_DefaultInstance = new RethrowErrorHandler()); }
+			get { return s_DefaultInstance ?? (s_DefaultInstance = new RethrowErrorHandler()); }
 		}
 	}
 }
