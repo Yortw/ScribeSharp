@@ -12,7 +12,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\AutoLoggerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\IFirstChanceLogFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DictionaryExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Filters\StandardFirstChanceFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImmutableStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogCallContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\StackTraceLogEntryContextProvider.cs" />

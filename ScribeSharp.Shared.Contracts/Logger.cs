@@ -14,7 +14,6 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
-		//TODO: First chance filters?
 		//TODO: Log exceptions?
 		//TODO: Logger.WriteFormat?
 		//TODO: Property renderers? JsonRenderer
@@ -31,6 +30,7 @@ namespace ScribeSharp
 		private readonly ILoggedJobPool _JobPool;
 		private readonly ILogClock _LogClock;
 		private readonly ILogEventFilter _Filter;
+		private readonly IFirstChanceLogFilter _FirstChanceFilter;
 		private readonly ILogWriter _LogWriter;
 		private readonly ILogEventContextProvider[] _ContextProviders;
 		private readonly IDictionary<Type, IPropertyRenderer> _PropertyRenderers;
@@ -63,6 +63,7 @@ namespace ScribeSharp
 			_LogWriter = policy.LogWriter;
 			_LogClock = policy.Clock;
 			_Filter = policy.Filter;
+			_FirstChanceFilter = policy.FirstChanceFilter;
 			_Source = policy.Source;
 
 			if (policy.PropertyRenderers != null)
@@ -108,7 +109,7 @@ namespace ScribeSharp
 
 			try
 			{
-				if (!IsEnabled) return;
+				if (!IsEnabled || !(_FirstChanceFilter?.ShouldLog(logEvent.EventName, logEvent.EventSeverity, logEvent.EventType, logEvent.Source, logEvent.SourceMethod) ?? true)) return;
 
 				UnsafeWriteEvent(logEvent, null, null, -1);
 			}
@@ -184,7 +185,7 @@ namespace ScribeSharp
 
 			try
 			{
-				if (!IsEnabled) return;
+				if (!IsEnabled || !(_FirstChanceFilter?.ShouldLog(logEvent.EventName, logEvent.EventSeverity, logEvent.EventType, logEvent.Source, logEvent.SourceMethod) ?? true)) return;
 
 				if (logEvent.DateTime == DateTimeOffset.MinValue)
 					logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
@@ -446,7 +447,7 @@ namespace ScribeSharp
 		{
 			try
 			{
-				if (!IsEnabled) return;
+				if (!IsEnabled || !(_FirstChanceFilter?.ShouldLog(eventName, eventSeverity, eventType, source, sourceMethod) ?? true)) return;
 
 				using (var pooledLogEvent = _EntryPool.Take())
 				{

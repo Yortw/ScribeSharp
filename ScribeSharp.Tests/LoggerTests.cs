@@ -164,6 +164,19 @@ namespace ScribeSharp.Tests
 			Assert.AreEqual(Environment.MachineName, list[1].Properties["Machine Name"]);
 		}
 
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEvent_UsesFirstChanceFilter()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, null);
+			var logger = new Logger(policy);
+			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
+			logger.WriteEvent("Log Verbose", eventSeverity: LogEventSeverity.Verbose);
+			Assert.AreEqual(1, list.Count);
+		}
+
 		#endregion
 
 		#region WriteEventWithSource Tests
@@ -201,7 +214,8 @@ namespace ScribeSharp.Tests
 			policy.Source = null;
 			var logger = new Logger(policy);
 			logger.WriteEventWithSource("Log this!");
-			Assert.AreEqual(203, list.Last().SourceLineNumber);
+			Assert.AreNotEqual(-1, list.Last().SourceLineNumber);
+			Assert.AreNotEqual(0, list.Last().SourceLineNumber);
 		}
 
 		[TestCategory("Logger")]

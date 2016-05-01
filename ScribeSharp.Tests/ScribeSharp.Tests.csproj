@@ -62,6 +62,7 @@
     <Compile Include="LogCallContextTests.cs" />
     <Compile Include="LoggerTests.cs" />
     <Compile Include="RethrowErrorHandlerTests.cs" />
+    <Compile Include="StandardFirstChanceFilterTests.cs" />
     <Compile Include="SuppressingErrorHandlerTests.cs" />
     <Compile Include="LogWriterBaseTests.cs" />
     <Compile Include="MockLogClock.cs" />

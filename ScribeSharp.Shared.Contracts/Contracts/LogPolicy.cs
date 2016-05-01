@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScribeSharp.Filters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,8 +27,16 @@ namespace ScribeSharp
 		/// </summary>
 		/// <remarks>
 		/// <para>For multiple filters, use either a <see cref="Filters.AndFilter"/> or <see cref="Filters.OrFilter"/> instance.</para>
+		/// <para>If null, no logging is performed.</para>
 		/// </remarks>
 		public ILogEventFilter Filter { get; set;}
+		/// <summary>
+		/// A special filter applied early in the logging process. This filter is limited in values it can check, but filtering out log events early can improve performance.
+		/// </summary>
+		/// <remarks>
+		/// <para>If null, no logging is performed.</para>
+		/// </remarks>
+		public IFirstChanceLogFilter FirstChanceFilter { get; set; }
 		/// <summary>
 		/// A set of <see cref="ILogEventContextProvider"/> instances used to add additional information to log events before they are written to the <see cref="LogWriter"/>.
 		/// </summary>
