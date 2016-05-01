@@ -213,6 +213,7 @@ namespace ScribeSharp
 		/// <param name="eventName">The event name or message to write to the log.</param>
 		/// <param name="eventSeverity">A <see cref="LogEventSeverity"/> to assign to the written log entry. The default value is <see cref="LogEventSeverity.Information"/>.</param>
 		/// <param name="eventType">A <see cref="LogEventType"/> to assign to the written log entry. The defaultvalue if <see cref="LogEventType.ApplicationEvent"/>.</param>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
 		/// <param name="properties">An enumerable set of <see cref="KeyValuePair{TKey, TValue}"/> instance that contain additional property information to write with the log entry. The key must be a string, the value will be used for the property value.</param>
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
@@ -220,6 +221,7 @@ namespace ScribeSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
 		public void WriteEventWithSource(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent,
+			Exception exception = null,
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerFilePath] 
 #endif
@@ -234,7 +236,7 @@ namespace ScribeSharp
 			int sourceLineNumber = -1,
 			params KeyValuePair<string, object>[] properties)
 		{
-			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, source, sourceMethod, sourceLineNumber, properties, null);
+			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, source, sourceMethod, sourceLineNumber, properties, exception);
 		}
 
 		/// <summary>
