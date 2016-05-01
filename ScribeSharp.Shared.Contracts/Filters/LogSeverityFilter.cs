@@ -23,6 +23,22 @@ namespace ScribeSharp.Filters
 		}
 
 		/// <summary>
+		/// Sets or returns the only severity allowed to pass the filter.
+		/// </summary>
+		public LogEventSeverity RequiredSeverity
+		{
+			get
+			{
+				return _RequiredSeverity;
+			}
+
+			set
+			{
+				_RequiredSeverity = value;
+			}
+		}
+
+		/// <summary>
 		/// Returns true of the <see cref="LogEvent.EventSeverity"/> matches the specified severity.
 		/// </summary>
 		/// <param name="logEvent">A <see cref="LogEvent"/> instance to evaluate.</param>

@@ -12,7 +12,12 @@ namespace ScribeSharp.TestApplication
 		{
 			var policy = new LogPolicy()
 			{
-				LogWriter = new ScribeSharp.Writers.ConsoleLogWriter(null), //ScribeSharp.Formatters.SimpleLogEventFormatter.DefaultInstance)
+				LogWriter = new ScribeSharp.Writers.AggregateLogWriter(new ILogWriter[] 
+				{
+					new ScribeSharp.Writers.ConsoleLogWriter(null), 
+					new ScribeSharp.Writers.WindowsEventLogWriter("TestLog", "Test Source", ".", true, System.Diagnostics.OverflowAction.OverwriteAsNeeded, 30, ScribeSharp.Formatters.SimpleLogEventFormatter.DefaultInstance, null)
+				}
+				),
 				PropertyRenderers = new Dictionary<Type, IPropertyRenderer>() { { typeof(TestProperty), new PropertyRenderers.XmlPropertyRenderer(typeof(TestProperty)) } }
 			};
 			var logger = new Logger(policy);

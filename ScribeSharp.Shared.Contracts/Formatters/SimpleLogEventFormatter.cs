@@ -21,11 +21,39 @@ namespace ScribeSharp.Formatters
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
-			var retVal = "[" + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture) + "] [" + logEvent.EventSeverity.ToString() + "] [" + logEvent.EventType.ToString() + "] [" + logEvent.Source + "] [" + logEvent.SourceMethod + "] " + logEvent.EventName;
-			if (logEvent.Exception != null)
-				retVal += Environment.NewLine + logEvent.Exception.ToString();
+			var sb = new System.Text.StringBuilder();
+			sb.Append("[");
+			sb.Append(logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+			sb.Append("] ");
 
-			return retVal;
+			sb.Append("[");
+			sb.Append(logEvent.EventSeverity.ToString());
+			sb.Append("] ");
+
+			sb.Append("[");
+			sb.Append(logEvent.EventType.ToString());
+			sb.Append("] ");
+
+			if (!String.IsNullOrEmpty(logEvent.Source))
+			{
+				sb.Append("[");
+				sb.Append(logEvent.Source);
+				sb.Append("] ");
+			}
+
+			if (!String.IsNullOrEmpty(logEvent.SourceMethod))
+			{
+				sb.Append("[");
+				sb.Append(logEvent.SourceMethod);
+				sb.Append("] ");
+			}
+
+			sb.AppendLine(logEvent.EventName);
+
+			if (logEvent.Exception != null)
+				sb.AppendLine(logEvent.Exception.ToString());
+
+			return sb.ToString();
 		}
 
 		/// <summary>

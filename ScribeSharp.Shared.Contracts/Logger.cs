@@ -14,14 +14,13 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
-		//TODO: Logger.WriteFormat?
 		//TODO: Property renderers? JsonRenderer
-		//TODO: Message renderer separate to log event renderer/property renderer?
 		//TODO: Single filtering writer instead of base class?
 		//TODO: Level switch
 		//TODO: Pooled/Recycling text writer?
 		//TODO: Json serialiser
 		//TODO: Logger extension methods?
+		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
 
 		#region Fields
 
