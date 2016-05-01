@@ -126,6 +126,9 @@
   <data name="DateTimeChangedLogEventText" xml:space="preserve">
     <value>System date/time changed. New time is {0}</value>
   </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Error occurred: {0}</value>
+  </data>
   <data name="FailedOutcome" xml:space="preserve">
     <value>Failed</value>
   </data>

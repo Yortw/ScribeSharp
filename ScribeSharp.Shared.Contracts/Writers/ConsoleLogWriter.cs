@@ -82,8 +82,11 @@ namespace ScribeSharp.Writers
 				writer.Write("[" + logEvent.EventType.ToString() + "] ");
 				writer.Write("[" + logEvent.Source + "] ");
 				writer.Write("[" + logEvent.SourceMethod + "] ");
-				writer.Write(logEvent.EventName);
-				writer.Write(Environment.NewLine);
+				writer.WriteLine(logEvent.EventName);
+				if (logEvent.Exception != null)
+				{
+					writer.Write(logEvent.Exception.ToString());
+				}
 			}
 		}
 

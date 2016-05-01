@@ -14,6 +14,13 @@ namespace ScribeSharp
 		#region WriteEvent Overloads
 
 		/// <summary>
+		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter, using the exception provided to generate a message and severity.
+		/// </summary>
+		/// <param name="exception">The exception associated with this log event, if any.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="exception"/> is null.</exception>
+		void WriteEvent(Exception exception);
+
+		/// <summary>
 		/// Writes a <see cref="LogEvent"/> to the appropriate output locations if it meets the configured filter.
 		/// </summary>
 		/// <param name="eventName">The event name or message to write to the log.</param>
@@ -230,7 +237,7 @@ namespace ScribeSharp
 		/// </summary>
 		/// <remarks>
 		/// <para>Defaults to true.</para>
-		/// <para>If false then no log events are written regardless of other settings and calling the <see cref="WriteEventWithSource(string, LogEventSeverity, LogEventType, string, string, int, KeyValuePair{string, object}[])"/> overloads returns quickly without doing any work. If true, events are written based on the logger configuration.</para>
+		/// <para>If false then no log events are written regardless of other settings and calling the <see cref="WriteEventWithSource(string, LogEventSeverity, LogEventType, Exception, string, string, int, KeyValuePair{string, object}[])"/> overloads returns quickly without doing any work. If true, events are written based on the logger configuration.</para>
 		/// </remarks>
 		bool IsEnabled { get; set; }
 

@@ -88,6 +88,15 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error occurred: {0}.
+        /// </summary>
+        internal static string ErrorOccurred {
+            get {
+                return ResourceManager.GetString("ErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed.
         /// </summary>
         internal static string FailedOutcome {

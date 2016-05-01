@@ -21,7 +21,11 @@ namespace ScribeSharp.Formatters
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
-			return "[" + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture) + "] [" + logEvent.EventSeverity.ToString() + "] [" + logEvent.EventType.ToString() + "] [" + logEvent.Source + "] [" + logEvent.SourceMethod + "] " + logEvent.EventName;
+			var retVal = "[" + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture) + "] [" + logEvent.EventSeverity.ToString() + "] [" + logEvent.EventType.ToString() + "] [" + logEvent.Source + "] [" + logEvent.SourceMethod + "] " + logEvent.EventName;
+			if (logEvent.Exception != null)
+				retVal += Environment.NewLine + logEvent.Exception.ToString();
+
+			return retVal;
 		}
 
 		/// <summary>
