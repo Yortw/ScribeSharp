@@ -95,31 +95,7 @@ namespace ScribeSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3", Justification = "The previous call to Utils.Any technically does the validation, code analysis just can't figure that out.")]
 		public void WriteEvent(string eventName, LogEventSeverity eventSeverity = LogEventSeverity.Information, LogEventType eventType = LogEventType.ApplicationEvent, params KeyValuePair<string, object>[] properties)
 		{
-
-			try
-			{
-				if (!IsEnabled) return;
-
-				using (var pooledLogEvent = _EntryPool.Take())
-				{
-					var logEvent = pooledLogEvent.Value;
-					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, logEvent);
-
-					UnsafeWriteEvent(logEvent, null, null, -1);
-				}
-			}
-			catch (StackOverflowException) { throw; }
-			catch (LogException lex)
-			{
-				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
-					throw;
-			}
-			catch (Exception ex)
-			{
-				var wrappedException = new LogException(ex.Message, ex);
-				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
-					throw wrappedException;
-			}
+			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, null, null, -1, properties);
 		}
 
 		/// <summary>
@@ -180,30 +156,7 @@ namespace ScribeSharp
 			int sourceLineNumber = -1,
 			params KeyValuePair<string, object>[] properties)
 		{
-			try
-			{
-				if (!IsEnabled) return;
-
-				using (var pooledLogEvent = _EntryPool.Take())
-				{
-					var logEvent = pooledLogEvent.Value;
-					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, logEvent);
-
-					UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
-				}
-			}
-			catch (StackOverflowException) { throw; }
-			catch (LogException lex)
-			{
-				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
-					throw;
-			}
-			catch (Exception ex)
-			{
-				var wrappedException = new LogException(ex.Message, ex);
-				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
-					throw wrappedException;
-			}
+			WriteEventWithExplicitSource(eventName, eventSeverity, eventType, source, sourceMethod, sourceLineNumber, properties);
 		}
 
 		/// <summary>
@@ -488,6 +441,34 @@ namespace ScribeSharp
 		#endregion
 
 		#region Private Methods
+
+		private void WriteEventWithExplicitSource(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, string source, string sourceMethod, int sourceLineNumber, KeyValuePair<string, object>[] properties)
+		{
+			try
+			{
+				if (!IsEnabled) return;
+
+				using (var pooledLogEvent = _EntryPool.Take())
+				{
+					var logEvent = pooledLogEvent.Value;
+					InitialiseLogEvent(eventName, eventSeverity, eventType, properties, logEvent);
+
+					UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
+				}
+			}
+			catch (StackOverflowException) { throw; }
+			catch (LogException lex)
+			{
+				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
+					throw;
+			}
+			catch (Exception ex)
+			{
+				var wrappedException = new LogException(ex.Message, ex);
+				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
+					throw wrappedException;
+			}
+		}
 
 		private void InitialiseLogEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, KeyValuePair<string, object>[] properties, LogEvent logEvent)
 		{
