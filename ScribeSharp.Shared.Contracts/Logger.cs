@@ -14,7 +14,6 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
-		//TODO: Call contexts? Async/thread/logical?
 		//TODO: First chance filters?
 		//TODO: Log exceptions?
 		//TODO: Logger.WriteFormat?
@@ -446,7 +445,7 @@ namespace ScribeSharp
 		/// Disposes this instance and all internal resources.
 		/// </summary>
 		/// <param name="isDisposing">True if the class is being explicitly disposed, false if it is being finalised.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_JobPool")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_JobPool", Justification = "It is disposed, CA just can't tell.")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_EntryPool", Justification = "It is disposed, CA just can't tell.")]
 		protected virtual void Dispose(bool isDisposing)
 		{
@@ -469,7 +468,6 @@ namespace ScribeSharp
 
 			if (logEvent.Properties == null) logEvent.Properties = new Dictionary<string, object>(_ContextProviders.Length);
 
-			ILogEventContextProvider provider = null;
 			var properties = logEvent.Properties;
 			for (int cnt = 0; cnt < _ContextProviders.Length; cnt++)
 			{
