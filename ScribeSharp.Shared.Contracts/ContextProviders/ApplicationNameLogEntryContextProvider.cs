@@ -24,10 +24,11 @@ namespace ScribeSharp.ContextProviders
 		/// Adds an "Application Name" property containing the AppDomain.CurrentDomain.ApplicationIdentity.FullName value.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		/// <param name="rendererMap">A <see cref="ITypeRendererMap"/> that can be used to locate <see cref="IPropertyRenderer"/> instances to use when formatting properties. May be null if no renderers have been provided.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		protected override void AddPropertiesCore(LogEvent logEvent)
+		protected override void AddPropertiesCore(LogEvent logEvent, ITypeRendererMap rendererMap)
 		{
-			AddProperty(logEvent.Properties, "Application Name", AppDomain.CurrentDomain.ApplicationIdentity.FullName);
+			AddProperty(logEvent.Properties, "Application Name", AppDomain.CurrentDomain.ApplicationIdentity.FullName, rendererMap);
 		}
 	}
 }

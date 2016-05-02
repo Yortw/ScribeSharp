@@ -16,7 +16,7 @@ namespace ScribeSharp.PropertyRenderers
 		/// </summary>
 		/// <param name="sourceType">The type to be rendered.</param>
 		public XmlPropertyRenderer(Type sourceType)
-		{
+		{			
 			_Serialiser = new System.Xml.Serialization.XmlSerializer(sourceType);
 		}
 

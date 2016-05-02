@@ -14,6 +14,7 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
+		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
 		//TODO: Property renderers? JsonRenderer
 		//TODO: Single filtering writer instead of base class?
 		//TODO: Level switch
@@ -21,6 +22,12 @@ namespace ScribeSharp
 		//TODO: Json serialiser
 		//TODO: Logger extension methods?
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
+		//TODO: Tests
+			// Renderers
+			// Formatters
+			// Context providers
+			//Writers
+		//TODO: Sql writer
 
 		#region Fields
 
@@ -31,11 +38,11 @@ namespace ScribeSharp
 		private readonly IFirstChanceLogFilter _FirstChanceFilter;
 		private readonly ILogWriter _LogWriter;
 		private readonly ILogEventContextProvider[] _ContextProviders;
-		private readonly IDictionary<Type, IPropertyRenderer> _PropertyRenderers;
 		private readonly ILoggingErrorHandler _ErrorHandler;
+		private readonly ITypeRendererMap _RendererMap;
 		private readonly string _Source;
+		private readonly IPropertyRenderer _DefaultExceptionRenderer;
 
-		private bool _HasPropertyRenderers;
 		private bool _IsEnabled;
 
 		#endregion
@@ -62,15 +69,9 @@ namespace ScribeSharp
 			_LogClock = policy.Clock;
 			_Filter = policy.Filter;
 			_FirstChanceFilter = policy.FirstChanceFilter;
+			_RendererMap = policy.TypeRendererMap; 
 			_Source = policy.Source;
-
-			if (policy.PropertyRenderers != null)
-			{
-				_PropertyRenderers = new Dictionary<Type, IPropertyRenderer>(policy.PropertyRenderers);
-				_HasPropertyRenderers = Utils.Any(_PropertyRenderers);
-			}
-			else
-				_HasPropertyRenderers = false;
+			_DefaultExceptionRenderer = policy.DefaultExceptionRenderer;
 
 			if (policy.ContextProviders != null)
 				_ContextProviders = (policy.ContextProviders as ILogEventContextProvider[]) ?? policy.ContextProviders.ToArray();
@@ -510,7 +511,7 @@ namespace ScribeSharp
 		/// Called to apply additional properties to each log event written/created by this logger.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to modify.</param>
-		protected virtual void FillProperties(LogEvent logEvent)
+		protected virtual void ApplyContext(LogEvent logEvent)
 		{
 			if (logEvent == null) return;
 			if ((_ContextProviders?.Length ?? 0) == 0) return;
@@ -519,7 +520,7 @@ namespace ScribeSharp
 
 			for (int cnt = 0; cnt < _ContextProviders.Length; cnt++)
 			{
-				_ContextProviders[cnt].AddProperties(logEvent);
+				_ContextProviders[cnt].AddProperties(logEvent, _RendererMap);
 			}
 		}
 
@@ -573,13 +574,28 @@ namespace ScribeSharp
 			logEvent.EventType = eventType;
 			logEvent.Exception = exception;
 
+			RenderProperties(properties, logEvent);
+		}
+
+		private void RenderProperties(KeyValuePair<string, object>[] properties, LogEvent logEvent)
+		{
 			if (Utils.Any<KeyValuePair<string, object>>(properties))
 			{
-				var eventProperties = (logEvent.Properties = logEvent.Properties ?? new Dictionary<string, object>());
+				IPropertyRenderer renderer = null;
+				bool hasRenderers = _RendererMap != null;
+				var eventProperties = (logEvent.Properties = logEvent.Properties ?? new Dictionary<string, object>((properties?.Length ?? 1) + (_ContextProviders?.Length ?? 0)));
 				foreach (var property in properties)
 				{
-					if (_HasPropertyRenderers)
-						eventProperties[property.Key] = RenderProperty(property.Value);
+					if (property.Value != null)
+					{
+						if (hasRenderers)
+							renderer = _RendererMap.GetRenderer(property.GetType());
+						else if (_DefaultExceptionRenderer != null && property.Value is Exception)
+							renderer = _DefaultExceptionRenderer;
+					}
+
+					if (renderer != null)
+						eventProperties[property.Key] = renderer.RenderValue(property.Value);
 					else
 						eventProperties[property.Key] = property.Value;
 				}
@@ -591,12 +607,13 @@ namespace ScribeSharp
 			if (String.IsNullOrEmpty(logEvent.Source))
 				logEvent.Source = _Source ?? source;
 
-			if (String.IsNullOrWhiteSpace(logEvent.SourceMethod))
+			if (String.IsNullOrEmpty(logEvent.SourceMethod))
 				logEvent.SourceMethod = sourceMethod;
+
 			if (logEvent.SourceLineNumber < 0)
 				logEvent.SourceLineNumber = sourceLineNumber;
 
-			FillProperties(logEvent);
+			ApplyContext(logEvent);
 
 			if (ShouldLogEvent(logEvent))
 			{
@@ -604,27 +621,12 @@ namespace ScribeSharp
 				{
 					lock (this)
 					{
-						UnsynchronisedWrite(logEvent);
+						_LogWriter.Write(logEvent);
 					}
 				}
 				else
-					UnsynchronisedWrite(logEvent);
+					_LogWriter.Write(logEvent);
 			}
-		}
-
-		private object RenderProperty(object value)
-		{
-			if (value == null) return null;
-
-			var type = value.GetType();
-			if (_PropertyRenderers.ContainsKey(value.GetType())) return _PropertyRenderers[type].RenderValue(value);
-
-			return value;
-		}
-
-		private void UnsynchronisedWrite(LogEvent LogEvent)
-		{
-			_LogWriter.Write(LogEvent);
 		}
 
 		#endregion

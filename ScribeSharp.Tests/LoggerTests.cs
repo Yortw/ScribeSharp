@@ -84,7 +84,7 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		public void Logger_WriteEvent_PerformanceCheck()
 		{
-			int testIterations = 100;
+			int testIterations = 1000;
 			TimeSpan maxTime = TimeSpan.FromMilliseconds(10); // This is generous, to allow for variations caused by things outside the logging system (GC/CLR/OS etc)
 			var list = new List<LogEvent>(1);
 			var policy = GetSimpleListPolicy(list);
@@ -96,8 +96,8 @@ namespace ScribeSharp.Tests
 				logger.WriteEvent($"Log this {cnt.ToString()}!");
 			}
 			sw.Stop();
-			Assert.IsTrue(sw.ElapsedMilliseconds < maxTime.TotalMilliseconds, $"Logging 100 simple calls took more than {maxTime.ToString()}");
-			System.Diagnostics.Trace.WriteLine($"Logging 100 simple calls took {maxTime.ToString()}");
+			Assert.IsTrue(sw.ElapsedMilliseconds < maxTime.TotalMilliseconds, $"Logging {testIterations} simple calls took more than {maxTime.Milliseconds} ms ({sw.ElapsedMilliseconds} ms).");
+			System.Diagnostics.Trace.WriteLine($"Logging {testIterations} simple calls took {maxTime.ToString()}");
 		}
 
 		[TestCategory("Logger")]
@@ -175,6 +175,35 @@ namespace ScribeSharp.Tests
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
 			logger.WriteEvent("Log Verbose", eventSeverity: LogEventSeverity.Verbose);
 			Assert.AreEqual(1, list.Count);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEvent_AppliesContextProperties()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.FixedValueLogEntryContextProvider("Test Prop", "Test Prop Value") };
+			var logger = new Logger(policy);
+			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
+			Assert.AreEqual(1, list[0].Properties.Count);
+			Assert.AreEqual("Test Prop Value", list[0].Properties["Test Prop"]);
+		}
+
+		[TestCategory("Logger")]
+		[TestMethod]
+		public void Logger_WriteEvent_UsesPropertyRenderers()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.FixedValueLogEntryContextProvider("Test Converted Prop", DateTime.MinValue) };
+			policy.TypeRendererMap = new PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(DateTime), new PropertyRenderers.ToStringRenderer("G")));
+
+			var logger = new Logger(policy);
+			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
+			Assert.AreEqual(1, list[0].Properties.Count);
+			Assert.AreEqual(DateTime.MinValue.ToString("G", System.Globalization.CultureInfo.InvariantCulture), list[0].Properties["Test Converted Prop"].ToString());
+			Assert.IsTrue(list[0].Properties["Test Converted Prop"] is string);
 		}
 
 		#endregion
@@ -258,7 +287,7 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		public void Logger_WriteEventWithSource_PerformanceCheck()
 		{
-			int testIterations = 100;
+			int testIterations = 1000;
 			TimeSpan maxTime = TimeSpan.FromMilliseconds(10); // This is generous, to allow for variations caused by things outside the logging system (GC/CLR/OS etc)
 			var list = new List<LogEvent>(1);
 			var policy = GetSimpleListPolicy(list);
@@ -270,8 +299,8 @@ namespace ScribeSharp.Tests
 				logger.WriteEventWithSource($"Log this {cnt.ToString()}!");
 			}
 			sw.Stop();
-			Assert.IsTrue(sw.ElapsedMilliseconds < maxTime.TotalMilliseconds, $"Logging 100 simple calls took more than {maxTime.ToString()}");
-			System.Diagnostics.Trace.WriteLine($"Logging 100 simple calls took {maxTime.ToString()}");
+			Assert.IsTrue(sw.ElapsedMilliseconds < maxTime.TotalMilliseconds, $"Logging {testIterations} simple calls took more than {maxTime.Milliseconds} ms ({sw.ElapsedMilliseconds} ms).");
+			System.Diagnostics.Trace.WriteLine($"Logging {testIterations} simple calls took {maxTime.ToString()}");
 		}
 
 		[TestCategory("Logger")]

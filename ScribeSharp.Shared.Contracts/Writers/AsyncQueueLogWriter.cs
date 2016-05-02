@@ -157,6 +157,7 @@ namespace ScribeSharp.Writers
 		/// <summary>
 		/// Disposes this instance and all internal resources.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_QueueEmptySignal")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_LogEventPool")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_BufferTimeoutTimer", Justification = "It is disposed, CA just can't tell.")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_WriteBufferedEventsSignal", Justification = "It is disposed, CA just can't tell.")]

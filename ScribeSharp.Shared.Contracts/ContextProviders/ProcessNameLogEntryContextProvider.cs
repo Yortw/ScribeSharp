@@ -27,10 +27,11 @@ namespace ScribeSharp.ContextProviders
 		/// Adds a property with the name "Process Name" and the value of System.Diagnostics.Process.GetCurrentProcess().ProcessName.
 		/// </summary>
 		/// <param name="logEvent">The log event to apply the property to.</param>
+		/// <param name="rendererMap">A <see cref="ITypeRendererMap"/> that can be used to locate <see cref="IPropertyRenderer"/> instances to use when formatting properties. May be null if no renderers have been provided.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		protected override void AddPropertiesCore(LogEvent logEvent)
+		protected override void AddPropertiesCore(LogEvent logEvent, ITypeRendererMap rendererMap)
 		{
-			AddProperty(logEvent.Properties, "Process Name", _ProcessName ?? (_ProcessName = CachedCurrentProcess.CurrentProcess.ProcessName));
+			AddProperty(logEvent.Properties, "Process Name", _ProcessName ?? (_ProcessName = CachedCurrentProcess.CurrentProcess.ProcessName), rendererMap);
 		}
 	}
 }

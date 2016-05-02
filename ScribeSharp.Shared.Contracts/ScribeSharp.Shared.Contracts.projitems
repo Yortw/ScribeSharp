@@ -13,8 +13,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IFirstChanceLogFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\IMutableTypeRendererMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ITypeRendererMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DictionaryExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Filters\StandardFirstChanceFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formatters\FullTextLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImmutableStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogCallContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\StackTraceLogEntryContextProvider.cs" />
@@ -68,6 +72,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\SimpleLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\XmlLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggedJobPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\ExceptionAsXmlRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\TypeRendererMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RethrowErrorHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuppressingErrorHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UtcSystemClock.cs" />

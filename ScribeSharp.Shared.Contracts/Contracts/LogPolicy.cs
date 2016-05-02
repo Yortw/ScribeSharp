@@ -29,7 +29,7 @@ namespace ScribeSharp
 		/// <para>For multiple filters, use either a <see cref="Filters.AndFilter"/> or <see cref="Filters.OrFilter"/> instance.</para>
 		/// <para>If null, no logging is performed.</para>
 		/// </remarks>
-		public ILogEventFilter Filter { get; set;}
+		public ILogEventFilter Filter { get; set; }
 		/// <summary>
 		/// A special filter applied early in the logging process. This filter is limited in values it can check, but filtering out log events early can improve performance.
 		/// </summary>
@@ -42,11 +42,6 @@ namespace ScribeSharp
 		/// </summary>
 		public IEnumerable<ILogEventContextProvider> ContextProviders { get; set; }
 		/// <summary>
-		/// A dictionary of <see cref="IPropertyRenderer"/> implementations keyed by the type of value they know how to render.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public IDictionary<Type, IPropertyRenderer> PropertyRenderers { get; set; }
-		/// <summary>
 		/// Sets or returns the source to apply to all log events written by associated loggers. If null, the system will attempt to automatically apply a source.
 		/// </summary>
 		public string Source { get; set; }
@@ -54,6 +49,14 @@ namespace ScribeSharp
 		/// Sets or returns the error handler to use when an error occurs within the logging system.
 		/// </summary>
 		public ILoggingErrorHandler ErrorHandler { get; set; }
+		/// <summary>
+		/// Sets or returns a
+		/// </summary>
+		public ITypeRendererMap TypeRendererMap {get;set;}
+		/// <summary>
+		/// An optional renderer to use for <see cref="System.Exception"/> or any derived type that does not have a property renderer in the type map.
+		/// </summary>
+		public IPropertyRenderer DefaultExceptionRenderer { get; set; }
 		/// <summary>
 		/// Sets or returns the maximum size of the object pool used for <see cref="LogEvent"/> instances.
 		/// </summary>

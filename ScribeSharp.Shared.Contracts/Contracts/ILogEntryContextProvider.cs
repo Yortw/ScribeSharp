@@ -19,6 +19,7 @@ namespace ScribeSharp
 		/// Called by the system to ask this context provider to add any properties it wants to apply.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> to add properties to.</param>
-		void AddProperties(LogEvent logEvent);
+		/// <param name="typeRendererMap">A typeRendererMap instance that can be used to to locate renderers for property values.</param>
+		void AddProperties(LogEvent logEvent, ITypeRendererMap typeRendererMap);
 	}
 }

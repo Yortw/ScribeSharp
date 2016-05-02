@@ -44,17 +44,19 @@ namespace ScribeSharp.ContextProviders
 		/// Called by the system to ask this context provider to add any properties it wants to apply.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> to add properties to.</param>
-		public void AddProperties(LogEvent logEvent)
+		/// <param name="typeRendererMap">A <see cref="ITypeRendererMap"/> that can be used to locate <see cref="IPropertyRenderer"/> instances to use when formatting properties. May be null if no renderers have been provided.</param>
+		public void AddProperties(LogEvent logEvent, ITypeRendererMap typeRendererMap)
 		{
 			if ((_Filter?.ShouldProcess(logEvent) ?? true))
-				AddPropertiesCore(logEvent);
+				AddPropertiesCore(logEvent, typeRendererMap);
 		}
 
 		/// <summary>
 		/// Called when a log event requires properties added and the filter provided via the constructor has accepted the log event.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> to apply properties to.</param>
-		protected abstract void AddPropertiesCore(LogEvent logEvent);
+		/// <param name="typeRendererMap">A <see cref="ITypeRendererMap"/> that can be used to locate <see cref="IPropertyRenderer"/> instances to use when formatting properties. May be null if no renderers have been provided.</param>
+		protected abstract void AddPropertiesCore(LogEvent logEvent, ITypeRendererMap typeRendererMap);
 
 		/// <summary>
 		/// Adds the property to the specified dictionary if a property with the same name doesn't already exist.
@@ -62,12 +64,22 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="properties">The dictionary to add to.</param>
 		/// <param name="propertyName">The name of the property to add.</param>
 		/// <param name="value">The value of the property to add.</param>
-		protected static void AddProperty(IDictionary<string, object> properties, string propertyName, object value)
+		/// <param name="rendererMap">A <see cref="ITypeRendererMap"/> that can be used to locate <see cref="IPropertyRenderer"/> instances to use when formatting properties. May be null if no renderers have been provided.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+		protected static void AddProperty(IDictionary<string, object> properties, string propertyName, object value, ITypeRendererMap rendererMap)
 		{
-			//if (_HasPropertyRenderers)
-			//	properties[propertyName] = RenderProperty(value);
-			//else
-				properties.AddIfNotExists(propertyName, value);
+			if (!properties.ContainsKey(propertyName))
+			{
+				IPropertyRenderer renderer = null;
+
+				if (rendererMap != null && value != null)
+					renderer = rendererMap.GetRenderer(value.GetType());
+
+				if (renderer != null)
+					properties[propertyName] = renderer.RenderValue(value);
+				else
+					properties[propertyName] = value;
+			}
 		}
 	}
 }
