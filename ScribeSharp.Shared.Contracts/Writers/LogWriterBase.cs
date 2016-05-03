@@ -50,11 +50,7 @@ namespace ScribeSharp.Writers
 					WriteFilteredEvent(logEvent);
 				}
 			}
-			catch (StackOverflowException)
-			{
-				throw;
-			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				throw new LogWriterException(this, ex);
 			}

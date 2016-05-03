@@ -80,5 +80,17 @@ namespace ScribeSharp
 			writer.Flush();
 		}
 
+		/// <summary>
+		/// Returns true if the exception is of a type that indicates a serious system flaw, one that has likely resulted in unknown process state and should not attempt to be handled at all.
+		/// </summary>
+		/// <param name="exception">The exception to test.</param>
+		/// <returns>True if the exception should be rethrown immediately, else false.</returns>
+		public static bool ShouldRethrowImmediately(this Exception exception)
+		{
+			return exception is StackOverflowException
+				|| exception is System.Threading.ThreadAbortException
+				|| exception is AccessViolationException
+				|| exception is OutOfMemoryException;
+		}
 	}
 }

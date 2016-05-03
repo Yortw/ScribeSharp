@@ -30,6 +30,7 @@ namespace ScribeSharp
 			//Writers
 
 		//TODO: Writers
+			//TODO: Fallback writer
 			//TODO: Sql writer
 			//TODO: Msmq writer
 			//TODO: Azure event hub writer
@@ -210,13 +211,12 @@ namespace ScribeSharp
 
 				UnsafeWriteEvent(logEvent, null, null, -1);
 			}
-			catch (StackOverflowException) { throw; }
 			catch (LogException lex)
 			{
 				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
 					throw;
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				var wrappedException = new LogException(ex.Message, ex);
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
@@ -293,13 +293,12 @@ namespace ScribeSharp
 
 				UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
 			}
-			catch (StackOverflowException) { throw; }
 			catch (LogException lex)
 			{
 				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
 					throw;
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				var wrappedException = new LogException(ex.Message, ex);
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
@@ -426,11 +425,7 @@ namespace ScribeSharp
 			{
 				job();
 			}
-			catch (StackOverflowException)
-			{
-				throw;
-			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				token.SetFailure(ex);
 				throw;
@@ -558,13 +553,12 @@ namespace ScribeSharp
 					UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
 				}
 			}
-			catch (StackOverflowException) { throw; }
 			catch (LogException lex)
 			{
 				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
 					throw;
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				var wrappedException = new LogException(ex.Message, ex);
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)

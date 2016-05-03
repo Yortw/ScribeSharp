@@ -130,13 +130,12 @@ namespace ScribeSharp.Writers
 				else
 					StartTimeoutTimer();
 			}
-			catch (StackOverflowException) { throw; }
 			catch (LogException lex)
 			{
 				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
 					throw;
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				var wrappedException = new LogException(ex.Message, ex);
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
@@ -221,13 +220,12 @@ namespace ScribeSharp.Writers
 					}
 				}
 			}
-			catch (StackOverflowException) { throw; }
 			catch (LogException lex)
 			{
 				if (_ErrorHandler.ReportError(lex) == LoggingErrorPolicy.Rethrow)
 					throw;
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				var wrappedException = new LogException(ex.Message, ex);
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)

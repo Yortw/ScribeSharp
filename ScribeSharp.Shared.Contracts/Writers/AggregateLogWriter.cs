@@ -104,11 +104,7 @@ namespace ScribeSharp.Writers
 				{
 					writer.Write(logEvent);
 				}
-				catch (StackOverflowException)
-				{
-					throw;
-				}
-				catch (Exception ex)
+				catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 				{
 					if (_WriteOptions == AggregateLoggerWriteOption.SerialToFirstError)
 						throw;
