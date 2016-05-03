@@ -20,7 +20,7 @@ namespace ScribeSharp.Writers
 
 		private static readonly TimeSpan InfiniteTimespan = TimeSpan.FromMilliseconds(-1);
 
-		private ILogWriter _LogWriter;
+		private IBatchLogWriter _LogWriter;
 		private System.Collections.Concurrent.ConcurrentQueue<PooledObject<LogEvent>> _BufferedLogEvents;
 		private System.Threading.ManualResetEvent _WriteBufferedEventsSignal;
 		private System.Threading.ManualResetEvent _QueueEmptySignal;
@@ -88,7 +88,12 @@ namespace ScribeSharp.Writers
 
 			_WriteBufferedEventsSignal = new System.Threading.ManualResetEvent(false);
 			_BufferedLogEvents = new System.Collections.Concurrent.ConcurrentQueue<PooledObject<LogEvent>>();
-			_LogWriter = logWriter;
+
+			var batchedWriter = logWriter as IBatchLogWriter;
+			if (batchedWriter == null)
+				batchedWriter = new BatchLogWriterAdapter(logWriter);
+
+			_LogWriter = batchedWriter;
 
 			StartBackgroundWriterThread();
 
@@ -274,23 +279,54 @@ namespace ScribeSharp.Writers
 
 		private void BackgroundWriteEvents()
 		{
+			LogEvent[] buffer = new LogEvent[_BatchSize];
+			PooledObject<LogEvent>[] poolObjects = new PooledObject<LogEvent>[_BatchSize];
+
 			while (!_IsDisposed)
 			{
 				try
 				{
 					_WriteBufferedEventsSignal?.WaitOne();
+					_WriteBufferedEventsSignal.Reset();
 				}
 				catch (ObjectDisposedException) { }
 				catch (System.Threading.AbandonedMutexException) { }
 				catch (System.InvalidOperationException) { }
 
 				PooledObject<LogEvent> pooledLogEvent = null;
-				while (_BufferedLogEvents.TryDequeue(out pooledLogEvent))
+				int eventsRead = 1;
+				while (eventsRead > 0)
 				{
-					_LogWriter.Write(pooledLogEvent.Value);
-					pooledLogEvent.Dispose();
+					eventsRead = 0;
+					while (_BufferedLogEvents.TryDequeue(out pooledLogEvent))
+					{
+						poolObjects[eventsRead] = pooledLogEvent;
+						buffer[eventsRead] = pooledLogEvent.Value;
+						eventsRead++;
+
+						if (eventsRead >= buffer.Length)
+							break;
+					}
+					if (eventsRead > 0)
+						WriteBatch(buffer, poolObjects, eventsRead);
 				}
+
 				_QueueEmptySignal?.WaitOne();
+			}
+		}
+
+		private void WriteBatch(LogEvent[] buffer, PooledObject<LogEvent>[] poolObjects, int eventsRead)
+		{
+			try
+			{
+				_LogWriter.WriteBatch(buffer, eventsRead);
+			}
+			finally
+			{
+				for (int cnt = 0; cnt < eventsRead; cnt++)
+				{
+					poolObjects[cnt].Dispose();
+				}
 			}
 		}
 

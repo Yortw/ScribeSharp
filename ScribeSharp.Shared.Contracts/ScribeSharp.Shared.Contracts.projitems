@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CachingClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEntryContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\IBatchLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IFirstChanceLogFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IMutableTypeRendererMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\ITypeRendererMap.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\AggregateLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\AsyncQueueLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\BatchLogWriterAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ConsoleLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\DebugLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ForwardingLogWriter.cs" />

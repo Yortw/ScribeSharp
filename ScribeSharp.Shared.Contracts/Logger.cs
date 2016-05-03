@@ -14,8 +14,6 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
-		//TODO: Batch writing of log entries.
-
 		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
 		//TODO: Property renderers? JsonRenderer
 		//TODO: Single filtering writer instead of base class?
