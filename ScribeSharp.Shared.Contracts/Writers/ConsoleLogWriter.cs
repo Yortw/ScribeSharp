@@ -20,25 +20,13 @@ namespace ScribeSharp.Writers
 		#region Constructors
 
 		/// <summary>
-		/// Partial constructor.
-		/// </summary>
-		/// <remarks>
-		/// <para>If <paramref name="eventFormatter"/> is null then a simple human readable version of the string is output.</para>
-		/// </remarks>
-		/// <param name="eventFormatter">A <see cref="ILogEventFormatter"/> implementation used to format the event log entries to text for outputting.</param>
-		public ConsoleLogWriter(ILogEventFormatter eventFormatter) : this(eventFormatter, null) 
-		{
-		}
-
-		/// <summary>
 		/// Full constructor.
 		/// </summary>
 		/// <remarks>
 		/// <para>If <paramref name="eventFormatter"/> is null then a simple human readable version of the string is output.</para>
 		/// </remarks>
 		/// <param name="eventFormatter">A <see cref="ILogEventFormatter"/> implementation used to format the event log entries to text for outputting.</param>
-		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to filter events before writing. If null no filtering is performed.</param>
-		public ConsoleLogWriter(ILogEventFormatter eventFormatter, ILogEventFilter filter) : base(filter)
+		public ConsoleLogWriter(ILogEventFormatter eventFormatter) 
 		{
 			_LogEventFormatter = eventFormatter;
 		}
@@ -62,7 +50,7 @@ namespace ScribeSharp.Writers
 		/// Writes the event to the console.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to write.</param>
-		protected override void WriteFilteredEvent(LogEvent logEvent)
+		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 

@@ -24,25 +24,13 @@ namespace ScribeSharp.Writers
 		#region Constructors
 
 		/// <summary>
-		/// Partial constructor.
-		/// </summary>
-		/// <param name="events">An <see cref="IList{LogEvent}"/> instance that log events will be added to.</param>
-		/// <param name="maximumCapacity">A the maximum number of log events to keep in the list at any one time. When the list capacity is reached, the first event in the list is removed before the next event is added.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="events"/> is null.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="maximumCapacity"/> is less than or equal to 0.</exception>
-		public ListLogWriter(IList<LogEvent> events, int maximumCapacity) : this(events, maximumCapacity, null)
-		{
-		}
-
-		/// <summary>
 		/// Full constructor.
 		/// </summary>
 		/// <param name="events">An <see cref="IList{LogEvent}"/> instance that log events will be added to.</param>
 		/// <param name="maximumCapacity">A the maximum number of log events to keep in the list at any one time. When the list capacity is reached, the first event in the list is removed before the next event is added.</param>
-		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to filter events before writing. If null no filtering is performed.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="events"/> is null.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="maximumCapacity"/> is less than or equal to 0.</exception>
-		public ListLogWriter(IList<LogEvent> events, int maximumCapacity, ILogEventFilter filter) : base(filter)
+		public ListLogWriter(IList<LogEvent> events, int maximumCapacity) 
 		{
 			if (events == null) throw new ArgumentNullException(nameof(events));
 			if (maximumCapacity <= 0) throw new ArgumentOutOfRangeException(nameof(maximumCapacity), "maximumCapacity must be greater than zero.");
@@ -80,7 +68,7 @@ namespace ScribeSharp.Writers
 		/// Clones the supplied <see cref="LogEvent"/> instance and adds the clone to the list.
 		/// </summary>
 		/// <param name="logEvent">A <see cref="LogEvent"/> instance to clone and add to the queue.</param>
-		protected override void WriteFilteredEvent(LogEvent logEvent)
+		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			if (logEvent == null) return;
 

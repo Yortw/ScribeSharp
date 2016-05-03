@@ -45,35 +45,18 @@ namespace ScribeSharp.Writers
 		#region Constructors
 
 		/// <summary>
-		/// Partial constructor.
-		/// </summary>
-		/// <param name="logWriter">The log writer to forward events to from the background thread. If multiple output locations are required, usea  <see cref="AggregateLogWriter"/> instance.</param>
-		/// <param name="batchSize">The number of items in the queue before they are actually passed to <paramref name="logWriter"/>. Specify 1 to have entries written immediately.</param>
-		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <param ref="batchSize"/>. Specify <see cref="TimeSpan.Zero"/> to have entries written immediately, or a time span with a negative value to have no timeout applied.</param>
-		/// <param name="errorHandler">An <see cref="ILoggingErrorHandler"/> implementation used to handle errors that occur.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="logWriter"/> is null.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="batchSize"/> is less than or equal to zero.</exception>
-		/// <remarks>
-		/// <para>If the <paramref name="errorHandler"/> is null then <see cref="SuppressingErrorHandler.DefaultInstance"/> will be used. Ideally the same error handler instance as provided to the parent logger should be used.</para>
-		/// </remarks>
-		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILoggingErrorHandler errorHandler) : this(logWriter, batchSize, writeTimeout, errorHandler, null)
-		{
-		}
-
-		/// <summary>
-		/// Partial constructor.
+		/// Full constructor.
 		/// </summary>
 		/// <param name="logWriter">The log writer to forward events to from the background thread. If multiple output locations are required, usea  <see cref="AggregateLogWriter"/> instance.</param>
 		/// <param name="batchSize">The number of items in the queue before they are actually passed to <paramref name="logWriter"/>.</param>
 		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <param ref="batchSize"/>.</param>
 		/// <param name="errorHandler">An <see cref="ILoggingErrorHandler"/> implementation used to handle errors that occur.</param>
-		/// <param name="filter">An <see cref="ILogEventFilter"/> to apply to events. Only events that pass the filter will be written. If null, no filtering is performed.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="logWriter"/> is null.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="batchSize"/> is less than or equal to zero.</exception>
 		/// <remarks>
 		/// <para>If the <paramref name="errorHandler"/> is null then <see cref="SuppressingErrorHandler.DefaultInstance"/> will be used. Ideally the same error handler instance as provided to the parent logger should be used.</para>
 		/// </remarks>
-		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILoggingErrorHandler errorHandler, ILogEventFilter filter) : base(filter)
+		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILoggingErrorHandler errorHandler)
 		{
 			if (logWriter == null) throw new ArgumentNullException(nameof(logWriter));
 			if (batchSize <= 0) throw new ArgumentOutOfRangeException(nameof(batchSize));
@@ -113,7 +96,7 @@ namespace ScribeSharp.Writers
 		/// <para>Queues the item and also notifies the write thread to start work if queue size is at least equal to the configured batch size, otherwise starts/resets a timer to kick off the write thread after the configured timeout.</para>
 		/// </remarks>
 		/// <param name="logEvent">A <see cref="LogEvent"/> instance to write.</param>
-		protected override void WriteFilteredEvent(LogEvent logEvent)
+		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			try
 			{

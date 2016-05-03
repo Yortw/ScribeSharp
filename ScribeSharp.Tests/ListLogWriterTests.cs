@@ -43,24 +43,6 @@ namespace ScribeSharp.Tests
 			Assert.AreEqual(5, list.Count);
 		}
 
-		[TestMethod]
-		[TestCategory("ListLogWriter")]
-		public void ListLogWriter_Write_UsesFilter()
-		{
-			var list = new List<LogEvent>(10);
-			var logWriter = new ListLogWriter(list, list.Capacity, new ScribeSharp.Filters.LogSeverityFilter(LogEventSeverity.Error));
-
-			var logEvent = new LogEvent();
-			logEvent.EventName = "Test";
-			logWriter.Write(logEvent);
-			Assert.AreEqual(0, list.Count);
-
-			logEvent.EventName = "Test";
-			logEvent.EventSeverity = LogEventSeverity.Error;
-			logWriter.Write(logEvent);
-			Assert.AreEqual(1, list.Count);
-		}
-
 		[ExpectedException(typeof(ArgumentNullException))]
 		[TestCategory("ListLogWriter")]
 		[TestMethod]

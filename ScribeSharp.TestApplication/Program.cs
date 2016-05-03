@@ -33,7 +33,7 @@ namespace ScribeSharp.TestApplication
 					{
 						new ScribeSharp.Writers.ConsoleLogWriter(null),
 						new ScribeSharp.Writers.WindowsEventLogWriter("TestLog", "Test Source", ".", true, System.Diagnostics.OverflowAction.OverwriteAsNeeded, 30, 
-							new ScribeSharp.Formatters.XmlLogEventFormatter(), null)
+							new ScribeSharp.Formatters.XmlLogEventFormatter())
 					}
 				),
 				//PropertyRenderers = new Dictionary<Type, IPropertyRenderer>() { { typeof(TestProperty), new PropertyRenderers.XmlPropertyRenderer(typeof(TestProperty)) } }

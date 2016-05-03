@@ -29,7 +29,7 @@ namespace ScribeSharp.Writers
 		/// </remarks>
 		/// <param name="writers">An enumerable set of child <see cref="ILogWriter"/> implementations to write to.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="writers"/> argument is null.</exception>
-		public AggregateLogWriter(IEnumerable<ILogWriter> writers) : this(writers, AggregateLoggerWriteOption.Parallel, null)
+		public AggregateLogWriter(IEnumerable<ILogWriter> writers) : this(writers, AggregateLoggerWriteOption.Parallel)
 		{
 		}
 
@@ -38,9 +38,8 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="writers">An enumerable set of child <see cref="ILogWriter"/> implementations to write to.</param>
 		/// <param name="writeOptions">A value from the <see cref="AggregateLoggerWriteOption"/> specifying how child writers are called and exceptions reported.</param>
-		/// <param name="filter">A <see cref="ILogEventFilter"/> implementation used to filter events written by this writer. If null, no filtering is performed.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="writers"/> argument is null.</exception>
-		public AggregateLogWriter(IEnumerable<ILogWriter> writers, AggregateLoggerWriteOption writeOptions, ILogEventFilter filter) : base(filter)
+		public AggregateLogWriter(IEnumerable<ILogWriter> writers, AggregateLoggerWriteOption writeOptions) 
 		{
 			if (writers == null) throw new ArgumentNullException(nameof(writers));
 
@@ -57,7 +56,7 @@ namespace ScribeSharp.Writers
 		/// Called when the <see cref="ILogWriter.Write(LogEvent)"/> method has been called and the writer's filter has passed the event.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to write.</param>
-		protected override void WriteFilteredEvent(LogEvent logEvent)
+		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			if (_RequiresSynchronisation)
 			{

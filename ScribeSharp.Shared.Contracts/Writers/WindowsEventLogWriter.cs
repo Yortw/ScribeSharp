@@ -28,7 +28,7 @@ namespace ScribeSharp.Writers
 		/// Creates a new event source and log if required and configures the writer to output events there.
 		/// </summary>
 		/// <remarks>
-		/// <para>Warning: It's often a better idea to pre-create the event log and use the <see cref="WindowsEventLogWriter(System.Diagnostics.EventLog, ILogEventFormatter, ILogEventFilter)"/> constructor to avoid issues.
+		/// <para>Warning: It's often a better idea to pre-create the event log and use the <see cref="WindowsEventLogWriter(System.Diagnostics.EventLog, ILogEventFormatter)"/> constructor to avoid issues.
 		/// Creating new event sources and logs requires administrative priviledges on Windows.
 		/// Newly created event logs are not always available immediately, and output to them can either fail or be redirected to the application event log (often until a reboot).
 		/// </para>
@@ -40,8 +40,7 @@ namespace ScribeSharp.Writers
 		/// <param name="overflowAction">Specifies the overflow policy for the Windows Event Log policy if the event log is to be created.</param>
 		/// <param name="retentionDays">Specifies the number of days to keep events for before overwriting them, used if the event log is to be created.</param>
 		/// <param name="eventFormatter">A <see cref="ILogEventFormatter"/> implementation used to format the event log entries to text for outputting.</param>
-		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to filter events before writing. If null no filtering is performed.</param>
-		public WindowsEventLogWriter(string eventLogName, string eventSourceName, string eventLogMachineName, bool createEventLog, System.Diagnostics.OverflowAction overflowAction, int retentionDays, ILogEventFormatter eventFormatter, ILogEventFilter filter) : base(filter)
+		public WindowsEventLogWriter(string eventLogName, string eventSourceName, string eventLogMachineName, bool createEventLog, System.Diagnostics.OverflowAction overflowAction, int retentionDays, ILogEventFormatter eventFormatter) 
 		{
 			eventLogName = eventLogName ?? "Application";
 			if (String.IsNullOrWhiteSpace(eventLogName)) throw new ArgumentException(nameof(eventLogName) + " cannot be empty or whitespace.", nameof(eventLogName));
@@ -73,8 +72,7 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="eventLog">The Windows event log to write to.</param>
 		/// <param name="eventFormatter">A <see cref="ILogEventFormatter"/> implementation used to format the event log entries to text for outputting.</param>
-		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to filter events before writing. If null no filtering is performed.</param>
-		public WindowsEventLogWriter(System.Diagnostics.EventLog eventLog, ILogEventFormatter eventFormatter, ILogEventFilter filter) : base(filter)
+		public WindowsEventLogWriter(System.Diagnostics.EventLog eventLog, ILogEventFormatter eventFormatter) 
 		{
 			if (eventLog == null) throw new ArgumentNullException(nameof(eventLog));
 
@@ -91,7 +89,7 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to write.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.EventLog.WriteEntry(System.String,System.Diagnostics.EventLogEntryType,System.Int32,System.Int16,System.Byte[])", Justification="The interface is inherited from another interface we don't control, the interface member does map to a properly implemented dispose pattern anyway.")]
-		protected override void WriteFilteredEvent(LogEvent logEvent)
+		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 

@@ -40,7 +40,18 @@ namespace ScribeSharp.Writers
 		/// <param name="logEvent">The event to log.</param>
 		public void Write(LogEvent logEvent)
 		{
-			_LogWriter.Write(logEvent);
+			try
+			{
+				_LogWriter.Write(logEvent);
+			}
+			catch (LogWriterException)
+			{
+				throw;
+			}
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
+			{
+				throw new LogWriterException(ex.Message, ex);
+			}
 		}
 
 		/// <summary>
@@ -51,9 +62,20 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvents == null) return;
 
-			foreach (var logEvent in logEvents)
+			try
 			{
-				Write(logEvent);
+				foreach (var logEvent in logEvents)
+				{
+					Write(logEvent);
+				}
+			}
+			catch (LogWriterException)
+			{
+				throw;
+			}
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
+			{
+				throw new LogWriterException(ex.Message, ex);
 			}
 		}
 
@@ -69,9 +91,20 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvents == null) return;
 
-			for (int cnt = 0; cnt < length; cnt++)
+			try
 			{
-				Write(logEvents[cnt]);
+				for (int cnt = 0; cnt < length; cnt++)
+				{
+					Write(logEvents[cnt]);
+				}
+			}
+			catch (LogWriterException)
+			{
+				throw;
+			}
+			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
+			{
+				throw new LogWriterException(ex.Message, ex);
 			}
 		}
 	}

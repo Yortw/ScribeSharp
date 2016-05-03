@@ -15,9 +15,7 @@ namespace ScribeSharp.Tests
 		{
 		}
 
-		public MockLogWriter(ILogEventFilter filter) : base(filter) { }
-
-		protected override void WriteFilteredEvent(LogEvent logEvent)
+		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			_LastEvent = logEvent;
 		}

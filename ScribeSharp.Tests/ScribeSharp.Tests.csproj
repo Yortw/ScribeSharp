@@ -58,13 +58,13 @@
   <ItemGroup>
     <Compile Include="AsyncQueueLogWriterTests.cs" />
     <Compile Include="AggregateLogWriterTests.cs" />
+    <Compile Include="FilteringWriterTests.cs" />
     <Compile Include="ListLogWriterTests.cs" />
     <Compile Include="LogCallContextTests.cs" />
     <Compile Include="LoggerTests.cs" />
     <Compile Include="RethrowErrorHandlerTests.cs" />
     <Compile Include="StandardFirstChanceFilterTests.cs" />
     <Compile Include="SuppressingErrorHandlerTests.cs" />
-    <Compile Include="LogWriterBaseTests.cs" />
     <Compile Include="MockLogClock.cs" />
     <Compile Include="MockLogWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

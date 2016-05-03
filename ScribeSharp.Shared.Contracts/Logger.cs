@@ -16,7 +16,6 @@ namespace ScribeSharp
 	{
 		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
 		//TODO: Property renderers? JsonRenderer
-		//TODO: Single filtering writer instead of base class?
 		//TODO: Level switch
 		//TODO: Pooled/Recycling text writer?
 		//TODO: Json serialiser

@@ -11,22 +11,11 @@ namespace ScribeSharp.Writers
 	public abstract class LogWriterBase : ILogWriter
 	{
 
-		private readonly ILogEventFilter _Filter;
-
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
 		protected LogWriterBase()
 		{
-		}
-
-		/// <summary>
-		/// Full constructor.
-		/// </summary>
-		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to filter events before writing. If null no filtering is performed.</param>
-		protected LogWriterBase(ILogEventFilter filter)
-		{
-			_Filter = filter;
 		}
 
 		/// <summary>
@@ -38,18 +27,16 @@ namespace ScribeSharp.Writers
 		}
 
 		/// <summary>
-		/// Checks the supplied <see cref="LogEvent"/> instance against the configured <see cref="ILogWriter"/> instance and calls <see cref="WriteFilteredEvent(LogEvent)"/> if the filter passes.
+		/// Checks the supplied <see cref="LogEvent"/> instance against the configured <see cref="ILogWriter"/> instance and calls <see cref="WriteEventInternal(LogEvent)"/> if the filter passes.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to write.</param>
 		public void Write(LogEvent logEvent)
 		{
 			try
 			{
-				if (_Filter?.ShouldProcess(logEvent) ?? true)
-				{
-					WriteFilteredEvent(logEvent);
-				}
+				WriteEventInternal(logEvent);
 			}
+			catch (LogWriterException) { throw; }
 			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
 				throw new LogWriterException(this, ex);
@@ -60,6 +47,6 @@ namespace ScribeSharp.Writers
 		/// Abstract method to be overridden by derived classes. Should actually write the specified <see cref="LogEvent"/> to the output location.
 		/// </summary>
 		/// <param name="logEvent"></param>
-		protected abstract void WriteFilteredEvent(LogEvent logEvent);
+		protected abstract void WriteEventInternal(LogEvent logEvent);
 	}
 }
