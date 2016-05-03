@@ -30,25 +30,21 @@ namespace ScribeSharp.Formatters
 			}
 		}
 
-		private void LogEventToXml(LogEvent logEvent, XmlWriter writer)
+		private static void LogEventToXml(LogEvent logEvent, XmlWriter writer)
 		{
 			writer.WriteStartElement("LogEvent");
 
 			WriteElementIfValueNotNull(writer, "EventName", logEvent.EventName);
 
-			writer.WriteStartElement("Date");
-			writer.WriteValue(logEvent.DateTime.ToLocalTime());
-			writer.WriteEndElement();
+			writer.WriteAttributeString("Date", logEvent.DateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
 
-			writer.WriteElementString("Severity", logEvent.EventSeverity.ToString());
-			writer.WriteElementString("EventType", logEvent.EventType.ToString());
+			writer.WriteAttributeString("Severity", logEvent.EventSeverity.ToString());
+			writer.WriteAttributeString("EventType", logEvent.EventType.ToString());
 
-			WriteElementIfValueNotNull(writer, "Source", logEvent.Source);
-			WriteElementIfValueNotNull(writer, "SourceMethod", logEvent.SourceMethod);
-
-			writer.WriteStartElement("SourceLineNumber");
-			writer.WriteValue(logEvent.SourceLineNumber);
-			writer.WriteEndElement();
+			WriteAttributeIfValueNotNull(writer, "Source", logEvent.Source);
+			WriteAttributeIfValueNotNull(writer, "SourceMethod", logEvent.SourceMethod);
+			if (logEvent.SourceLineNumber >= 0)
+				WriteAttributeIfValueNotNull(writer, "SourceLineNumber", logEvent.SourceLineNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
 			if (logEvent.Exception != null)
 				writer.WriteRaw(logEvent.Exception.ToXml());
@@ -71,7 +67,14 @@ namespace ScribeSharp.Formatters
 			writer.Flush();
 		}
 
-		private void WriteElementIfValueNotNull(XmlWriter writer, string elementName, string value)
+		private static void WriteAttributeIfValueNotNull(XmlWriter writer, string attributeName, string attributeValue)
+		{
+			if (attributeValue == null) return;
+
+			writer.WriteAttributeString(attributeName, attributeValue);
+		}
+
+		private static void WriteElementIfValueNotNull(XmlWriter writer, string elementName, string value)
 		{
 			if (value == null) return;
 

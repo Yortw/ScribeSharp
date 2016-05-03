@@ -21,7 +21,7 @@ namespace ScribeSharp
 		public CachingClock(ILogClock innerClock, TimeSpan cacheInterval)
 		{
 			if (innerClock == null) throw new ArgumentNullException(nameof(innerClock));
-			if (cacheInterval.Ticks > Int32.MaxValue) throw new ArgumentOutOfRangeException(String.Format(Properties.Resources.ArgumentOutOfRangeMessage, "cacheInterval.Ticks", 1, Int32.MaxValue));
+			if (cacheInterval.Ticks > Int32.MaxValue) throw new ArgumentOutOfRangeException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.ArgumentOutOfRangeMessage, "cacheInterval.Ticks", 1, Int32.MaxValue));
 
 			_CacheIntervalTicks = Convert.ToInt32(cacheInterval.Ticks);
 			_CachedTime = innerClock.Now;

@@ -227,8 +227,9 @@ namespace ScribeSharp
 		/// <param name="jobName">A name/type/descriptio of the job, i.e "Process message".</param>
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
+		/// <param name="maxExpectedDuration">The maximum expected duration of the work. If the work takes longer than this, the job complete event will be marked with a warning severity.</param>
 		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
-		LoggedJob BeginLoggedJob(string jobName, string jobId, params KeyValuePair<string, object>[] properties);
+		LoggedJob BeginLoggedJob(string jobName, string jobId, TimeSpan maxExpectedDuration, params KeyValuePair<string, object>[] properties);
 
 		#endregion
 

@@ -31,6 +31,7 @@ namespace ScribeSharp
 		private System.Diagnostics.Stopwatch _Stopwatch;
 		private ILoggedJobPool _ParentPool;
 		private bool _Cancelled;
+		private TimeSpan _MaxExpectedDuration;
 
 		#endregion
 
@@ -89,6 +90,23 @@ namespace ScribeSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void Initialize(ILogger logger, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties, ILoggedJobPool parentPool)
 		{
+			Initialize(logger, jobName, jobId, properties, parentPool, TimeSpan.Zero);
+		}
+
+		/// <summary>
+		/// Initialises this instance with values relating to a particular job.
+		/// </summary>
+		/// <param name="logger">The logger associated with the job.</param>
+		/// <param name="jobName">The name/type/description of the job running.</param>
+		/// <param name="jobId">A unique identifier to apply to the job.</param>
+		/// <param name="properties">An additional set of property to be included on all log entries related to this job.</param>
+		/// <param name="parentPool">Either null, or pool instance the job should be returned to when complete, so this instance can be reused.</param>
+		/// <param name="maxExpectedDuration">The maximum expected duration of the work. If the work takes longer than this, the job complete event will be marked with a warning severity.</param>
+		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="logger"/> or <paramref name="jobName"/> arguments are null.</exception>
+		/// <exception cref="ArgumentException">Thrown if the <paramref name="jobName"/> argument is empty or only whitespace.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public void Initialize(ILogger logger, string jobName, string jobId, IEnumerable<KeyValuePair<string, object>> properties, ILoggedJobPool parentPool, TimeSpan maxExpectedDuration)
+		{
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 			if (jobName == null) throw new ArgumentNullException(nameof(jobName));
 			if (String.IsNullOrWhiteSpace(jobName)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, jobName), nameof(jobName));
@@ -100,6 +118,7 @@ namespace ScribeSharp
 			_Logger = logger;
 			_JobId = jobId;
 			_JobName = jobName;
+			_MaxExpectedDuration = maxExpectedDuration;
 			_Properties = GetExtendedProperties(properties,
 				new KeyValuePair<string, object>(Properties.Resources.JobNamePropertyName, jobName),
 				new KeyValuePair<string, object>(Properties.Resources.JobIdPropertyName, jobId)
@@ -187,7 +206,7 @@ namespace ScribeSharp
 			if (_Properties != null)
 				allProperties = allProperties.Union(GetNonJobProperties(_Properties));
 
-			retVal.Initialize(_Logger, jobName, jobId, allProperties, _ParentPool);
+			retVal.Initialize(_Logger, jobName, jobId, allProperties, _ParentPool, TimeSpan.Zero);
 			return retVal;
 		}
 
@@ -204,8 +223,14 @@ namespace ScribeSharp
 		{
 			_Stopwatch.Stop();
 
+			var severity = LogEventSeverity.Information;
+			if (_Exception != null)
+				severity = LogEventSeverity.Error;
+			else if (_Cancelled || (_Stopwatch.Elapsed > _MaxExpectedDuration && _MaxExpectedDuration != TimeSpan.Zero))
+				severity = LogEventSeverity.Warning;
+
 			_Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
-				eventSeverity: _Exception == null ? (_Cancelled ? LogEventSeverity.Warning : LogEventSeverity.Information) : LogEventSeverity.Error,
+				eventSeverity: severity,
 				eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
 				properties: GetExtendedProperties(
 					_Properties,

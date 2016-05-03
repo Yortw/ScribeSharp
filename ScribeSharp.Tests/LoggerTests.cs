@@ -454,9 +454,26 @@ namespace ScribeSharp.Tests
 			Assert.IsFalse(String.IsNullOrWhiteSpace(list[1].Properties["Duration"].ToString()));
 		}
 
+		[TestMethod]
+		[TestCategory("Logger")]
+		public void Logger_BeginLoggedJob_WritesWarningWhenOverTime()
+		{
+			var list = new List<LogEvent>();
+			var policy = GetSimpleListPolicy(list);
+			var logger = new Logger(policy);
+
+			var jobId = Guid.NewGuid().ToString();
+			using (var loggedJob = logger.BeginLoggedJob("Test", jobId, TimeSpan.FromSeconds(1)))
+			{
+				System.Threading.Thread.Sleep(2000);
+			}
+
+			Assert.AreEqual(LogEventSeverity.Warning, list.Last().EventSeverity);
+		}
+
 		#endregion
 
-		#region BeginLoggedJob Tests
+		#region CreateChildJob Tests
 
 		[TestMethod]
 		[TestCategory("Logger")]

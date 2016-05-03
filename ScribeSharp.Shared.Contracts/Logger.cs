@@ -14,9 +14,6 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
-		//TODO: Option to set job properties on logical call context
-		//TODO: Expected max duration option on job.
-
 		//TODO: Batch writing of log entries.
 
 		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
@@ -426,7 +423,7 @@ namespace ScribeSharp
 		{
 			if (job == null) throw new ArgumentNullException(nameof(jobName));
 
-			var token = BeginLoggedJob(jobName, jobId, properties);
+			var token = BeginLoggedJob(jobName, jobId, TimeSpan.Zero, properties);
 			try
 			{
 				job();
@@ -458,7 +455,7 @@ namespace ScribeSharp
 		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
 		public LoggedJob BeginLoggedJob(string jobName, string jobId)
 		{
-			return BeginLoggedJob(jobName, jobId, null);
+			return BeginLoggedJob(jobName, jobId, TimeSpan.Zero);
 		}
 
 		/// <summary>
@@ -467,11 +464,12 @@ namespace ScribeSharp
 		/// <param name="jobName">A name/type/descriptio of the job, i.e "Process message".</param>
 		/// <param name="jobId">The unique id of the job, used to distinguish it from other jobs of the same type. Optional.</param>
 		/// <param name="properties">A set of additional properties to include on each event logged in relation to the job.</param>
+		/// <param name="maxExpectedDuration">The maximum expected duration of the work. If the work takes longer than this, the job complete event will be marked with a warning severity.</param>
 		/// <returns>A <see cref="LoggedJob"/> instance for this specified job.</returns>
-		public LoggedJob BeginLoggedJob(string jobName, string jobId, params KeyValuePair<string, object>[] properties)
+		public LoggedJob BeginLoggedJob(string jobName, string jobId, TimeSpan maxExpectedDuration, params KeyValuePair<string, object>[] properties)
 		{
 			var retVal = _JobPool.Take();
-			retVal.Initialize(this, jobName, jobId, properties, _JobPool);
+			retVal.Initialize(this, jobName, jobId, properties, _JobPool, maxExpectedDuration);
 			return retVal;
 		}
 
