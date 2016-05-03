@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\AutoLoggerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoLoggers\DateTimeChangedAutoLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CachingClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IFirstChanceLogFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IMutableTypeRendererMap.cs" />

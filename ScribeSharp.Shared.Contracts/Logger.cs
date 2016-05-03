@@ -14,6 +14,11 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
+		//TODO: Option to set job properties on logical call context
+		//TODO: Expected max duration option on job.
+
+		//TODO: Batch writing of log entries.
+
 		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
 		//TODO: Property renderers? JsonRenderer
 		//TODO: Single filtering writer instead of base class?
@@ -22,12 +27,17 @@ namespace ScribeSharp
 		//TODO: Json serialiser
 		//TODO: Logger extension methods?
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
+
 		//TODO: Tests
 			// Renderers
 			// Formatters
 			// Context providers
 			//Writers
-		//TODO: Sql writer
+
+		//TODO: Writers
+			//TODO: Sql writer
+			//TODO: Msmq writer
+			//TODO: Azure event hub writer
 
 		#region Fields
 
@@ -66,7 +76,7 @@ namespace ScribeSharp
 			_JobPool = new LoggedJobPool(policy.JobPoolCapacity);
 
 			_LogWriter = policy.LogWriter;
-			_LogClock = policy.Clock;
+			_LogClock = policy.Clock ?? new CachingClock(new LocalSystemClock(), TimeSpan.FromTicks(16));
 			_Filter = policy.Filter;
 			_FirstChanceFilter = policy.FirstChanceFilter;
 			_RendererMap = policy.TypeRendererMap; 
@@ -284,7 +294,7 @@ namespace ScribeSharp
 				if (!IsEnabled || !(_FirstChanceFilter?.ShouldLog(logEvent.EventName, logEvent.EventSeverity, logEvent.EventType, logEvent.Source, logEvent.SourceMethod) ?? true)) return;
 
 				if (logEvent.DateTime == DateTimeOffset.MinValue)
-					logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
+					logEvent.DateTime = _LogClock.Now;
 
 				UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
 			}
@@ -568,7 +578,7 @@ namespace ScribeSharp
 
 		private void InitialiseLogEvent(string eventName, LogEventSeverity eventSeverity, LogEventType eventType, KeyValuePair<string, object>[] properties, Exception exception, LogEvent logEvent)
 		{
-			logEvent.DateTime = _LogClock?.Now ?? DateTimeOffset.Now;
+			logEvent.DateTime = _LogClock.Now;
 			logEvent.EventName = eventName ?? String.Empty;
 			logEvent.EventSeverity = eventSeverity;
 			logEvent.EventType = eventType;

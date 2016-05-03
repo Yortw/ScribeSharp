@@ -61,6 +61,15 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} cannot be less than {1} or more than {2}..
+        /// </summary>
+        internal static string ArgumentOutOfRangeMessage {
+            get {
+                return ResourceManager.GetString("ArgumentOutOfRangeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancelled.
         /// </summary>
         internal static string CancelledOutcome {
