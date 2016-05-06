@@ -39,6 +39,7 @@ namespace ScribeSharp.Formatters
 			writer.WriteAttributeString("Date", logEvent.DateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
 
 			writer.WriteAttributeString("Severity", logEvent.EventSeverity.ToString());
+			writer.WriteAttributeString("SeverityLevel", Convert.ToInt32(logEvent.EventSeverity).ToString(System.Globalization.CultureInfo.InvariantCulture));
 			writer.WriteAttributeString("EventType", logEvent.EventType.ToString());
 
 			WriteAttributeIfValueNotNull(writer, "Source", logEvent.Source);
