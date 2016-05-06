@@ -76,6 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LoggedJobPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\ExceptionAsXmlRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\TypeRendererMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RecyclableStringWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RethrowErrorHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuppressingErrorHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UtcSystemClock.cs" />
