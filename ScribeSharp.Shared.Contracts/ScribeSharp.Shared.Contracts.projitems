@@ -77,6 +77,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\XmlLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggedJobPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\ExceptionAsXmlRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\JsonPropertyRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\TypeRendererMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RecyclableStringWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RethrowErrorHandler.cs" />

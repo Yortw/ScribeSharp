@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace ScribeSharp.Formatters
 	/// </summary>
 	public sealed class JsonLogEventFormatter : LogEventFormatterBase
 	{
+		private JsonSerializer _Serialiser = new JsonSerializer();
+
 		/// <summary>
 		/// Writes the full log event as a Json object.
 		/// </summary>
@@ -18,7 +21,11 @@ namespace ScribeSharp.Formatters
 		/// <param name="writer">The <see cref="System.IO.TextWriter"/> to output to.</param>
 		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
-			throw new NotImplementedException();
+			using (var jsonWriter = new JsonTextWriter(writer))
+			{
+				_Serialiser.Serialize(jsonWriter, logEvent);
+				jsonWriter.Flush();
+			}
 		}
 	}
 }
