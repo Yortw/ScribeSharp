@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -8,44 +9,42 @@ namespace ScribeSharp.Formatters
 	/// <summary>
 	/// Formats a <see cref="LogEvent"/> to a simple human readable string containing the date, severity, event, source, source method and message.
 	/// </summary>
-	public sealed class FullTextLogEventFormatter : ILogEventFormatter
+	public sealed class FullTextLogEventFormatter : LogEventFormatterBase
 	{
 		private static FullTextLogEventFormatter s_DefaultInstance;
 
 		/// <summary>
-		/// Formats the <paramref name="logEvent"/> instance to a simple human readable string.
+		/// Formats and outputs the log event to the specified writer as a series of human readable lines of text, with a blank line at the end.
 		/// </summary>
-		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format.</param>
-		/// <returns>A string containing a human readable string of the primary log event properties.</returns>
-		public string Format(LogEvent logEvent)
+		/// <param name="logEvent">The log event to format and output.</param>
+		/// <param name="writer">A <see cref="System.IO.TextWriter"/> to output to.</param>
+		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
+			if (writer == null) throw new ArgumentNullException(nameof(writer));
 
-			var sb = new StringBuilder();
-			sb.AppendLine("Date: " + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
-			sb.AppendLine("Event Name: " + logEvent.EventName);
-			sb.AppendLine("Severity: " + logEvent.EventSeverity.ToString());
-			sb.AppendLine("Event Type: " + logEvent.EventType.ToString());
-			sb.AppendLine("Source: " + logEvent.Source);
-			sb.AppendLine("SourceMethod: " + logEvent.SourceMethod);
+			writer.WriteLine("Date: " + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+			writer.WriteLine("Event Name: " + logEvent.EventName);
+			writer.WriteLine("Severity: " + logEvent.EventSeverity.ToString());
+			writer.WriteLine("Event Type: " + logEvent.EventType.ToString());
+			writer.WriteLine("Source: " + logEvent.Source);
+			writer.WriteLine("SourceMethod: " + logEvent.SourceMethod);
 
 			if (logEvent.Exception != null)
 			{
-				sb.AppendLine("Exception:");
-				sb.AppendLine(logEvent.Exception.ToString());
+				writer.WriteLine("Exception:");
+				writer.WriteLine(logEvent.Exception.ToString());
 			}
 
 			var properties = logEvent.Properties;
 			if (properties != null)
 			{
-				sb.AppendLine("Properties:");
+				writer.WriteLine("Properties:");
 				foreach (var property in properties)
 				{
-					sb.AppendLine(property.Key + ": " + property.Value);
+					writer.WriteLine(property.Key + ": " + property.Value);
 				}
 			}
-
-			return sb.ToString();
 		}
 
 		/// <summary>

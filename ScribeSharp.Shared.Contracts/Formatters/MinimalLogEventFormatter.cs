@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -8,20 +9,29 @@ namespace ScribeSharp.Formatters
 	/// <summary>
 	/// Formats a <see cref="LogEvent"/> to a simple human readable string containing the severity, type and message.
 	/// </summary>
-	public sealed class MinimalLogEventFormatter : ILogEventFormatter
+	public sealed class MinimalLogEventFormatter : LogEventFormatterBase
 	{
 		private static MinimalLogEventFormatter s_DefaultInstance;
 
 		/// <summary>
-		/// Formats the <paramref name="logEvent"/> instance to a simple human readable string.
+		/// Writes the important parts of the log event as a single line containing only the severity, event type and message.
 		/// </summary>
-		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format.</param>
-		/// <returns>A string containing a human readable string of the primary log event properties.</returns>
-		public string Format(LogEvent logEvent)
+		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format and output.</param>
+		/// <param name="writer">The <see cref="System.IO.TextWriter"/> to output to.</param>
+		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
+			if (writer == null) throw new ArgumentNullException(nameof(writer));
 
-			return "[" + logEvent.EventSeverity.ToString() + "] [" + logEvent.EventType.ToString() + "] " + logEvent.EventName;
+			writer.Write("[");
+			writer.Write(logEvent.EventSeverity.ToString());
+			writer.Write("] ");
+
+			writer.Write("[");
+			writer.Write(logEvent.EventType.ToString());
+			writer.Write("] ");
+
+			writer.Write(logEvent.EventName);
 		}
 
 		/// <summary>

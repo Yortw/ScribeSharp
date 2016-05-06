@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace ScribeSharp.Formatters
 {
 	/// <summary>
-	/// Formats a <see cref="LogEvent"/> instance to a json block.
+	/// Formats a <see cref="LogEvent"/> instance to a json object.
 	/// </summary>
-	public sealed class JsonLogEventFormatter : ILogEventFormatter
+	public sealed class JsonLogEventFormatter : LogEventFormatterBase
 	{
 		/// <summary>
-		/// Formats the <paramref name="logEvent"/> provided to a json string.
+		/// Writes the full log event as a Json object.
 		/// </summary>
-		/// <param name="logEvent">A <see cref="LogEvent"/> instance to format.</param>
-		/// <returns>A string containing a json representation of the <see cref="LogEvent"/>.</returns>
-		public string Format(LogEvent logEvent)
+		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format and output.</param>
+		/// <param name="writer">The <see cref="System.IO.TextWriter"/> to output to.</param>
+		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
-			//TODO: Serialise to json.
 			throw new NotImplementedException();
 		}
 	}

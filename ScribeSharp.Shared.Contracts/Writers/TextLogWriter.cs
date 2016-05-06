@@ -56,7 +56,7 @@ namespace ScribeSharp.Writers
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to write.</param>
 		protected override void WriteEventInternal(LogEvent logEvent)
 		{
-			_Writer.Write(_LogEventFormatter.Format(logEvent));
+			_LogEventFormatter.FormatToTextWriter(logEvent, _Writer);
 		}
 
 		#endregion

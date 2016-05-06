@@ -18,6 +18,18 @@ namespace ScribeSharp
 
 		private StringBuilder _StringBuilder;
 		private int _MaxCapacity;
+
+		/// <summary>
+		/// Flushes the text writer and returns the written string.
+		/// </summary>
+		/// <returns>A string containing the contents written since the object was constructed or last reset (closed/disposed).</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+		public string GetText()
+		{
+			this.Flush();
+			return (_StringBuilder ?? (_StringBuilder = this.GetStringBuilder())).ToString();
+		}
+
 		private int _DefaultCapacity;
 
 		#endregion

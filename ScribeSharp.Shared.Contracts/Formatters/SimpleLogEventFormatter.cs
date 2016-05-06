@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -8,57 +9,44 @@ namespace ScribeSharp.Formatters
 	/// <summary>
 	/// Formats a <see cref="LogEvent"/> to a simple human readable string containing the date, severity, event, source, source method and message.
 	/// </summary>
-	public sealed class SimpleLogEventFormatter : ILogEventFormatter
+	public sealed class SimpleLogEventFormatter : LogEventFormatterBase
 	{
 		private static SimpleLogEventFormatter s_DefaultInstance;
 
 		/// <summary>
-		/// Formats the <paramref name="logEvent"/> instance to a simple human readable string.
+		/// Writes the important parts of the log event as a single line, with multiple lines if the message contains line breaks or there is an exception.
 		/// </summary>
-		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format.</param>
-		/// <returns>A string containing a human readable string of the primary log event properties.</returns>
-		public string Format(LogEvent logEvent)
+		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format and output.</param>
+		/// <param name="writer">The <see cref="System.IO.TextWriter"/> to output to.</param>
+		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
+			if (writer == null) throw new ArgumentNullException(nameof(writer));
 
-			var retVal = "[" + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture) + "] [" + logEvent.EventSeverity.ToString() + "] [" + logEvent.EventType.ToString() + "] [" + logEvent.Source + "] [" + logEvent.SourceMethod + "] " + logEvent.EventName;
+			writer.Write("[");
+			writer.Write(logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+			writer.Write("] ");
+
+			writer.Write("[");
+			writer.Write(logEvent.EventSeverity.ToString());
+			writer.Write("] ");
+
+			writer.Write("[");
+			writer.Write(logEvent.EventType.ToString());
+			writer.Write("] ");
+
+			writer.Write("[");
+			writer.Write(logEvent.Source);
+			writer.Write("] ");
+
+			writer.Write("[");
+			writer.Write(logEvent.SourceMethod);
+			writer.Write("] ");
+
+			writer.WriteLine(logEvent.EventName);
+
 			if (logEvent.Exception != null)
-				retVal += Environment.NewLine + logEvent.Exception.ToString();
-
-			return retVal;
-			//var sb = new System.Text.StringBuilder();
-			//sb.Append("[");
-			//sb.Append(logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
-			//sb.Append("] ");
-
-			//sb.Append("[");
-			//sb.Append(logEvent.EventSeverity.ToString());
-			//sb.Append("] ");
-
-			//sb.Append("[");
-			//sb.Append(logEvent.EventType.ToString());
-			//sb.Append("] ");
-
-			//if (!String.IsNullOrEmpty(logEvent.Source))
-			//{
-			//	sb.Append("[");
-			//	sb.Append(logEvent.Source);
-			//	sb.Append("] ");
-			//}
-
-			//if (!String.IsNullOrEmpty(logEvent.SourceMethod))
-			//{
-			//	sb.Append("[");
-			//	sb.Append(logEvent.SourceMethod);
-			//	sb.Append("] ");
-			//}
-
-			//sb.AppendLine(logEvent.EventName);
-
-			//if (logEvent.Exception != null)
-			//	sb.AppendLine(logEvent.Exception.ToString());
-
-			//return sb.ToString();
+				writer.WriteLine(logEvent.Exception.ToString());
 		}
 
 		/// <summary>

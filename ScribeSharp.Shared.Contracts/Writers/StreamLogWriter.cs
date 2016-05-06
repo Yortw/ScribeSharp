@@ -28,7 +28,7 @@ namespace ScribeSharp.Writers
 		/// <param name="encoding">A <see cref="System.Text.Encoding"/> instance used to output the log event data to the stream.</param>
 		/// <param name="eventFormatter">A <see cref="ILogEventFormatter"/> instance used to format the event before writing to the stream. If null then <see cref="SimpleLogEventFormatter.DefaultInstance"/> is used.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="stream"/> is null.</exception>
-		public StreamLogWriter(System.IO.Stream stream, System.Text.Encoding encoding, ILogEventFormatter eventFormatter) 
+		public StreamLogWriter(System.IO.Stream stream, System.Text.Encoding encoding, ILogEventFormatter eventFormatter)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 
@@ -57,7 +57,7 @@ namespace ScribeSharp.Writers
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to write.</param>
 		protected override void WriteEventInternal(LogEvent logEvent)
 		{
-			_Writer.Write(_LogEventFormatter.Format(logEvent));
+			_LogEventFormatter.FormatToTextWriter(logEvent, _Writer);
 		}
 
 		#endregion
@@ -67,7 +67,7 @@ namespace ScribeSharp.Writers
 		/// <summary>
 		/// Disposes the stream written to by this object.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_Writer", Justification="It is disposed, CA just doesn't realise it.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_Writer", Justification = "It is disposed, CA just doesn't realise it.")]
 		public void Dispose()
 		{
 			_Writer?.Dispose();

@@ -47,19 +47,19 @@ namespace ScribeSharp.Writers
 			switch (logEvent.EventSeverity)
 			{
 				case LogEventSeverity.Information:
-					System.Diagnostics.Trace.TraceInformation(_LogEventFormatter.Format(logEvent));
+					System.Diagnostics.Trace.TraceInformation(_LogEventFormatter.FormatToString(logEvent));
 					break;
 
 				case LogEventSeverity.Error:
-					System.Diagnostics.Trace.TraceError(_LogEventFormatter.Format(logEvent));
+					System.Diagnostics.Trace.TraceError(_LogEventFormatter.FormatToString(logEvent));
 					break;
 
 				case LogEventSeverity.Warning:
-					System.Diagnostics.Trace.TraceWarning(_LogEventFormatter.Format(logEvent));
+					System.Diagnostics.Trace.TraceWarning(_LogEventFormatter.FormatToString(logEvent));
 					break;
 
 				default:
-					System.Diagnostics.Trace.TraceWarning(_LogEventFormatter.Format(logEvent), logEvent.EventSeverity.ToString());
+					System.Diagnostics.Trace.TraceWarning(_LogEventFormatter.FormatToString(logEvent), logEvent.EventSeverity.ToString());
 					break;
 			}
 		}

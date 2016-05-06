@@ -55,7 +55,6 @@ namespace ScribeSharp.Tests
 		{
 			var sb = new System.Text.StringBuilder();
 			var writer = new RecyclableStringWriter(sb);
-
 			writer.Dispose();
 
 			writer.Write("Test");
@@ -160,6 +159,23 @@ namespace ScribeSharp.Tests
 			Assert.AreEqual(600, sb.Capacity);
 			Assert.AreEqual(0, sb.Length);
 			Assert.AreEqual(String.Empty, sb.ToString());
+		}
+
+		#endregion
+
+		#region GetText Tests
+
+		[TestMethod]
+		public void RecyclingTextWriter_GetText_ReturnsWrittenText()
+		{
+			var sb = new System.Text.StringBuilder();
+			var writer = new RecyclableStringWriter(sb);
+
+			writer.Write("A test string. ");
+			writer.Write("Some more test text.");
+
+			var actual = writer.GetText();
+			Assert.AreEqual("A test string. Some more test text.", actual);
 		}
 
 		#endregion

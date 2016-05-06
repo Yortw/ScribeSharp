@@ -95,9 +95,14 @@ namespace ScribeSharp.Writers
 
 			string message = null;
 			if (_EventFormatter != null)
-				message = _EventFormatter.Format(logEvent);
+				message = _EventFormatter.FormatToString(logEvent);
 			else
+			{
 				message = logEvent.EventName;
+
+				if (logEvent.Exception != null)
+					message = message += Environment.NewLine + logEvent.Exception.ToString();
+			}
 
 			if (message != null && message.Length > 32000)
 			{

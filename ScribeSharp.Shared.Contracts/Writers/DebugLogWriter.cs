@@ -51,7 +51,8 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
-			System.Diagnostics.Debug.WriteLine(_LogEventFormatter.Format(logEvent), logEvent.EventType.ToString());
+			System.Diagnostics.Debugger.Log(Convert.ToInt32(logEvent.EventSeverity, System.Globalization.CultureInfo.InvariantCulture), logEvent.EventType.ToString(), _LogEventFormatter.FormatToString(logEvent));
+			//System.Diagnostics.Debug.WriteLine(_LogEventFormatter.FormatToString(logEvent), logEvent.EventType.ToString());
 		}
 
 		#endregion

@@ -21,6 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Filters\StandardFirstChanceFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\FullTextLogEventFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formatters\LogEventFormatterBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Globals.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImmutableStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogCallContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\StackTraceLogEntryContextProvider.cs" />

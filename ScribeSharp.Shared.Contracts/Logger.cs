@@ -17,7 +17,6 @@ namespace ScribeSharp
 		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
 		//TODO: Property renderers? JsonRenderer
 		//TODO: Level switch
-		//TODO: Pooled/Recycling text writer?
 		//TODO: Json serialiser
 		//TODO: Logger extension methods?
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?

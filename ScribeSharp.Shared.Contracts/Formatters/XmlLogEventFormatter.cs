@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -10,23 +11,21 @@ namespace ScribeSharp.Formatters
 	/// <summary>
 	/// Formats <see cref="LogEvent"/> instances as XML blocks.
 	/// </summary>
-	public sealed class XmlLogEventFormatter : ILogEventFormatter
+	public sealed class XmlLogEventFormatter : LogEventFormatterBase
 	{
 
 		private static readonly PropertyRenderers.ToStringRenderer _AttributeValueRenderer = new ToStringRenderer();
 
 		/// <summary>
-		/// Returns a string containing an XML version of the <paramref name="logEvent"/> parameter.
+		/// Formats and outputs the log event to the specified writer as an XML node and attributes/child elements.
 		/// </summary>
-		/// <param name="logEvent">The log event to format.</param>
-		/// <returns>A string containing XML.</returns>
-		public string Format(LogEvent logEvent)
+		/// <param name="logEvent">The log event to format and output.</param>
+		/// <param name="writer">A <see cref="System.IO.TextWriter"/> to output to.</param>
+		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
-			var sb = new StringBuilder();
-			using (var writer = System.Xml.XmlWriter.Create(sb, new System.Xml.XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
+			using (var xmlWriter = System.Xml.XmlWriter.Create(writer, new System.Xml.XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
 			{
-				LogEventToXml(logEvent, writer);
-				return sb.ToString();
+				LogEventToXml(logEvent, xmlWriter);
 			}
 		}
 

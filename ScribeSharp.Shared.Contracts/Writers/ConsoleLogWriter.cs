@@ -58,7 +58,7 @@ namespace ScribeSharp.Writers
 			if (_LogEventFormatter != null)
 			{
 				Console.ForegroundColor = GetConsoleColor(logEvent.EventSeverity);
-				writer.Write(_LogEventFormatter.Format(logEvent) + Environment.NewLine);
+				_LogEventFormatter.FormatToTextWriter(logEvent, writer);
 				Console.ResetColor();
 			}
 			else
