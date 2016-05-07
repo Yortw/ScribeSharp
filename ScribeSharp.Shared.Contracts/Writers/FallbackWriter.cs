@@ -151,7 +151,7 @@ namespace ScribeSharp.Writers
 
 		#region Private Methods
 
-		private void WriteToWriter(ILogWriter writer, LogEvent logEvent)
+		private static void WriteToWriter(ILogWriter writer, LogEvent logEvent)
 		{
 			if (writer.RequiresSynchronization)
 			{
@@ -164,7 +164,7 @@ namespace ScribeSharp.Writers
 				writer.Write(logEvent);
 		}
 
-		private void WriteBatchToWriter(IBatchLogWriter writer, IEnumerable<LogEvent> logEvents)
+		private static void WriteBatchToWriter(IBatchLogWriter writer, IEnumerable<LogEvent> logEvents)
 		{
 			if (writer.RequiresSynchronization)
 			{
@@ -177,7 +177,7 @@ namespace ScribeSharp.Writers
 				writer.WriteBatch(logEvents);
 		}
 
-		private void WriteBatchToWriter(IBatchLogWriter writer, LogEvent[] logEvents, int length)
+		private static void WriteBatchToWriter(IBatchLogWriter writer, LogEvent[] logEvents, int length)
 		{
 			if (writer.RequiresSynchronization)
 			{

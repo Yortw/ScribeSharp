@@ -51,7 +51,7 @@ namespace ScribeSharp.Formatters
 			}
 		}
 
-		private void WriteLine(TextWriter writer, string fieldCaption, string value)
+		private static void WriteLine(TextWriter writer, string fieldCaption, string value)
 		{
 			writer.WriteLine(fieldCaption, value);
 		}
