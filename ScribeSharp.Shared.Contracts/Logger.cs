@@ -27,7 +27,6 @@ namespace ScribeSharp
 			//Writers
 
 		//TODO: Writers
-			//TODO: Fallback writer
 			//TODO: Sql writer
 			//TODO: Msmq writer
 			//TODO: Azure event hub writer

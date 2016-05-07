@@ -101,6 +101,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Writers\BatchLogWriterAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ConsoleLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\DebugLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\FallbackWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\FilteringLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ForwardingLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ListLogWriter.cs" />

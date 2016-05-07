@@ -39,4 +39,20 @@ namespace ScribeSharp.Tests
 		}
 
 	}
+
+	public class MockLogWriterWithError : Writers.LogWriterBase
+	{
+		public override bool RequiresSynchronization
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		protected override void WriteEventInternal(LogEvent logEvent)
+		{
+			throw new InvalidOperationException();
+		}
+	}
 }
