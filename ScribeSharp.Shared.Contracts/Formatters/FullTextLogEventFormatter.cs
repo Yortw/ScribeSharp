@@ -23,12 +23,14 @@ namespace ScribeSharp.Formatters
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 			if (writer == null) throw new ArgumentNullException(nameof(writer));
 
-			writer.WriteLine("Date: " + logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
-			writer.WriteLine("Event Name: " + logEvent.EventName);
-			writer.WriteLine("Severity: " + logEvent.EventSeverity.ToString());
-			writer.WriteLine("Event Type: " + logEvent.EventType.ToString());
-			writer.WriteLine("Source: " + logEvent.Source);
-			writer.WriteLine("SourceMethod: " + logEvent.SourceMethod);
+			WriteLine(writer, "Date: ", logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+			WriteLine(writer, "Event Name: ", logEvent.EventName);
+			WriteLine(writer, "Severity: ",logEvent.EventSeverity.ToString());
+			WriteLine(writer, "Event Type: ", logEvent.EventType.ToString());
+			WriteLine(writer, "Source: ", logEvent.Source);
+			WriteLine(writer, "Source Method: ", logEvent.SourceMethod);
+			if (logEvent.SourceLineNumber >= 0)
+				WriteLine(writer, "Source Line: ", logEvent.SourceLineNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
 			if (logEvent.Exception != null)
 			{
@@ -42,9 +44,16 @@ namespace ScribeSharp.Formatters
 				writer.WriteLine("Properties:");
 				foreach (var property in properties)
 				{
-					writer.WriteLine(property.Key + ": " + property.Value);
+					writer.Write(property.Key);
+					writer.Write(": ");
+					writer.Write(property.Value);
 				}
 			}
+		}
+
+		private void WriteLine(TextWriter writer, string fieldCaption, string value)
+		{
+			writer.WriteLine(fieldCaption, value);
 		}
 
 		/// <summary>
