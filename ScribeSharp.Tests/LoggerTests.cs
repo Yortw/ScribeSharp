@@ -205,7 +205,7 @@ namespace ScribeSharp.Tests
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
 			Assert.AreEqual(1, list[0].Properties.Count);
-			Assert.AreEqual(DateTime.MinValue.ToString("G", System.Globalization.CultureInfo.InvariantCulture), list[0].Properties["Test Converted Prop"].ToString());
+			Assert.AreEqual(DateTime.MinValue.ToString("G"), list[0].Properties["Test Converted Prop"].ToString());
 			Assert.IsTrue(list[0].Properties["Test Converted Prop"] is string);
 		}
 

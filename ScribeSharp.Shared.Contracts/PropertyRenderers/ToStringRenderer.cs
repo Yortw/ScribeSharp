@@ -25,7 +25,7 @@ namespace ScribeSharp.PropertyRenderers
 		/// </summary>
 		/// <param name="formatString">A string to pass to the ToString method to control the format of the output string.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "string")]
-		public ToStringRenderer(string formatString) : this(formatString, System.Globalization.CultureInfo.InvariantCulture)
+		public ToStringRenderer(string formatString) : this(formatString, null)
 		{
 		}
 

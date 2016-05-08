@@ -18,7 +18,6 @@ namespace ScribeSharp
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
 
 		//TODO: Tests
-			// Renderers
 			// Context providers
 
 		//TODO: Writers
