@@ -16,6 +16,8 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FilteringLogWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void FilteredWriter_Constructor_ThrowsOnNullFilter()
 		{
@@ -25,6 +27,8 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FilteringLogWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void FilteredWriter_Constructor_ThrowsOnNullLogWriter()
 		{
@@ -38,6 +42,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FilteringLogWriter")]
+		[TestCategory("Writers")]
 		public void FilteredWriter_WriteEvent_DoesNotWriteEventWhenFilterFails()
 		{
 			var mockWriter = new MockLogWriter();
@@ -49,6 +54,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FilteringLogWriter")]
+		[TestCategory("Writers")]
 		public void FilteredWriter_WriteEvent_WritesEventWhenFilterPasses()
 		{
 			var mockWriter = new MockLogWriter();

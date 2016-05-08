@@ -14,7 +14,6 @@ namespace ScribeSharp
 	/// </summary>
 	public class Logger : ILogger, IDisposable
 	{
-		//TODO: concurrent bag in pool possibly creating more allocations than it saves?
 		//TODO: Logger extension methods?
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
 
@@ -22,7 +21,7 @@ namespace ScribeSharp
 			// Renderers
 			// Formatters
 			// Context providers
-			//Writers
+			// Writers
 
 		//TODO: Writers
 			//TODO: Sql writer

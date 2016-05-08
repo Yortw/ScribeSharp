@@ -22,6 +22,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("ApiQualityTests")]
 		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Constructor_ThrowsOnNullStringBuilder()
 		{
@@ -198,6 +199,8 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("RecyclingTextWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(ObjectDisposedException))]
 		public void RecyclingTextWriter_ForceDispose_ReallyDisposes()
 		{

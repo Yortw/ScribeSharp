@@ -14,6 +14,8 @@ namespace ScribeSharp.Tests
 		
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void AsyncQueueLogWriterTests_Constructor_ThrowsOnNullChildren()
 		{
@@ -22,6 +24,8 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void AsyncQueueLogWriterTests_Constructor_ThrowsOnInvalidBatchSize()
 		{
@@ -30,6 +34,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("Writers")]
 		public void AsyncQueueLogWriterTests_WriteEvent_WritesToChild()
 		{
 			var events = new List<LogEvent>(10);
@@ -44,6 +49,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("Writers")]
 		public void AggregateLogWriter_WriteEvent_WritesToChildOnBatchSizeReached()
 		{
 			var events = new List<LogEvent>(10);
@@ -71,6 +77,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("Writers")]
 		public void AggregateLogWriter_WriteEvent_WritesAfterTimeoutIfBatchSizeNotReached()
 		{
 			var events = new List<LogEvent>(10);
@@ -94,6 +101,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("Writers")]
 		public void AggregateLogWriter_WriteEvent_FlushesOnDispose()
 		{
 			var events = new List<LogEvent>(10);
@@ -115,6 +123,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("Writers")]
 		public void AggregateLogWriter_RequiresSynchronisation_IsTrueIfChildRequires()
 		{
 			var child = new MockLogWriter();
@@ -126,6 +135,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
+		[TestCategory("Writers")]
 		public void AggregateLogWriter_RequiresSynchronisation_IsFalseIfChildDoesNotRequires()
 		{
 			var child = new MockLogWriter();

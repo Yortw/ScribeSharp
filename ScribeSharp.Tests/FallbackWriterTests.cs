@@ -17,6 +17,8 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		[ExpectedException(typeof(System.ArgumentNullException))]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		public void FallbackWriter_Constructor_ThrowsOnNullPrimaryWriter()
 		{
 			var secondaryList = new List<LogEvent>();
@@ -28,6 +30,8 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		[ExpectedException(typeof(System.ArgumentNullException))]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("Writers")]
 		public void FallbackWriter_Constructor_ThrowsOnNullSecondaryWriter()
 		{
 			var primaryList = new List<LogEvent>();
@@ -38,6 +42,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("Writers")]
 		public void FallbackWriter_Constructor_ConstructsOkWithValidWriters()
 		{
 			var primaryList = new List<LogEvent>();
@@ -54,6 +59,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("Writers")]
 		public void FallbackWriter_Write_WritesToPrimaryWriter()
 		{
 			var primaryList = new List<LogEvent>();
@@ -76,6 +82,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("Writers")]
 		public void FallbackWriter_Write_FallsbackToSecondaryWriter()
 		{
 			var primaryWriter = new MockLogWriterWithError();
@@ -96,6 +103,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(LogWriterException))]
 		public void FallbackWriter_Write_RethrowsOnSecondaryError()
 		{
@@ -116,6 +124,7 @@ namespace ScribeSharp.Tests
 		#region Write Batch Tests
 
 		[TestMethod]
+		[TestCategory("Writers")]
 		[TestCategory("FallbackWriter")]
 		public void FallbackWriter_WriteBatch_WritesToPrimaryWriter()
 		{
@@ -146,6 +155,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("Writers")]
 		public void FallbackWriter_WriteBatch_FallsbackToSecondaryWriter()
 		{
 			var primaryWriter = new MockLogWriterWithError();
@@ -173,6 +183,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FallbackWriter")]
+		[TestCategory("Writers")]
 		[ExpectedException(typeof(LogWriterException))]
 		public void FallbackWriter_WriteBatch_RethrowsOnSecondaryError()
 		{

@@ -42,6 +42,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsEventName()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -56,6 +57,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsSource()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -71,6 +73,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsSourceMethod()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -87,6 +90,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsSourceLineNumber()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -104,6 +108,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsDateTime()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -122,6 +127,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsSeverity()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -141,6 +147,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsType()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -161,6 +168,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_ContainsCustomProperties()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
@@ -183,6 +191,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
 		public void FullTextFormatter_FormatToString_UsesExceptionFormatter()
 		{
 			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));

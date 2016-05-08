@@ -39,8 +39,8 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PoolSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PoolSharp.1.0.0\lib\net40\PoolSharp.dll</HintPath>
+    <Reference Include="PoolSharp, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PoolSharp.2.0.0\lib\net40\PoolSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

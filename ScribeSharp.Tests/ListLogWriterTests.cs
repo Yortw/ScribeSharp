@@ -14,6 +14,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("ListLogWriter")]
+		[TestCategory("Writers")]
 		public void ListLogWriter_Write_WritesToList()
 		{
 			var list = new List<LogEvent>(10);
@@ -28,6 +29,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("ListLogWriter")]
+		[TestCategory("Writers")]
 		public void ListLogWriter_Write_EnforcesCapacity()
 		{
 			var list = new List<LogEvent>(5);
@@ -44,7 +46,9 @@ namespace ScribeSharp.Tests
 		}
 
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("ApiQualityTests")]
 		[TestCategory("ListLogWriter")]
+		[TestCategory("Writers")]
 		[TestMethod]
 		public void ListLogWriter_Constructor_ThrowsOnNullList()
 		{
@@ -52,7 +56,9 @@ namespace ScribeSharp.Tests
 		}
 
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[TestCategory("ApiQualityTests")]
 		[TestCategory("ListLogWriter")]
+		[TestCategory("Writers")]
 		[TestMethod]
 		public void ListLogWriter_Constructor_ThrowsOnInvalidCapacity()
 		{

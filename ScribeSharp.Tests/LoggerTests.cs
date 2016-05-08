@@ -14,6 +14,7 @@ namespace ScribeSharp.Tests
 
 		[TestCategory("Logger")]
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("ApiQualityTests")]
 		[TestMethod]
 		public void Logger_Constructor_ThrowsOnNullPolicy()
 		{
@@ -22,6 +23,7 @@ namespace ScribeSharp.Tests
 
 		[TestCategory("Logger")]
 		[ExpectedException(typeof(ArgumentException))]
+		[TestCategory("ApiQualityTests")]
 		[TestMethod]
 		public void Logger_Constructor_ThrowsOnNullWriter()
 		{
@@ -102,6 +104,7 @@ namespace ScribeSharp.Tests
 
 		[TestCategory("Logger")]
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("ApiQualityTests")]
 		[TestMethod]
 		public void Logger_WriteEvent_ThrowsOnNullLogEvent()
 		{
@@ -305,6 +308,7 @@ namespace ScribeSharp.Tests
 
 		[TestCategory("Logger")]
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("ApiQualityTests")]
 		[TestMethod]
 		public void Logger_WriteEventWithSource_ThrowsOnNullLogEvent()
 		{
@@ -508,6 +512,7 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[TestCategory("Logger")]
+		[TestCategory("ApiQualityTests")]
 		[ExpectedException(typeof(System.ArgumentNullException))]
 		public void Logger_ExecuteLoggedJob_ThrowsOnNullJob()
 		{
