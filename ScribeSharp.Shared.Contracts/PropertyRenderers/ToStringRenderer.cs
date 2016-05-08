@@ -8,7 +8,7 @@ namespace ScribeSharp.PropertyRenderers
 	/// <summary>
 	/// Renders an object by calling it's ToString method.
 	/// </summary>
-	public class ToStringRenderer : IPropertyRenderer
+	public sealed class ToStringRenderer : IPropertyRenderer
 	{
 		private string _FormatString;
 		private System.IFormatProvider _FormatProvider;

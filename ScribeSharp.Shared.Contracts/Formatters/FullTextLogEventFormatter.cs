@@ -14,6 +14,21 @@ namespace ScribeSharp.Formatters
 		private static FullTextLogEventFormatter s_DefaultInstance;
 
 		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public FullTextLogEventFormatter() : base()
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="exceptionRenderers">An <see cref="ITypeRendererMap"/> implementation used to locate renders used to format exceptions written to the log.</param>
+		public FullTextLogEventFormatter(ITypeRendererMap exceptionRenderers) : base(exceptionRenderers)
+		{
+		}
+
+		/// <summary>
 		/// Formats and outputs the log event to the specified writer as a series of human readable lines of text, with a blank line at the end.
 		/// </summary>
 		/// <param name="logEvent">The log event to format and output.</param>
@@ -33,9 +48,9 @@ namespace ScribeSharp.Formatters
 				WriteLine(writer, "Source Line: ", logEvent.SourceLineNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
 			if (logEvent.Exception != null)
-			{
+			{			
 				writer.WriteLine("Exception:");
-				writer.WriteLine(logEvent.Exception.ToString());
+				writer.WriteLine(RenderException(logEvent.Exception));
 			}
 
 			var properties = logEvent.Properties;
@@ -53,7 +68,8 @@ namespace ScribeSharp.Formatters
 
 		private static void WriteLine(TextWriter writer, string fieldCaption, string value)
 		{
-			writer.WriteLine(fieldCaption, value);
+			writer.Write(fieldCaption);
+			writer.WriteLine(value);
 		}
 
 		/// <summary>

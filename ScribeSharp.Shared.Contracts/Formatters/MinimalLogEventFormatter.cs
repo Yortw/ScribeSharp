@@ -14,6 +14,13 @@ namespace ScribeSharp.Formatters
 		private static MinimalLogEventFormatter s_DefaultInstance;
 
 		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public MinimalLogEventFormatter() : base()
+		{
+		}
+
+		/// <summary>
 		/// Writes the important parts of the log event as a single line containing only the severity, event type and message.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format and output.</param>

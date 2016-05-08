@@ -8,7 +8,7 @@ namespace ScribeSharp.PropertyRenderers
 	/// <summary>
 	/// Renders an exception to a string containing an XML node.
 	/// </summary>
-	public class ExceptionAsXmlRenderer : IPropertyRenderer
+	public sealed class ExceptionAsXmlRenderer : IPropertyRenderer
 	{
 		/// <summary>
 		/// Returns a string containing an XML representation of the provided an exception.

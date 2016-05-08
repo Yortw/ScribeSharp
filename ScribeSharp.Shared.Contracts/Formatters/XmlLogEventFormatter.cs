@@ -17,6 +17,21 @@ namespace ScribeSharp.Formatters
 		private static readonly PropertyRenderers.ToStringRenderer _AttributeValueRenderer = new ToStringRenderer();
 
 		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public XmlLogEventFormatter() : base()
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="exceptionRenderers">An <see cref="ITypeRendererMap"/> implementation used to locate renders used to format exceptions written to the log.</param>
+		public XmlLogEventFormatter(ITypeRendererMap exceptionRenderers) : base(exceptionRenderers)
+		{
+		}
+
+		/// <summary>
 		/// Formats and outputs the log event to the specified writer as an XML node and attributes/child elements.
 		/// </summary>
 		/// <param name="logEvent">The log event to format and output.</param>
@@ -29,7 +44,7 @@ namespace ScribeSharp.Formatters
 			}
 		}
 
-		private static void LogEventToXml(LogEvent logEvent, XmlWriter writer)
+		private void LogEventToXml(LogEvent logEvent, XmlWriter writer)
 		{
 			writer.WriteStartElement("LogEvent");
 
@@ -47,7 +62,12 @@ namespace ScribeSharp.Formatters
 				WriteAttributeIfValueNotNull(writer, "SourceLineNumber", logEvent.SourceLineNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
 			if (logEvent.Exception != null)
-				writer.WriteRaw(logEvent.Exception.ToXml());
+			{
+				if (!HasExceptionRenderers)
+					writer.WriteValue(RenderException(logEvent.Exception));
+				else
+					writer.WriteRaw(logEvent.Exception.ToXml());
+			}
 
 			var properties = logEvent.Properties;
 			if (properties != null)

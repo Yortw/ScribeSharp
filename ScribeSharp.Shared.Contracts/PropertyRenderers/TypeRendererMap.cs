@@ -7,7 +7,7 @@ namespace ScribeSharp.PropertyRenderers
 	/// <summary>
 	/// Provides an efficient, cached map of types to renders.
 	/// </summary>
-	public class TypeRendererMap : IMutableTypeRendererMap
+	public sealed class TypeRendererMap : IMutableTypeRendererMap
 	{
 
 		private System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer> _KnownRenderers;

@@ -8,7 +8,7 @@ namespace ScribeSharp.PropertyRenderers
 	/// <summary>
 	/// Formats a property value as a Json string.
 	/// </summary>
-	public class JsonPropertyRenderer : IPropertyRenderer
+	public sealed class JsonPropertyRenderer : IPropertyRenderer
 	{
 		private JsonSerializer _Serialiser = new JsonSerializer();
 

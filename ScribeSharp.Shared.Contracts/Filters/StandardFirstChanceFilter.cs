@@ -8,7 +8,7 @@ namespace ScribeSharp.Filters
 	/// <summary>
 	/// A simple <see cref="IFirstChanceLogFilter"/> implementation that can filter based on minimum event severity and an optional list of event types.
 	/// </summary>
-	public class StandardFirstChanceFilter : IFirstChanceLogFilter
+	public sealed class StandardFirstChanceFilter : IFirstChanceLogFilter
 	{
 
 		#region Fields

@@ -7,7 +7,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// A batched log writer used to wrap another log writer that does not support batching, for convenience rather than performance.
 	/// </summary>
-	public class BatchLogWriterAdapter : IBatchLogWriter
+	public sealed class BatchLogWriterAdapter : IBatchLogWriter
 	{
 
 		private ILogWriter _LogWriter;

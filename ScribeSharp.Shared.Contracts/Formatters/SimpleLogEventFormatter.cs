@@ -13,6 +13,22 @@ namespace ScribeSharp.Formatters
 	{
 		private static SimpleLogEventFormatter s_DefaultInstance;
 
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public SimpleLogEventFormatter() : base()
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="exceptionRenderers">An <see cref="ITypeRendererMap"/> implementation used to locate renders used to format exceptions written to the log.</param>
+		public SimpleLogEventFormatter(ITypeRendererMap exceptionRenderers) : base(exceptionRenderers)
+		{
+		}
+
 		/// <summary>
 		/// Writes the important parts of the log event as a single line, with multiple lines if the message contains line breaks or there is an exception.
 		/// </summary>
@@ -23,30 +39,16 @@ namespace ScribeSharp.Formatters
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 			if (writer == null) throw new ArgumentNullException(nameof(writer));
 
-			writer.Write("[");
-			writer.Write(logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
-			writer.Write("] ");
-
-			writer.Write("[");
-			writer.Write(logEvent.EventSeverity.ToString());
-			writer.Write("] ");
-
-			writer.Write("[");
-			writer.Write(logEvent.EventType.ToString());
-			writer.Write("] ");
-
-			writer.Write("[");
-			writer.Write(logEvent.Source);
-			writer.Write("] ");
-
-			writer.Write("[");
-			writer.Write(logEvent.SourceMethod);
-			writer.Write("] ");
+			WriteBracketedValue(writer, logEvent.DateTime.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+			WriteBracketedValue(writer, logEvent.EventSeverity.ToString());
+			WriteBracketedValue(writer, logEvent.EventType.ToString());
+			WriteBracketedValue(writer, logEvent.Source);
+			WriteBracketedValue(writer, logEvent.SourceMethod);
 
 			writer.WriteLine(logEvent.EventName);
 
 			if (logEvent.Exception != null)
-				writer.WriteLine(logEvent.Exception.ToString());
+				writer.WriteLine(RenderException(logEvent.Exception));
 		}
 
 		/// <summary>
@@ -55,6 +57,13 @@ namespace ScribeSharp.Formatters
 		public static SimpleLogEventFormatter DefaultInstance
 		{
 			get { return s_DefaultInstance ?? (s_DefaultInstance = new SimpleLogEventFormatter()); }
+		}
+
+		private static void WriteBracketedValue(TextWriter writer, string value)
+		{
+			writer.Write("[");
+			writer.Write(value);
+			writer.Write("] ");
 		}
 	}
 }

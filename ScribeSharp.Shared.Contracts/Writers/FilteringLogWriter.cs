@@ -8,7 +8,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// A log writer that filters events before passing them on.
 	/// </summary>
-	public class FilteringLogWriter : IBatchLogWriter
+	public sealed class FilteringLogWriter : IBatchLogWriter
 	{
 
 		private readonly ILogEventFilter _Filter;

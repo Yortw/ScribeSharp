@@ -15,6 +15,13 @@ namespace ScribeSharp.Formatters
 		private JsonSerializer _Serialiser = new JsonSerializer();
 
 		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public JsonLogEventFormatter() : base()
+		{
+		}
+
+		/// <summary>
 		/// Writes the full log event as a Json object.
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance to format and output.</param>

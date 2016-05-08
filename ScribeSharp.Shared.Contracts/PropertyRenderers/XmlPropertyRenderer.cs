@@ -7,7 +7,7 @@ namespace ScribeSharp.PropertyRenderers
 	/// <summary>
 	/// Renders a type as an XML string.
 	/// </summary>
-  public class XmlPropertyRenderer : IPropertyRenderer
+  public sealed class XmlPropertyRenderer : IPropertyRenderer
 	{
 		private System.Xml.Serialization.XmlSerializer _Serialiser;
 
