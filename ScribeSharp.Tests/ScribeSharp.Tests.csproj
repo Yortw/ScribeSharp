@@ -65,6 +65,7 @@
     <Compile Include="BatchLogWriterAdapterTests.cs" />
     <Compile Include="FallbackWriterTests.cs" />
     <Compile Include="FilteringWriterTests.cs" />
+    <Compile Include="ForwardingWriterTests.cs" />
     <Compile Include="FullTextFormatterTests.cs" />
     <Compile Include="ListLogWriterTests.cs" />
     <Compile Include="LogCallContextTests.cs" />
@@ -73,10 +74,12 @@
     <Compile Include="RecyclingTextWriterTests.cs" />
     <Compile Include="RethrowErrorHandlerTests.cs" />
     <Compile Include="StandardFirstChanceFilterTests.cs" />
+    <Compile Include="StreamLogWriterTests.cs" />
     <Compile Include="SuppressingErrorHandlerTests.cs" />
     <Compile Include="MockLogClock.cs" />
     <Compile Include="MockLogWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextLogWriterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

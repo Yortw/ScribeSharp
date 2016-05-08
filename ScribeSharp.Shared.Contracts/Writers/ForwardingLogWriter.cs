@@ -37,13 +37,13 @@ namespace ScribeSharp.Writers
 		#region Overrides
 
 		/// <summary>
-		/// Returns true.
+		/// Returns false.
 		/// </summary>
 		public override bool RequiresSynchronization
 		{
 			get
 			{
-				return true;
+				return false;
 			}
 		}
 

@@ -49,6 +49,8 @@ namespace ScribeSharp.Formatters
 
 			if (logEvent.Exception != null)
 				writer.WriteLine(RenderException(logEvent.Exception));
+
+			writer.Flush();
 		}
 
 		/// <summary>

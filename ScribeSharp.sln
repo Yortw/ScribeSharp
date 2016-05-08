@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScribeSharp.TestApplication
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScribeSharp.Bait", "ScribeSharp.Bait\ScribeSharp.Bait.csproj", "{5C3F0A3B-8E73-4281-8FFA-B2BDFF00CF8F}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ScribeSharp.Shared.Contracts", "ScribeSharp.Shared.Contracts\ScribeSharp.Shared.Contracts.shproj", "{6C583A51-A8EF-459B-A8C7-D2C95F152F48}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ScribeSharp.Shared", "ScribeSharp.Shared.Contracts\ScribeSharp.Shared.shproj", "{6C583A51-A8EF-459B-A8C7-D2C95F152F48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScribeSharp.Net40", "ScribeSharp.Net40\ScribeSharp.Net40.csproj", "{4B162FD7-6CDA-40C3-BD38-6D7FD225F669}"
 EndProject

@@ -64,6 +64,8 @@ namespace ScribeSharp.Formatters
 					writer.Write(property.Value);
 				}
 			}
+
+			writer.Flush();
 		}
 
 		private static void WriteLine(TextWriter writer, string fieldCaption, string value)

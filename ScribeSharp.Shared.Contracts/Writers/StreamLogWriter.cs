@@ -9,7 +9,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// A log writer used to output log events to a <see cref="System.IO.Stream"/>.
 	/// </summary>
-	public sealed class StreamLogWriter : LogWriterBase, IDisposable
+	public sealed class StreamLogWriter : LogWriterBase, IDisposable, IBatchLogWriter
 	{
 
 		#region Fields
@@ -58,6 +58,42 @@ namespace ScribeSharp.Writers
 		protected override void WriteEventInternal(LogEvent logEvent)
 		{
 			_LogEventFormatter.FormatToTextWriter(logEvent, _Writer);
+			_Writer.Flush();
+		}
+
+		#endregion
+
+		#region IBatchLogWriter Members
+
+		/// <summary>
+		/// Writes multiple events to the stream and calls flush once when the batch is finished.
+		/// </summary>
+		/// <param name="logEvents">A enumerable set of <see cref="LogEvent"/> instances to write.</param>
+		public void WriteBatch(IEnumerable<LogEvent> logEvents)
+		{
+			if (logEvents == null) return;
+
+			foreach (var logEvent in logEvents)
+			{
+				_LogEventFormatter.FormatToTextWriter(logEvent, _Writer);
+			}
+			_Writer.Flush();
+		}
+
+		/// <summary>
+		/// Writes multiple events to the stream and calls flush once when the batch is finished.
+		/// </summary>
+		/// <param name="logEvents">An array of <see cref="LogEvent"/> instances to be written.</param>
+		/// <param name="length">The number of items (starting from index 0) in the array to write.</param>
+		public void WriteBatch(LogEvent[] logEvents, int length)
+		{
+			if (logEvents == null) return;
+
+			for (int cnt = 0; cnt < length; cnt++)
+			{
+				_LogEventFormatter.FormatToTextWriter(logEvents[cnt], _Writer);
+			}
+			_Writer.Flush();
 		}
 
 		#endregion

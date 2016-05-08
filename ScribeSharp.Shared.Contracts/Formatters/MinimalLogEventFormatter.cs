@@ -39,6 +39,8 @@ namespace ScribeSharp.Formatters
 			writer.Write("] ");
 
 			writer.Write(logEvent.EventName);
+
+			writer.Flush();
 		}
 
 		/// <summary>
