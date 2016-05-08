@@ -67,6 +67,7 @@
     <Compile Include="FullTextFormatterTests.cs" />
     <Compile Include="ListLogWriterTests.cs" />
     <Compile Include="LogCallContextTests.cs" />
+    <Compile Include="LogEventSeveritySwitchTest.cs" />
     <Compile Include="LoggerTests.cs" />
     <Compile Include="RecyclingTextWriterTests.cs" />
     <Compile Include="RethrowErrorHandlerTests.cs" />

@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IBatchLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IFirstChanceLogFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ILogEventSeveritySwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IMutableTypeRendererMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\ITypeRendererMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogEvent.cs" />
@@ -25,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogWriterException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogEventSeveritySwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Filters\StandardFirstChanceFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\FullTextLogEventFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatters\LogEventFormatterBase.cs" />

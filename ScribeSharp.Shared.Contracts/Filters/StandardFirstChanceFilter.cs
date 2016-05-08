@@ -13,6 +13,7 @@ namespace ScribeSharp.Filters
 
 		#region Fields
 
+		private ILogEventSeveritySwitch _SeveritySwitch;
 		private LogEventSeverity _MinimumSeverity;
 		private LogEventType[] _AllowedEventTypes;
 
@@ -23,11 +24,11 @@ namespace ScribeSharp.Filters
 		/// <summary>
 		/// Full constructor.
 		/// </summary>
-		/// <param name="minimumSeverity">The minimum severity of events to log.</param>
+		/// <param name="severitySwitch">An <see cref="ILogEventSeveritySwitch"/> implementation used to filter events based on their severity.</param>
 		/// <param name="allowedEventTypes">Null to avoid filtering on event type, or else an enumerable set of event types that will pass the filter.</param>
-		public StandardFirstChanceFilter(LogEventSeverity minimumSeverity, IEnumerable<LogEventType> allowedEventTypes)
+		public StandardFirstChanceFilter(ILogEventSeveritySwitch severitySwitch, IEnumerable<LogEventType> allowedEventTypes)
 		{
-			_MinimumSeverity = minimumSeverity;
+			_SeveritySwitch = severitySwitch;
 			_AllowedEventTypes = allowedEventTypes?.ToArray();
 		}
 
@@ -42,7 +43,7 @@ namespace ScribeSharp.Filters
 		/// <returns>A boolean, true if the event should be logged, else false.</returns>
 		public bool ShouldLog(string message, LogEventSeverity eventSeverity, LogEventType eventType, string source, string sourceMethod)
 		{
-			return eventSeverity >= _MinimumSeverity
+			return (_SeveritySwitch?.IsAllowed(eventSeverity) ?? true)
 				&& IsEventTypeAllowed(eventType);
 		}
 

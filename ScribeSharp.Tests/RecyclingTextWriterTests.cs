@@ -14,6 +14,7 @@ namespace ScribeSharp.Tests
 		#region Constructors
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Constructor_ConstructsOk()
 		{
 			var writer = new RecyclableStringWriter();
@@ -21,18 +22,21 @@ namespace ScribeSharp.Tests
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Constructor_ThrowsOnNullStringBuilder()
 		{
 			var writer = new RecyclableStringWriter((StringBuilder)null);
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Constructor_AllowsNullFormatProvider()
 		{
 			var writer = new RecyclableStringWriter((IFormatProvider)null);
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Constructor_ConstructsOkWithStringBuilderAndFormatProvider()
 		{
 			var sb = new StringBuilder();
@@ -40,6 +44,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Constructor_FullConstructorConstructsOk()
 		{
 			var sb = new StringBuilder();
@@ -51,6 +56,7 @@ namespace ScribeSharp.Tests
 		#region Dispose Tests
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Dispose_DoesNotDisposeInstance()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -61,6 +67,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Dispose_ResetsStringBuilder()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -76,6 +83,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Dispose_SetsCapacityWhenOverSize()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -90,6 +98,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Dispose_DoesNotSetCapacityWhenUnderMaxSize()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -108,6 +117,7 @@ namespace ScribeSharp.Tests
 		#region Close Tests
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Close_DoesNotCloseInstance()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -119,6 +129,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Close_ResetsStringBuilder()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -134,6 +145,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Close_SetsCapacityWhenOverSize()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -148,6 +160,7 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_Close_DoesNotSetCapacityWhenUnderMaxSize()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -166,6 +179,7 @@ namespace ScribeSharp.Tests
 		#region GetText Tests
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		public void RecyclingTextWriter_GetText_ReturnsWrittenText()
 		{
 			var sb = new System.Text.StringBuilder();
@@ -183,6 +197,7 @@ namespace ScribeSharp.Tests
 		#region Force Dispose Tests
 
 		[TestMethod]
+		[TestCategory("RecyclingTextWriter")]
 		[ExpectedException(typeof(ObjectDisposedException))]
 		public void RecyclingTextWriter_ForceDispose_ReallyDisposes()
 		{

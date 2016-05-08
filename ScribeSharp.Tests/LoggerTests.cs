@@ -170,7 +170,7 @@ namespace ScribeSharp.Tests
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, null);
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), null);
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
 			logger.WriteEvent("Log Verbose", eventSeverity: LogEventSeverity.Verbose);

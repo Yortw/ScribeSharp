@@ -10,15 +10,16 @@ namespace ScribeSharp.Filters
 	/// </summary>
 	public sealed class MinimumLogSeverityFilter : ILogEventFilter
 	{
-		private LogEventSeverity _MinimumSeverity;
+		private ILogEventSeveritySwitch _SeveritySwitch;
 
 		/// <summary>
 		/// Full constructor.
 		/// </summary>
-		/// <param name="minimumSeverity">A value from the <see cref="LogEventSeverity"/> enum that specifies the lowest severity of event to log.</param>
-		public MinimumLogSeverityFilter(LogEventSeverity minimumSeverity)
+		/// <param name="severitySwitch">An <see cref="ILogEventSeveritySwitch"/> implementation used to provide and check the minimum allowed event severity.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="severitySwitch"/> is null.</exception>
+		public MinimumLogSeverityFilter(ILogEventSeveritySwitch severitySwitch)
 		{
-			_MinimumSeverity = minimumSeverity;
+			_SeveritySwitch = severitySwitch;
 		}
 
 		/// <summary>
@@ -28,12 +29,12 @@ namespace ScribeSharp.Filters
 		{
 			get
 			{
-				return _MinimumSeverity;
+				return _SeveritySwitch.MinimumSeverity;
 			}
 
 			set
 			{
-				_MinimumSeverity = value;
+				_SeveritySwitch.MinimumSeverity = value;
 			}
 		}
 
@@ -46,7 +47,7 @@ namespace ScribeSharp.Filters
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
-			return logEvent.EventSeverity >= _MinimumSeverity;
+			return _SeveritySwitch.IsAllowed(logEvent.EventSeverity);
 		}
 	}
 }

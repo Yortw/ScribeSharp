@@ -15,33 +15,36 @@ namespace ScribeSharp.Tests
 		#region MinimumSeverity Tests
 
 		[TestMethod]
+		[TestCategory("StandardFirstChanceFilter")]
 		public void StandardFirstChanceFilter_MinimumSeverity_PassesMinimumSeverity()
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, null);
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), null);
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
 			Assert.AreEqual(1, list.Count);
 		}
 
 		[TestMethod]
+		[TestCategory("StandardFirstChanceFilter")]
 		public void StandardFirstChanceFilter_MinimumSeverity_FiltersLowerSeverity()
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, null);
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), null);
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Verbose", eventSeverity: LogEventSeverity.Verbose);
 			Assert.AreEqual(0, list.Count);
 		}
 
 		[TestMethod]
+		[TestCategory("StandardFirstChanceFilter")]
 		public void StandardFirstChanceFilter_MinimumSeverity_PassesGreaterSeverity()
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, null);
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), null);
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Warning", eventSeverity: LogEventSeverity.Warning);
 			Assert.AreEqual(1, list.Count);
@@ -52,11 +55,12 @@ namespace ScribeSharp.Tests
 		#region MinimumSeverity Tests
 
 		[TestMethod]
+		[TestCategory("StandardFirstChanceFilter")]
 		public void StandardFirstChanceFilter_AllowedEventTypes_PassesAnyEventTypeOnNullList()
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, null);
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), null);
 
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information, eventType: LogEventType.ApplicationEvent);
@@ -77,11 +81,12 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("StandardFirstChanceFilter")]
 		public void StandardFirstChanceFilter_AllowedEventTypes_PassesOnlyEventTypesInlist()
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, new LogEventType[] { LogEventType.Performance });
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), new LogEventType[] { LogEventType.Performance });
 
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information, eventType: LogEventType.Performance);
@@ -90,11 +95,12 @@ namespace ScribeSharp.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("StandardFirstChanceFilter")]
 		public void StandardFirstChanceFilter_AllowedEventTypes_FiltersEventTypesNotInlist()
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(LogEventSeverity.Information, new LogEventType[] { LogEventType.Performance });
+			policy.FirstChanceFilter = new Filters.StandardFirstChanceFilter(new LogEventSeveritySwitch(LogEventSeverity.Information), new LogEventType[] { LogEventType.Performance });
 
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information, eventType: LogEventType.ScheduledEvent);
