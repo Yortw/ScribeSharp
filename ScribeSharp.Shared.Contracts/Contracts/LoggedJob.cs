@@ -59,9 +59,9 @@ namespace ScribeSharp
 				{
 					var list = new List<ILogEventContextProvider>(2);
 					if (!String.IsNullOrWhiteSpace(Properties.Resources.JobNamePropertyName))
-						list.Add(new ContextProviders.FixedValueLogEntryContextProvider(Properties.Resources.JobNamePropertyName, _JobName));
+						list.Add(new ContextProviders.FixedValueLogEventContextProvider(Properties.Resources.JobNamePropertyName, _JobName));
 					if (!String.IsNullOrWhiteSpace(Properties.Resources.JobNamePropertyName))
-						list.Add(new ContextProviders.FixedValueLogEntryContextProvider(Properties.Resources.JobIdPropertyName, _JobId));
+						list.Add(new ContextProviders.FixedValueLogEventContextProvider(Properties.Resources.JobIdPropertyName, _JobId));
 
 					_JobLogger = _Logger.CreateChildLogger(new LogPolicy()
 					{

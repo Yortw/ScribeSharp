@@ -186,7 +186,7 @@ namespace ScribeSharp.Tests
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.FixedValueLogEntryContextProvider("Test Prop", "Test Prop Value") };
+			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.FixedValueLogEventContextProvider("Test Prop", "Test Prop Value") };
 			var logger = new Logger(policy);
 			logger.WriteEvent("Log Info", eventSeverity: LogEventSeverity.Information);
 			Assert.AreEqual(1, list[0].Properties.Count);
@@ -199,7 +199,7 @@ namespace ScribeSharp.Tests
 		{
 			var list = new List<LogEvent>();
 			var policy = GetSimpleListPolicy(list);
-			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.FixedValueLogEntryContextProvider("Test Converted Prop", DateTime.MinValue) };
+			policy.ContextProviders = new ILogEventContextProvider[] { new ContextProviders.FixedValueLogEventContextProvider("Test Converted Prop", DateTime.MinValue) };
 			policy.TypeRendererMap = new PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(DateTime), new PropertyRenderers.ToStringRenderer("G")));
 
 			var logger = new Logger(policy);

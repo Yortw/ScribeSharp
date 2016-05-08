@@ -159,7 +159,7 @@ namespace ScribeSharp.Tests
 			var eventList = new List<LogEvent>();
 			var policy = new LogPolicy()
 			{
-				ContextProviders = new ILogEventContextProvider[] { new ContextProviders.LogCallContextLogEntryContextProvider() },
+				ContextProviders = new ILogEventContextProvider[] { new ContextProviders.LogCallContextLogEventContextProvider() },
 				LogWriter = new ListLogWriter(eventList, 10)
 			};
 			var logger = new Logger(policy);

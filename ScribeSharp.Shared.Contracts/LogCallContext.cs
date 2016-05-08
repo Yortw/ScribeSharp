@@ -7,7 +7,7 @@ using System.Linq;
 namespace ScribeSharp
 {
 	/// <summary>
-	/// <para>Allows properties to be added to the 'logical call context', which will be added to <see cref="ILogger"/> implementations using the <see cref="ContextProviders.LogCallContextLogEntryContextProvider"/>.
+	/// <para>Allows properties to be added to the 'logical call context', which will be added to <see cref="ILogger"/> implementations using the <see cref="ContextProviders.LogCallContextLogEventContextProvider"/>.
 	/// This allows properties to be added to all log calls in the logical call stack without each call needing to explicitly pass them, and without including the properties in other parallel call stacks.
 	/// </para>
 	/// </summary>

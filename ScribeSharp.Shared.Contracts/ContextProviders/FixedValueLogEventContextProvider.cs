@@ -7,7 +7,7 @@ namespace ScribeSharp.ContextProviders
 	/// <summary>
 	/// Applies a property with a specified name and string value.
 	/// </summary>
-	public sealed class FixedValueLogEntryContextProvider : ContextProviderBase
+	public sealed class FixedValueLogEventContextProvider : ContextProviderBase
 	{
 
 		private string _PropertyName;
@@ -20,7 +20,7 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="propertyValue">The value of the property to apply.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="propertyName"/> is null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="propertyName"/> is empty or only whitespace.</exception>
-		public FixedValueLogEntryContextProvider(string propertyName, object propertyValue) : this(propertyName, propertyValue, null)
+		public FixedValueLogEventContextProvider(string propertyName, object propertyValue) : this(propertyName, propertyValue, null)
 		{
 		}
 
@@ -32,7 +32,7 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="filter">An optional <see cref="ILogEventFilter"/> used to decide if this property should be applied or not.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="propertyName"/> is null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="propertyName"/> is empty or only whitespace.</exception>
-		public FixedValueLogEntryContextProvider(string propertyName, object propertyValue, ILogEventFilter filter) : base(filter)
+		public FixedValueLogEventContextProvider(string propertyName, object propertyValue, ILogEventFilter filter) : base(filter)
 		{
 			if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
 			if (String.IsNullOrWhiteSpace(propertyName)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(propertyName)));
