@@ -38,7 +38,7 @@ namespace ScribeSharp.Formatters
 		/// <param name="writer">A <see cref="System.IO.TextWriter"/> to output to.</param>
 		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
-			using (var xmlWriter = System.Xml.XmlWriter.Create(writer, new System.Xml.XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
+			using (var xmlWriter = System.Xml.XmlWriter.Create(writer, new System.Xml.XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, CloseOutput = false }))
 			{
 				LogEventToXml(logEvent, xmlWriter);
 			}
@@ -48,9 +48,7 @@ namespace ScribeSharp.Formatters
 		{
 			writer.WriteStartElement("LogEvent");
 
-			WriteElementIfValueNotNull(writer, "EventName", logEvent.EventName);
-
-			writer.WriteAttributeString("Date", logEvent.DateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+			writer.WriteAttributeString("EventDate", logEvent.DateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
 
 			writer.WriteAttributeString("Severity", logEvent.EventSeverity.ToString());
 			writer.WriteAttributeString("SeverityLevel", Convert.ToInt32(logEvent.EventSeverity, System.Globalization.CultureInfo.InvariantCulture).ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -60,6 +58,8 @@ namespace ScribeSharp.Formatters
 			WriteAttributeIfValueNotNull(writer, "SourceMethod", logEvent.SourceMethod);
 			if (logEvent.SourceLineNumber >= 0)
 				WriteAttributeIfValueNotNull(writer, "SourceLineNumber", logEvent.SourceLineNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+			WriteElementIfValueNotNull(writer, "EventName", logEvent.EventName);
 
 			if (logEvent.Exception != null)
 			{

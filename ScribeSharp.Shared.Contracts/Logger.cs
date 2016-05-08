@@ -19,9 +19,7 @@ namespace ScribeSharp
 
 		//TODO: Tests
 			// Renderers
-			// Formatters
 			// Context providers
-			// Writers
 
 		//TODO: Writers
 			//TODO: Sql writer

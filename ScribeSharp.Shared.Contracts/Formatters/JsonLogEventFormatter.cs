@@ -28,10 +28,16 @@ namespace ScribeSharp.Formatters
 		/// <param name="writer">The <see cref="System.IO.TextWriter"/> to output to.</param>
 		public override void FormatToTextWriter(LogEvent logEvent, TextWriter writer)
 		{
+			if (writer == null) return;
+
 			using (var jsonWriter = new JsonTextWriter(writer))
 			{
+				jsonWriter.CloseOutput = false;
+				jsonWriter.Formatting = Formatting.Indented;
+
 				_Serialiser.Serialize(jsonWriter, logEvent);
 				jsonWriter.Flush();
+				writer.Flush();
 			}
 		}
 	}
