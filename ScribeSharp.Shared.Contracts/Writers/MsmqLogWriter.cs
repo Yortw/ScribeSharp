@@ -278,6 +278,7 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="obj"></param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public void Write(Message message, object obj)
 		{
 			if (obj == null) return;
@@ -350,6 +351,8 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="obj"></param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public void Write(Message message, object obj)
 		{
 			if (obj == null) return;
@@ -364,7 +367,7 @@ namespace ScribeSharp.Writers
 			if (logEvent != null)
 			{
 				var ms = new System.IO.MemoryStream();
-				using (var writer = new System.IO.StreamWriter(new NonClosingStreamWrapper(ms)))
+				using (var writer = new System.IO.StreamWriter(new NonClosingWrapperStream(ms)))
 				{
 					Formatters.JsonLogEventFormatter.DefaultInstance.FormatToTextWriter(logEvent, writer);
 					writer.Flush();
@@ -373,14 +376,15 @@ namespace ScribeSharp.Writers
 			}
 			else
 			{
-				message.BodyStream = WriteBatchToStream(message, logEvents);
+				message.BodyStream = WriteBatchToStream(logEvents);
 			}
 		}
 
-		private static System.IO.Stream WriteBatchToStream(Message message, IEnumerable<LogEvent> logEvents)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+		private static System.IO.Stream WriteBatchToStream(IEnumerable<LogEvent> logEvents)
 		{
 			var ms = new System.IO.MemoryStream();
-			using (var textWriter = new System.IO.StreamWriter(new NonClosingStreamWrapper(ms)))
+			using (var textWriter = new System.IO.StreamWriter(new NonClosingWrapperStream(ms)))
 			{
 				using (var writer = new Newtonsoft.Json.JsonTextWriter(textWriter))
 				{

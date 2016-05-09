@@ -161,9 +161,9 @@ namespace ScribeSharp.Writers
 		public SqlServerLogWriter(string connectionString, string tableName, IDictionary<string, string> columnMappings, ILogEventFormatter logEventFormatter)
 		{
 			if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
-			if (String.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(String.Format(Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(connectionString)));
+			if (String.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(connectionString)));
 			if (tableName == null) throw new ArgumentNullException(nameof(tableName));
-			if (String.IsNullOrWhiteSpace(tableName)) throw new ArgumentException(String.Format(Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(tableName)));
+			if (String.IsNullOrWhiteSpace(tableName)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(tableName)));
 
 			_ConnectionString = connectionString;
 			_TableName = tableName;
@@ -244,7 +244,7 @@ namespace ScribeSharp.Writers
 
 		#region Private Methods
 
-		private void ExecuteWithRetries(Action<int> work)
+		private static void ExecuteWithRetries(Action<int> work)
 		{
 			int retryCount = 0;
 			int maxRetries = 4;
@@ -275,7 +275,7 @@ namespace ScribeSharp.Writers
 			}
 		}
 
-		private bool IsTransientSqlException(SqlException exception)
+		private static bool IsTransientSqlException(SqlException exception)
 		{
 			bool retVal = false;
 
@@ -301,7 +301,7 @@ namespace ScribeSharp.Writers
 			return retVal;
 		}
 
-		private bool IsSqlTimeoutException(SqlException exception)
+		private static bool IsSqlTimeoutException(SqlException exception)
 		{
 			if (exception.Errors == null) return false;
 
@@ -430,12 +430,12 @@ namespace ScribeSharp.Writers
 
 			public bool GetBoolean(int i)
 			{
-				return Convert.ToBoolean(GetValue(i));
+				return Convert.ToBoolean(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public byte GetByte(int i)
 			{
-				return Convert.ToByte(GetValue(i));
+				return Convert.ToByte(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
@@ -445,7 +445,7 @@ namespace ScribeSharp.Writers
 
 			public char GetChar(int i)
 			{
-				return Convert.ToChar(GetValue(i));
+				return Convert.ToChar(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
@@ -465,17 +465,17 @@ namespace ScribeSharp.Writers
 
 			public DateTime GetDateTime(int i)
 			{
-				return Convert.ToDateTime(GetValue(i));
+				return Convert.ToDateTime(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public decimal GetDecimal(int i)
 			{
-				return Convert.ToDecimal(GetValue(i));
+				return Convert.ToDecimal(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public double GetDouble(int i)
 			{
-				return Convert.ToDouble(GetValue(i));
+				return Convert.ToDouble(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public Type GetFieldType(int i)
@@ -485,7 +485,7 @@ namespace ScribeSharp.Writers
 
 			public float GetFloat(int i)
 			{
-				return Convert.ToSingle(GetValue(i));
+				return Convert.ToSingle(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public Guid GetGuid(int i)
@@ -495,17 +495,17 @@ namespace ScribeSharp.Writers
 
 			public short GetInt16(int i)
 			{
-				return Convert.ToInt16(GetValue(i));
+				return Convert.ToInt16(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public int GetInt32(int i)
 			{
-				return Convert.ToInt32(GetValue(i));
+				return Convert.ToInt32(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public long GetInt64(int i)
 			{
-				return Convert.ToInt64(GetValue(i));
+				return Convert.ToInt64(GetValue(i), System.Globalization.CultureInfo.InvariantCulture);
 			}
 
 			public string GetName(int i)
@@ -571,6 +571,7 @@ namespace ScribeSharp.Writers
 				get { return (LogEvent)_Enumerator.Current; }
 			}
 
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification="Really, it's not that complex regardless of what the stats say, and it is reasonably efficient.")]
 			private object GetValueByName(string name)
 			{
 				switch (name)
@@ -603,7 +604,7 @@ namespace ScribeSharp.Writers
 						return _LogEventFormatter.FormatToString(CurrentEvent);
 
 					case SourceColumn_LogSeverityLevel:
-						return Convert.ToInt32(CurrentEvent.EventSeverity);
+						return Convert.ToInt32(CurrentEvent.EventSeverity, System.Globalization.CultureInfo.InvariantCulture);
 
 					default:
 						var properties = CurrentEvent.Properties;

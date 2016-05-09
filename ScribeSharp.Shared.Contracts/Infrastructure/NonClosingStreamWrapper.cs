@@ -8,7 +8,7 @@ namespace ScribeSharp.Infrastructure
 	/// <summary>
 	/// A wrapper around a <see cref="System.IO.Stream"/> that does not close or dispose the stream even when explicitly asked to do so.
 	/// </summary>
-	public class NonClosingStreamWrapper : System.IO.Stream
+	public class NonClosingWrapperStream : System.IO.Stream
 	{
 
 		#region Fields
@@ -23,7 +23,7 @@ namespace ScribeSharp.Infrastructure
 		/// Full constructor.
 		/// </summary>
 		/// <param name="stream">The stream to wrap.</param>
-		public NonClosingStreamWrapper(System.IO.Stream stream)
+		public NonClosingWrapperStream(System.IO.Stream stream)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 

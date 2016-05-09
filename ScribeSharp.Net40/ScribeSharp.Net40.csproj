@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS;CODE_ANALYSIS;SUPPORTS_SERIALISATION;SUPPORTS_CALLERATTRIBUTES;SUPPORTS_THREAD;SUPPORTS_SYSTEMMESSAGING</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;CODE_ANALYSIS;CODE_ANALYSIS;SUPPORTS_SERIALISATION;SUPPORTS_CALLERATTRIBUTES;SUPPORTS_THREAD;SUPPORTS_SYSTEMMESSAGING;SUPPORTS_SQLCLIENT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
