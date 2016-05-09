@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogWriterException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\ArrayEnumerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NonClosingStreamWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogEventSeveritySwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Filters\StandardFirstChanceFilter.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ListLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\LogWriterBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\MsmqLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\SqlServerLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\StreamLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\TextLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\TraceLogWriter.cs" />

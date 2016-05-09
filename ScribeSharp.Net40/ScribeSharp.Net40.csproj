@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;CODE_ANALYSIS;SUPPORTS_SERIALISATION;SUPPORTS_CALLERATTRIBUTES;SUPPORTS_THREAD;SUPPORTS_SYSTEMMESSAGING</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;CODE_ANALYSIS;CODE_ANALYSIS;SUPPORTS_SERIALISATION;SUPPORTS_CALLERATTRIBUTES;SUPPORTS_THREAD;SUPPORTS_SYSTEMMESSAGING;SUPPORTS_SQLCLIENT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -37,6 +37,17 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\ScribeSharpAnalysis.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release\ScribeSharp.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWithFullTests|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugWithFullTests\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;CODE_ANALYSIS;CODE_ANALYSIS;CODE_ANALYSIS;SUPPORTS_SERIALISATION;SUPPORTS_CALLERATTRIBUTES;SUPPORTS_THREAD;SUPPORTS_SYSTEMMESSAGING;SUPPORTS_SQLCLIENT</DefineConstants>
+    <DocumentationFile>bin\Debug\ScribeSharp.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\ScribeSharpAnalysis.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
