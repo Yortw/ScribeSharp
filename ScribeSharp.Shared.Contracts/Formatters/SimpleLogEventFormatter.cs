@@ -12,8 +12,7 @@ namespace ScribeSharp.Formatters
 	public sealed class SimpleLogEventFormatter : LogEventFormatterBase
 	{
 		private static SimpleLogEventFormatter s_DefaultInstance;
-
-
+		
 		/// <summary>
 		/// Default constructor.
 		/// </summary>

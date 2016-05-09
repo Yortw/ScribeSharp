@@ -46,6 +46,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -78,6 +79,7 @@
     <Compile Include="LogEventSeveritySwitchTest.cs" />
     <Compile Include="LoggerTests.cs" />
     <Compile Include="MinimalLogEventFormatterTests.cs" />
+    <Compile Include="MsmqLogWriterTests.cs" />
     <Compile Include="RecyclingTextWriterTests.cs" />
     <Compile Include="RethrowErrorHandlerTests.cs" />
     <Compile Include="SimpleLogEventFormatterTests.cs" />

@@ -14,6 +14,8 @@ namespace ScribeSharp.Formatters
 	public sealed class XmlLogEventFormatter : LogEventFormatterBase
 	{
 
+		private static XmlLogEventFormatter s_DefaultInstance;
+
 		private static readonly PropertyRenderers.ToStringRenderer _AttributeValueRenderer = new ToStringRenderer();
 
 		/// <summary>
@@ -42,6 +44,16 @@ namespace ScribeSharp.Formatters
 			{
 				LogEventToXml(logEvent, xmlWriter);
 			}
+		}
+
+		/// <summary>
+		/// Formats and outputs the log event to the specified writer as an XML node and attributes/child elements.
+		/// </summary>
+		/// <param name="logEvent">The log event to format and output.</param>
+		/// <param name="writer">A <see cref="System.Xml.XmlWriter"/> to output to.</param>
+		public void FormatToTextWriter(LogEvent logEvent, XmlWriter writer)
+		{
+			LogEventToXml(logEvent, writer);
 		}
 
 		private void LogEventToXml(LogEvent logEvent, XmlWriter writer)
@@ -100,5 +112,14 @@ namespace ScribeSharp.Formatters
 
 			writer.WriteElementString(elementName, value);
 		}
+
+		/// <summary>
+		/// Returns a common instance of the formatter which can be resused to reduce allocations.
+		/// </summary>
+		public static XmlLogEventFormatter DefaultInstance
+		{
+			get { return s_DefaultInstance ?? (s_DefaultInstance = new XmlLogEventFormatter()); }
+		}
+
 	}
 }

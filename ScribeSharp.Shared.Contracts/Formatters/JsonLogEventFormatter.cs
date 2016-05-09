@@ -12,6 +12,8 @@ namespace ScribeSharp.Formatters
 	/// </summary>
 	public sealed class JsonLogEventFormatter : LogEventFormatterBase
 	{
+		private static JsonLogEventFormatter s_DefaultInstance;
+
 		private JsonSerializer _Serialiser = new JsonSerializer();
 
 		/// <summary>
@@ -40,5 +42,14 @@ namespace ScribeSharp.Formatters
 				writer.Flush();
 			}
 		}
+
+		/// <summary>
+		/// Returns a common instance of the formatter which can be resused to reduce allocations.
+		/// </summary>
+		public static JsonLogEventFormatter DefaultInstance
+		{
+			get { return s_DefaultInstance ?? (s_DefaultInstance = new JsonLogEventFormatter()); }
+		}
+
 	}
 }

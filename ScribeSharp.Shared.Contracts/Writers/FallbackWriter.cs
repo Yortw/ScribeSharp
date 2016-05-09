@@ -7,7 +7,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// A log writer that attempts to write to a child log writer, and if an error occurs falls back to a second log writer.
 	/// </summary>
-	public sealed class FallbackWriter : ILogWriter, IBatchLogWriter
+	public sealed class FallbackWriter : ILogWriter, IBatchLogWriter, IDisposable
 	{
 
 		#region Fields
@@ -188,6 +188,19 @@ namespace ScribeSharp.Writers
 			}
 			else
 				writer.WriteBatch(logEvents, length);
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispsoes this instance and the underlying primary and secondary log writers.
+		/// </summary>
+		public void Dispose()
+		{
+			(_PrimaryWriter as IDisposable)?.Dispose();
+			(_SecondaryWriter as IDisposable)?.Dispose();
 		}
 
 		#endregion

@@ -7,7 +7,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// A batched log writer used to wrap another log writer that does not support batching, for convenience rather than performance.
 	/// </summary>
-	public sealed class BatchLogWriterAdapter : IBatchLogWriter
+	public sealed class BatchLogWriterAdapter : IBatchLogWriter, IDisposable
 	{
 
 		private ILogWriter _LogWriter;
@@ -107,5 +107,18 @@ namespace ScribeSharp.Writers
 				throw new LogWriterException(ex.Message, ex);
 			}
 		}
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispsoes this instance and the underlying log writer.
+		/// </summary>
+		public void Dispose()
+		{
+			(_LogWriter as IDisposable)?.Dispose();
+		}
+
+		#endregion
+
 	}
 }

@@ -8,7 +8,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// A log writer that filters events before passing them on.
 	/// </summary>
-	public sealed class FilteringLogWriter : IBatchLogWriter
+	public sealed class FilteringLogWriter : IBatchLogWriter, IDisposable
 	{
 
 		private readonly ILogEventFilter _Filter;
@@ -103,5 +103,16 @@ namespace ScribeSharp.Writers
 			}
 		}
 
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispsoes this instance and the underlying log writer.
+		/// </summary>
+		public void Dispose()
+		{
+			(_LogWriter as IDisposable)?.Dispose();
+		}
+
+		#endregion
 	}
 }

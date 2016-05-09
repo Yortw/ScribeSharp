@@ -9,7 +9,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// Writes events to multiple child <see cref="ILogWriter"/> implementations.
 	/// </summary>
-	public sealed class AggregateLogWriter : LogWriterBase
+	public sealed class AggregateLogWriter : LogWriterBase, IDisposable
 	{
 		#region Fields
 
@@ -77,6 +77,21 @@ namespace ScribeSharp.Writers
 			get
 			{
 				return _RequiresSynchronisation;
+			}
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispsoes this instance and the underlying log writers.
+		/// </summary>
+		public void Dispose()
+		{
+			foreach (var writer in _Writers)
+			{
+				(writer as IDisposable)?.Dispose();
 			}
 		}
 
