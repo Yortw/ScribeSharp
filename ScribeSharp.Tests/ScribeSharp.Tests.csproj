@@ -39,7 +39,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FullTests|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\DebugWithFullTests\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;RUN_SQLWRITERINTEGRATIONTESTS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;RUN_SQLWRITERINTEGRATIONTESTS;RUN_AZUREEVENTHUBTESTS</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -57,6 +57,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Messaging" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -75,6 +77,7 @@
   <ItemGroup>
     <Compile Include="AsyncQueueLogWriterTests.cs" />
     <Compile Include="AggregateLogWriterTests.cs" />
+    <Compile Include="AzureEventHubLogWriterTests.cs" />
     <Compile Include="BatchLogWriterAdapterTests.cs" />
     <Compile Include="ContextProviderTests.cs" />
     <Compile Include="ExceptionAsXmlRendererTests.cs" />
@@ -101,6 +104,7 @@
     <Compile Include="MockLogWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestClass.cs" />
+    <Compile Include="TestSecrets.cs" />
     <Compile Include="TextLogWriterTests.cs" />
     <Compile Include="ToStringRendererTests.cs" />
     <Compile Include="TypeRendererMapTests.cs" />

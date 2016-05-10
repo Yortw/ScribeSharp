@@ -268,6 +268,7 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public object Read(Message message)
 		{
 			return new System.IO.StreamReader(message.BodyStream).ReadToEnd();
@@ -341,6 +342,7 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="message"></param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public object Read(Message message)
 		{
 			return new System.IO.StreamReader(message.BodyStream).ReadToEnd();

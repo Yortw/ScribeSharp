@@ -102,6 +102,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PropertyRenderers\XmlPropertyRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\AggregateLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\AsyncQueueLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\AzureEventHubLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\BatchLogWriterAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ConsoleLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\DebugLogWriter.cs" />
