@@ -201,7 +201,7 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		[TestCategory(nameof(JsonWriter))]
 		[TestCategory("Infrastructure")]
-		//[Timeout(50)]
+		[Timeout(50)]
 		public void JsonWriter_WriteJsonObject_ComplexTypePerfTest()
 		{
 			using (var writer = new System.IO.StringWriter())
