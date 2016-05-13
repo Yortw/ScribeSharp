@@ -201,7 +201,7 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		[TestCategory(nameof(JsonWriter))]
 		[TestCategory("Infrastructure")]
-		[Timeout(50)]
+		//[Timeout(50)]
 		public void JsonWriter_WriteJsonObject_ComplexTypePerfTest()
 		{
 			using (var writer = new System.IO.StringWriter())
@@ -213,7 +213,7 @@ namespace ScribeSharp.Tests
 				{
 					list.Add(new TestJson1()
 					{
-						Test = "Test" + itemsToWrite.ToString(),
+						Test = "Test" + cnt.ToString(),
 						IsTest = (cnt % 2) == 0,
 						TestCount = cnt
 					});
@@ -228,6 +228,7 @@ namespace ScribeSharp.Tests
 					sw.Stop();
 				}
 				System.Diagnostics.Trace.WriteLine($"Complex type write for {itemsToWrite.ToString()} items took: {sw.Elapsed.ToString()}.");
+
 			}
 		}
 
