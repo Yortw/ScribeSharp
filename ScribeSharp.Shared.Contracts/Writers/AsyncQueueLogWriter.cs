@@ -80,14 +80,16 @@ namespace ScribeSharp.Writers
 
 			StartBackgroundWriterThread();
 
+#if SUPPORTS_APPDOMAINS
 			AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+#endif
 		}
 
-		#endregion
+#endregion
 
-		#region Overrides
+#region Overrides
 
 		/// <summary>
 		/// Queues the <paramref name="logEvent"/> for writing to the child log writers.
@@ -137,9 +139,9 @@ namespace ScribeSharp.Writers
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 
 		/// <summary>
 		/// Disposes this instance and all internal resources.
@@ -152,9 +154,11 @@ namespace ScribeSharp.Writers
 		{
 			if (!_IsDisposed)
 			{
+#if SUPPORTS_APPDOMAIN
 				AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
 				AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
 				AppDomain.CurrentDomain.ProcessExit -= CurrentDomain_ProcessExit;
+#endif
 
 				_IsDisposed = true;
 				_BufferTimeoutTimer?.Dispose();
@@ -216,9 +220,9 @@ namespace ScribeSharp.Writers
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		private void WaitForBackgroundThreadToExit()
 		{
@@ -316,9 +320,11 @@ namespace ScribeSharp.Writers
 			if (_IsDisposed) throw new ObjectDisposedException(nameof(AsyncQueueLogWriter));
 		}
 
-		#endregion
+#endregion
 
-		#region Event Handlers
+#region Event Handlers
+
+#if SUPPORTS_APPDOMAINS
 
 		private void CurrentDomain_ProcessExit(object sender, EventArgs e)
 		{
@@ -335,7 +341,9 @@ namespace ScribeSharp.Writers
 			Flush();
 		}
 
-		#endregion
+#endif
+
+#endregion
 
 	}
 }

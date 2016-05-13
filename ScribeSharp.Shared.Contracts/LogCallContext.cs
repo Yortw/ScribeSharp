@@ -14,13 +14,13 @@ namespace ScribeSharp
 	public static class LogCallContext
 	{
 
-		#region Fields 
+#region Fields 
 
 		private static readonly string SlotName = Guid.NewGuid().ToString("N");
 
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 
 		/// <summary>
 		/// Adds a property to the logical context and returns an <see cref="IDisposable"/> that can be used to remove the property when it no longer applies to the stack.
@@ -79,9 +79,9 @@ namespace ScribeSharp
 			return retValue;
 		}
 
-		#endregion
+#endregion
 
-		#region Public Properties
+#region Public Properties
 
 		/// <summary>
 		/// Returns an enumerator instance that can be used to enumerate all properties in the current logical call context.
@@ -99,9 +99,9 @@ namespace ScribeSharp
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Private Members
+#region Private Members
 
 		private static void Pop()
 		{
@@ -129,9 +129,9 @@ namespace ScribeSharp
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Private Classes
+#region Private Classes
 
 		private sealed class Wrapper : MarshalByRefObject
 		{
@@ -179,7 +179,7 @@ namespace ScribeSharp
 			}
 		}
 
-		#endregion
+#endregion
 
 	}
 }

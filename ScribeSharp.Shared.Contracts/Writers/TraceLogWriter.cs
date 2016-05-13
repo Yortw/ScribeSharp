@@ -1,4 +1,6 @@
-﻿using ScribeSharp.Formatters;
+﻿#if SUPPORTS_TRACE
+
+using ScribeSharp.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +14,13 @@ namespace ScribeSharp.Writers
 	public sealed class TraceLogWriter : LogWriterBase
 	{
 
-		#region Fields
+#region Fields
 
 		private ILogEventFormatter _LogEventFormatter;
 
-		#endregion
+#endregion
 
-		#region Constructors
+#region Constructors
 
 		/// <summary>
 		/// Full constructor.
@@ -29,9 +31,9 @@ namespace ScribeSharp.Writers
 			_LogEventFormatter = eventFormatter ?? SimpleLogEventFormatter.DefaultInstance;
 		}
 
-		#endregion
+#endregion
 
-		#region Overrides
+#region Overrides
 
 		/// <summary>
 		/// Writes the supplied <see cref="LogEvent"/> to <see cref="System.Diagnostics.Trace"/>.
@@ -75,6 +77,8 @@ namespace ScribeSharp.Writers
 			}
 		}
 
-		#endregion
+#endregion
 	}
 }
+
+#endif

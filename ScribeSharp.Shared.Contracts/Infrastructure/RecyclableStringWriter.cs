@@ -101,6 +101,7 @@ namespace ScribeSharp
 
 		#region Overrides
 
+#if !NETFX_CORE
 		/// <summary>
 		/// Does NOT close the text writer or underlying <see cref="System.Text.StringBuilder"/>, but instead resets it so it can be reused.
 		/// </summary>
@@ -108,6 +109,7 @@ namespace ScribeSharp
 		{
 			ResetStringBuilder();
 		}
+#endif
 
 		/// <summary>
 		/// Really disposes this instance instead of just resetting it. Should only be called if you do not intend to use this instance again.

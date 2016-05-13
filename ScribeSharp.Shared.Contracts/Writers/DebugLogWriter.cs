@@ -1,4 +1,6 @@
-﻿using ScribeSharp.Formatters;
+﻿#if SUPPORTS_DEBUGGERLOGGING
+
+using ScribeSharp.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,9 +54,10 @@ namespace ScribeSharp.Writers
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
 			System.Diagnostics.Debugger.Log(Convert.ToInt32(logEvent.EventSeverity, System.Globalization.CultureInfo.InvariantCulture), logEvent.EventType.ToString(), _LogEventFormatter.FormatToString(logEvent));
-			//System.Diagnostics.Debug.WriteLine(_LogEventFormatter.FormatToString(logEvent), logEvent.EventType.ToString());
 		}
 
 		#endregion
 	}
 }
+
+#endif

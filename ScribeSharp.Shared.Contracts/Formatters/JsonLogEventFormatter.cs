@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using ScribeSharp.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +13,6 @@ namespace ScribeSharp.Formatters
 	public sealed class JsonLogEventFormatter : LogEventFormatterBase
 	{
 		private static JsonLogEventFormatter s_DefaultInstance;
-
-		private JsonSerializer _Serialiser = new JsonSerializer();
 
 		/// <summary>
 		/// Default constructor.
@@ -32,14 +30,10 @@ namespace ScribeSharp.Formatters
 		{
 			if (writer == null) return;
 
-			using (var jsonWriter = new JsonTextWriter(writer))
+			using (var jsonWriter = new JsonWriter(writer, false))
 			{
-				jsonWriter.CloseOutput = false;
-				jsonWriter.Formatting = Formatting.Indented;
-
-				_Serialiser.Serialize(jsonWriter, logEvent);
+				jsonWriter.WriteJsonObject<LogEvent>(logEvent);
 				jsonWriter.Flush();
-				writer.Flush();
 			}
 		}
 

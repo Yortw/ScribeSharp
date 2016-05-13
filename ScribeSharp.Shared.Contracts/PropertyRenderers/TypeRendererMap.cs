@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reflection;
 
 namespace ScribeSharp.PropertyRenderers
 {
@@ -118,7 +119,11 @@ namespace ScribeSharp.PropertyRenderers
 			IPropertyRenderer retVal = null;
 			while (type != null && !_KnownRenderers.TryGetValue(type, out retVal))
 			{
+#if !NETFX_CORE
 				type = type.BaseType;
+#else
+				type = type.GetTypeInfo().BaseType;
+#endif
 			}
 
 			if (retVal == null)

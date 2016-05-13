@@ -30,7 +30,7 @@ namespace ScribeSharp
 					Factory = (pool) => new PooledObject<RecyclableStringWriter>(pool, new RecyclableStringWriter(System.Globalization.CultureInfo.CurrentCulture)),
 					InitializationPolicy = PooledItemInitialization.Return,
 					MaximumPoolSize = 50,
-					ReinitializeObject = (poolItem) => poolItem.Value.Close()
+					ReinitializeObject = (poolItem) => poolItem.Value.Dispose()
 				};
 
 				return (s_TextWriterPool = new Pool<PooledObject<RecyclableStringWriter>>(policy));

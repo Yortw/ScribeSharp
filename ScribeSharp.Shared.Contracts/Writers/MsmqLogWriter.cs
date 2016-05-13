@@ -388,15 +388,15 @@ namespace ScribeSharp.Writers
 			var ms = new System.IO.MemoryStream();
 			using (var textWriter = new System.IO.StreamWriter(new NonClosingWrapperStream(ms)))
 			{
-				using (var writer = new Newtonsoft.Json.JsonTextWriter(textWriter))
+				using (var writer = new JsonWriter(textWriter, false))
 				{
-					writer.WriteStartArray();
+					writer.WriteArrayStart();
 					foreach (var logEvent in logEvents)
 					{
 						writer.WriteRaw(Formatters.JsonLogEventFormatter.DefaultInstance.FormatToString(logEvent));
-						writer.WriteRaw("," + Environment.NewLine);
+						writer.WriteDelimiter();
 					}
-					writer.WriteEndArray();
+					writer.WriteArrayEnd();
 					writer.Flush();
 				}
 				return ms;

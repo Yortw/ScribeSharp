@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if SUPPORTS_EVENTLOG
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -179,3 +181,5 @@ namespace ScribeSharp.Writers
 
 	}
 }
+
+#endif

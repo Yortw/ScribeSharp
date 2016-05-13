@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\LogWriterException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\ArrayEnumerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\JsonWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NonClosingStreamWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogEventSeveritySwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Filters\StandardFirstChanceFilter.cs" />

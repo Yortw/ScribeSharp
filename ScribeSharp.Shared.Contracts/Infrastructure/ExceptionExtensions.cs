@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reflection;
 
 namespace ScribeSharp
 {
@@ -9,6 +10,9 @@ namespace ScribeSharp
 	/// </summary>
 	public static class ExceptionExtensions
 	{
+
+		private static System.Collections.Concurrent.ConcurrentDictionary<Type, List<System.Reflection.PropertyInfo>> s_PropertyCache = new System.Collections.Concurrent.ConcurrentDictionary<Type, List<System.Reflection.PropertyInfo>>();
+
 		/// <summary>
 		/// Returns a string containing an XML representation of the exception.
 		/// </summary>
@@ -38,8 +42,10 @@ namespace ScribeSharp
 			if (ex.StackTrace != null)
 				writer.WriteElementString("StackTrace", ex.StackTrace.ToString());
 
+#if !NETFX_CORE
 			if (ex.TargetSite != null)
 				writer.WriteElementString("TargetSite", ex.TargetSite.ToString());
+#endif
 
 			if (ex.Data != null)
 			{
@@ -56,7 +62,7 @@ namespace ScribeSharp
 				}
 			}
 
-			foreach (var prop in ex.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+			foreach (var prop in GetProperties(ex.GetType()))
 			{
 				if (prop.Name != "Message" && prop.Name != "StackTrace" && prop.Name != "Source" && prop.Name != "Data" && prop.Name != "TargetSite")
 				{
@@ -80,6 +86,22 @@ namespace ScribeSharp
 			writer.Flush();
 		}
 
+		private static List<System.Reflection.PropertyInfo> GetProperties(Type type)
+		{
+			List<System.Reflection.PropertyInfo> retVal = null;
+			if (!s_PropertyCache.TryGetValue(type, out retVal))
+			{
+#if !NETFX_CORE
+				retVal = new List<System.Reflection.PropertyInfo>(type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+#else
+				retVal = new List<System.Reflection.PropertyInfo>(type.GetTypeInfo().DeclaredProperties);
+#endif
+				s_PropertyCache.TryAdd(type, retVal);
+			}
+
+			return retVal;
+		}
+
 		/// <summary>
 		/// Returns true if the exception is of a type that indicates a serious system flaw, one that has likely resulted in unknown process state and should not attempt to be handled at all.
 		/// </summary>
@@ -87,10 +109,13 @@ namespace ScribeSharp
 		/// <returns>True if the exception should be rethrown immediately, else false.</returns>
 		public static bool ShouldRethrowImmediately(this Exception exception)
 		{
-			return exception is StackOverflowException
+			return
+#if !NETFX_CORE
+				exception is StackOverflowException
 				|| exception is System.Threading.ThreadAbortException
-				|| exception is AccessViolationException
-				|| exception is OutOfMemoryException;
+				|| exception is AccessViolationException || 
+#endif
+				exception is OutOfMemoryException;
 		}
 	}
 }

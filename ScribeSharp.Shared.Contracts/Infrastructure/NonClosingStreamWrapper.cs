@@ -134,12 +134,14 @@ namespace ScribeSharp.Infrastructure
 			_Stream.Write(buffer, offset, count);
 		}
 
+#if !NETFX_CORE
 		/// <summary>
 		/// Does nothing.
 		/// </summary>
 		public override void Close()
 		{
 		}
+#endif
 
 		/// <summary>
 		/// Does nothing.
@@ -148,7 +150,7 @@ namespace ScribeSharp.Infrastructure
 		{
 		}
 
-		#endregion
+#endregion
 
 	}
 }

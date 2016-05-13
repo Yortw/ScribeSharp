@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using ScribeSharp.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,8 +10,6 @@ namespace ScribeSharp.PropertyRenderers
 	/// </summary>
 	public sealed class JsonPropertyRenderer : IPropertyRenderer
 	{
-		private JsonSerializer _Serialiser = new JsonSerializer();
-
 		/// <summary>
 		/// Renders the value to a Json string. If the value is null, null is returned.
 		/// </summary>
@@ -23,9 +21,9 @@ namespace ScribeSharp.PropertyRenderers
 
 			using (var pooledWriter = Globals.TextWriterPool.Take())
 			{
-				using (var jsonWriter = new JsonTextWriter(pooledWriter.Value))
+				using (var jsonWriter = new JsonWriter(pooledWriter.Value, false))
 				{
-					_Serialiser.Serialize(jsonWriter, value);
+					jsonWriter.WriteJsonObject(value);
 					jsonWriter.Flush();
 
 					return pooledWriter.Value.GetText();

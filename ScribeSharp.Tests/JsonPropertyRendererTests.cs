@@ -40,7 +40,7 @@ namespace ScribeSharp.Tests
 			};
 
 			var result = renderer.RenderValue(testValue).ToString();
-			Assert.AreEqual("{\"Name\":\"Test Name\",\"Count\":10,\"TestDate\":\"2016-08-05T19:53:22\"}", result);
+			Assert.AreEqual("{\"Name\":\"Test Name\",\"Count\":10,\"TestDate\":\"2016-08-05T19:53:22.0000000\"}", result);
 		}
 
 		[TestMethod]

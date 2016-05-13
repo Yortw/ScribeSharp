@@ -13,7 +13,9 @@ namespace ScribeSharp
 #endif
 	public class LogWriterException : LogException
 	{
+#if SUPPORTS_SERIALISATION
 		[NonSerialized]
+#endif
 		private readonly ILogWriter _LogWriter;
 
 		/// <summary>

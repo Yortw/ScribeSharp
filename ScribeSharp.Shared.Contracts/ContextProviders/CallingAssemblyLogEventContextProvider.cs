@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETFX_CORE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -33,3 +35,5 @@ namespace ScribeSharp.ContextProviders
 		}
 	}
 }
+
+#endif

@@ -25,7 +25,9 @@ namespace ScribeSharp
 		{
 			if (exception == null) throw new ArgumentNullException(nameof(exception));
 
+#if SUPPORTS_TRACE   
 			System.Diagnostics.Trace.WriteLine("Logging Error: " + exception.ToString(), "loggingerror");
+#endif
 
 			ErrorOccurred?.Invoke(this, new LoggingErrorEventArgs(exception));
 
