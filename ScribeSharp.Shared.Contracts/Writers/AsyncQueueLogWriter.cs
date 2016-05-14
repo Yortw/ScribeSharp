@@ -49,7 +49,7 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="logWriter">The log writer to forward events to from the background thread. If multiple output locations are required, usea  <see cref="AggregateLogWriter"/> instance.</param>
 		/// <param name="batchSize">The number of items in the queue before they are actually passed to <paramref name="logWriter"/>.</param>
-		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <param ref="batchSize"/>.</param>
+		/// <param name="writeTimeout">The time after the last event was logged to wait before writing items in the queue, even if the queue size is still less than <paramref="batchSize"/>.</param>
 		/// <param name="errorHandler">An <see cref="ILoggingErrorHandler"/> implementation used to handle errors that occur.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="logWriter"/> is null.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="batchSize"/> is less than or equal to zero.</exception>

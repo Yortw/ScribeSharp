@@ -221,7 +221,7 @@ namespace ScribeSharp.Writers
 		#region IDisposable Members
 
 		/// <summary>
-		/// Dispsoes this instance and the underlying <see cref="System.Messaging.MessageQueue"/> instance.
+		/// Disposes this instance and the underlying <see cref="System.Messaging.MessageQueue"/> instance.
 		/// </summary>
 		public void Dispose()
 		{

@@ -111,7 +111,7 @@ namespace ScribeSharp.Writers
 		#region IDisposable Members
 
 		/// <summary>
-		/// Dispsoes this instance and the underlying log writer.
+		/// Disposes this instance and the underlying log writer.
 		/// </summary>
 		public void Dispose()
 		{
