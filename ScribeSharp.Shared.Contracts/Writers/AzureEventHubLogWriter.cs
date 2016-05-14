@@ -16,13 +16,12 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// Sends events to an Azure event hub for processing in the cloud.
 	/// </summary>
-	public sealed class AzureEventHubLogWriter : LogWriterBase, IBatchLogWriter
+	public sealed class AzureEventHubLogWriter : LogWriterBase, IBatchLogWriter, IDisposable
 	{
 
 		#region Fields
 
 		private ILogEventFormatter _Formatter;
-
 		private EventHubSender _Sender;
 
 		#endregion
@@ -33,7 +32,19 @@ namespace ScribeSharp.Writers
 		/// Partial constructor. Sends log events as Json.
 		/// </summary>
 		/// <param name="connectionString"></param>
-		public AzureEventHubLogWriter(string connectionString) : this(connectionString, null)
+		public AzureEventHubLogWriter(string connectionString) : this(connectionString, null, true)
+		{
+		}
+
+		/// <summary>
+		/// Partial constructor.
+		/// </summary>
+		/// <remarks><para>Instances created using this constructor have compression enabled.</para></remarks>
+		/// <param name="connectionString">A connection string granting write access to the Azure event hub events are to be forwarded to.</param>
+		/// <param name="formatter">An <see cref="ILogEventFormatter"/> implementation used to format events before sending to Azure. If null then <see cref="Formatters.JsonLogEventFormatter.DefaultInstance"/> is used.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="connectionString"/> is null.</exception>
+		/// <exception cref="System.ArgumentException">Thrown if <paramref name="connectionString"/> is empty or contains only whitespace.</exception>
+		public AzureEventHubLogWriter(string connectionString, ILogEventFormatter formatter) : this(connectionString, formatter, true)
 		{
 		}
 
@@ -42,14 +53,15 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		/// <param name="connectionString">A connection string granting write access to the Azure event hub events are to be forwarded to.</param>
 		/// <param name="formatter">An <see cref="ILogEventFormatter"/> implementation used to format events before sending to Azure. If null then <see cref="Formatters.JsonLogEventFormatter.DefaultInstance"/> is used.</param>
+		/// <param name="useCompression">If true the system will gzip compress data before sending it to Azure.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="connectionString"/> is null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="connectionString"/> is empty or contains only whitespace.</exception>
-		public AzureEventHubLogWriter(string connectionString, ILogEventFormatter formatter)
+		public AzureEventHubLogWriter(string connectionString, ILogEventFormatter formatter, bool useCompression)
 		{
 			if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 			if (String.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(connectionString)), nameof(connectionString));
 
-			_Sender = new EventHubSender(connectionString);
+			_Sender = new EventHubSender(connectionString, useCompression);
 			_Formatter = formatter;
 		}
 
@@ -92,23 +104,26 @@ namespace ScribeSharp.Writers
 
 			try
 			{
-				var task = _Sender.SendJsonMessage(LogEventsToJson(logEvents));
-				task.Wait();
-			}
-			catch (AggregateException agex)
-			{
-				var firstException = agex.InnerExceptions.FirstOrDefault() as HttpRequestException;
-				if (firstException != null && (HttpStatusCode)(firstException.Data["StatusCode"] ?? HttpStatusCode.Unused) == HttpStatusCode.BadRequest)
+				try
 				{
-					WriteOverSizedBatch(logEvents);
+					var task = _Sender.SendJsonMessage(LogEventsToJson(logEvents));
+					task.Wait();
 				}
-				else
-					throw;
+				catch (AggregateException agex)
+				{
+					var firstException = agex.InnerExceptions.FirstOrDefault() as HttpRequestException;
+					if (firstException != null)
+						throw firstException;
+					else
+						throw;
+				}
 			}
 			catch (System.Net.Http.HttpRequestException hrex)
 			{
-				//TODO: Check exception here.
-				WriteOverSizedBatch(logEvents);
+				if ((HttpStatusCode)((hrex.Data["StatusCode"]) ?? HttpStatusCode.Unused) == HttpStatusCode.BadRequest)
+					WriteOverSizedBatch(logEvents);
+				else
+					throw;
 			}
 		}
 
@@ -196,18 +211,40 @@ namespace ScribeSharp.Writers
 
 		#endregion
 
+		#region IDisposable
+
+		/// <summary>
+		/// Disposes this instance and all internal resources.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_Sender")]
+		public void Dispose()
+		{
+			_Sender?.Dispose();
+		}
+
+		#endregion
+
 		#region Private Classes
 
-		private class EventHubSender
+		private sealed class EventHubSender : IDisposable
 		{
 
+			#region Fields
+
 			private ServiceBusConnectionStringBuilder _ConnectionString;
+			private bool _UseCompression;
+			private DateTime _AuthHeaderLastGenerated;
 
 			private HttpClient _HttpClient;
 
-			public EventHubSender(string eventHubConnectionString)
+			#endregion
+
+			#region Constructors
+
+			public EventHubSender(string eventHubConnectionString, bool useCompression)
 			{
 				if (eventHubConnectionString == null) throw new ArgumentNullException(nameof(eventHubConnectionString));
+				_UseCompression = useCompression;
 
 				var handler = new HttpClientHandler();
 				if (handler.SupportsAutomaticDecompression)
@@ -215,14 +252,78 @@ namespace ScribeSharp.Writers
 
 				_ConnectionString = new ServiceBusConnectionStringBuilder(eventHubConnectionString);
 				_HttpClient = new HttpClient(handler);
+				SetAuthHeader();
+			}
+
+			#endregion
+
+			#region Public Methods
+
+			public async Task SendJsonMessage(string messageBody)
+			{
+				if (ShouldRenewAuthHeader())
+					SetAuthHeader();
+
+				using (var ms = new System.IO.MemoryStream())
+				{
+					var bytes = System.Text.UTF8Encoding.UTF8.GetBytes(messageBody);
+
+					if (_UseCompression)
+					{
+						using (var cs = new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionMode.Compress, true))
+						{
+							cs.Write(bytes, 0, bytes.Length);
+							cs.Flush();
+						}
+					}
+					else
+						ms.Write(bytes, 0, bytes.Length);
+
+					ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+					using (var content = new StreamContent(ms))
+					{
+						content.Headers.ContentEncoding.Add("gzip");
+
+						var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", content).ConfigureAwait(false);
+						try
+						{
+							result.EnsureSuccessStatusCode();
+						}
+						catch (HttpRequestException hrex)
+						{
+							hrex.Data.Add("StatusCode", result.StatusCode);
+							throw;
+						}
+					}
+				}
+
+				//var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", new StringContent(messageBody, System.Text.UTF8Encoding.UTF8, "application/json")).ConfigureAwait(false);
+				//try
+				//{
+				//	result.EnsureSuccessStatusCode();
+				//}
+				//catch (HttpRequestException hrex)
+				//{
+				//	hrex.Data.Add("StatusCode", result.StatusCode);
+				//	throw;
+				//}
+			}
+
+			#endregion
+
+			#region Private Methods
+
+			private void SetAuthHeader()
+			{
 				_HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("SharedAccessSignature", GenerateServiceBusAuthHeader());
 			}
 
 			private string GenerateServiceBusAuthHeader()
 			{
-				//TODO: Renew token?
 				DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-				TimeSpan diff = DateTime.Now.ToUniversalTime() - origin;
+				_AuthHeaderLastGenerated = DateTime.Now.ToUniversalTime();
+				TimeSpan diff = _AuthHeaderLastGenerated - origin;
 				uint tokenExpirationTime = Convert.ToUInt32(diff.TotalSeconds) + 20 * 60;
 
 				string url = _ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages";
@@ -236,19 +337,23 @@ namespace ScribeSharp.Writers
 				return token;
 			}
 
-			public async Task SendJsonMessage(string messageBody)
+			private bool ShouldRenewAuthHeader()
 			{
-				var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", new StringContent(messageBody, System.Text.UTF8Encoding.UTF8, "application/json")).ConfigureAwait(false);
-				try
-				{
-					result.EnsureSuccessStatusCode();
-				}
-				catch (HttpRequestException hrex)
-				{
-					hrex.Data.Add("StatusCode", result.StatusCode);
-					throw;
-				}
+				return DateTime.UtcNow.Subtract(_AuthHeaderLastGenerated).TotalMinutes > 15;
 			}
+
+			#endregion
+
+			#region Public Methods
+
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_HttpClient")]
+			public void Dispose()
+			{
+				_HttpClient?.Dispose();
+			}
+
+			#endregion
+
 		}
 
 		private class ServiceBusConnectionStringBuilder
@@ -270,6 +375,7 @@ namespace ScribeSharp.Writers
 			public string SharedAccessKey { get; set; }
 			public string SharedAccessKeyName { get; set; }
 
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])")]
 			public override string ToString()
 			{
 				return $"Endpoint={ this.EventHubUrl.Replace("https://", "sb://") };SharedAccessKeyName={ this.SharedAccessKeyName };SharedAccessKey={ this.SharedAccessKey };EntityPath={ this.EventHubPath }";
@@ -281,36 +387,36 @@ namespace ScribeSharp.Writers
 				foreach (var part in parts)
 				{
 					var index = part.IndexOf('=');
-					var key = part.Substring(0, index).ToLower();
+					var key = part.Substring(0, index).ToUpperInvariant();
 					var value = part.Substring(index + 1);
-					switch (key.ToLowerInvariant())
+					switch (key.ToUpperInvariant())
 					{
-						case "endpoint":
+						case "ENDPOINT":
 							this.EventHubUrl = ParseEndpoint(value);
 							break;
 
-						case "sharedaccesskeyname":
+						case "SHAREDACCESSKEYNAME":
 							this.SharedAccessKeyName = value;
 							break;
 
-						case "sharedaccesskey":
+						case "SHAREDACCESSKEY":
 							this.SharedAccessKey = value;
 							break;
 
-						case "entitypath":
+						case "ENTITYPATH":
 							this.EventHubPath = value;
 							break;
 					}
 				}
 			}
 
-			private string ParseEndpoint(string value)
+			private static string ParseEndpoint(string value)
 			{
 				var uri = new Uri(value);
 				var httpUri = "https://" + uri.Authority;
-				if (!httpUri.EndsWith("/") && !uri.PathAndQuery.StartsWith("/"))
+				if (!httpUri.EndsWith("/", StringComparison.OrdinalIgnoreCase) && !uri.PathAndQuery.StartsWith("/", StringComparison.OrdinalIgnoreCase))
 					httpUri += "/";
-				else if (httpUri.EndsWith("/") && uri.PathAndQuery.StartsWith("/"))
+				else if (httpUri.EndsWith("/", StringComparison.OrdinalIgnoreCase) && uri.PathAndQuery.StartsWith("/", StringComparison.OrdinalIgnoreCase))
 					httpUri = httpUri.Trim('/');
 
 				httpUri = httpUri.Trim('/');

@@ -118,7 +118,7 @@ namespace ScribeSharp.Tests
 		[TestCategory(nameof(AzureEventHubLogWriter))]
 		public void AzureEventHubLogWriter_WriteBatch_WritesOverSizedBatch()
 		{
-			var writer = new AzureEventHubLogWriter(ConnectionString, null);
+			var writer = new AzureEventHubLogWriter(ConnectionString, null, false);
 
 			int itemsInBatch = 2;
 			var batch = new List<LogEvent>(itemsInBatch);
