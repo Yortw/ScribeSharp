@@ -3,9 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.ServiceBus.Messaging;
 using System.Linq;
 using ScribeSharp.Infrastructure;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Globalization;
+using System.Net;
 
 namespace ScribeSharp.Writers
 {
@@ -17,14 +21,21 @@ namespace ScribeSharp.Writers
 
 		#region Fields
 
-		private string _ConnectionString;
 		private ILogEventFormatter _Formatter;
 
-		private EventHubClient _Client;
+		private EventHubSender _Sender;
 
 		#endregion
 
 		#region Constructors
+
+		/// <summary>
+		/// Partial constructor. Sends log events as Json.
+		/// </summary>
+		/// <param name="connectionString"></param>
+		public AzureEventHubLogWriter(string connectionString) : this(connectionString, null)
+		{
+		}
 
 		/// <summary>
 		/// Full constructor.
@@ -38,8 +49,8 @@ namespace ScribeSharp.Writers
 			if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 			if (String.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(connectionString)), nameof(connectionString));
 
-			_ConnectionString = connectionString;
-			_Formatter = formatter ?? Formatters.JsonLogEventFormatter.DefaultInstance;
+			_Sender = new EventHubSender(connectionString);
+			_Formatter = formatter;
 		}
 
 		#endregion
@@ -63,10 +74,8 @@ namespace ScribeSharp.Writers
 		/// <param name="logEvent">The event to write.</param>
 		protected override void WriteEventInternal(LogEvent logEvent)
 		{
-			using (var stream = LogEventToStream(logEvent))
-			{
-				Client.Send(new EventData(stream));
-			}
+			var task = _Sender.SendJsonMessage(LogEventToJson(logEvent));
+			task.Wait();
 		}
 
 		#endregion
@@ -81,23 +90,25 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvents == null) return;
 
-			var batch = (
-				from le
-				in logEvents
-				select new EventData(LogEventToStream(le))
-			).ToArray();
-
 			try
 			{
-				Client.SendBatch(batch);
+				var task = _Sender.SendJsonMessage(LogEventsToJson(logEvents));
+				task.Wait();
 			}
-			catch (Microsoft.ServiceBus.Messaging.MessageSizeExceededException)
+			catch (AggregateException agex)
 			{
+				var firstException = agex.InnerExceptions.FirstOrDefault() as HttpRequestException;
+				if (firstException != null && (HttpStatusCode)(firstException.Data["StatusCode"] ?? HttpStatusCode.Unused) == HttpStatusCode.BadRequest)
+				{
+					WriteOverSizedBatch(logEvents);
+				}
+				else
+					throw;
+			}
+			catch (System.Net.Http.HttpRequestException hrex)
+			{
+				//TODO: Check exception here.
 				WriteOverSizedBatch(logEvents);
-			}
-			finally
-			{
-				DisposeBatch(batch);
 			}
 		}
 
@@ -110,88 +121,207 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvents == null) return;
 
-			var batch = new EventData[length];
-			try
+			var batch = new List<LogEvent>(length);
+			for (int cnt = 0; cnt < length; cnt++)
 			{
-				for (int cnt = 0; cnt < length; cnt++)
-				{
-					batch[cnt] = new EventData(LogEventToStream(logEvents[cnt]));
-				}
-				Client.SendBatch(batch);
+				batch.Add(logEvents[cnt]);
 			}
-			catch (Microsoft.ServiceBus.Messaging.MessageSizeExceededException)
-			{
-				WriteOverSizedBatch(logEvents);
-			}
-			finally
-			{
-				DisposeBatch(batch);
-			}
+
+			WriteBatch(batch);
 		}
 
 		#endregion
 
 		#region Private Members
 
-		private EventHubClient Client
+		private string LogEventToJson(LogEvent logEvent)
 		{
-			get { return _Client ?? (_Client = EventHubClient.CreateFromConnectionString(_ConnectionString)); }
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-		private System.IO.Stream LogEventToStream(LogEvent logEvent)
-		{
-			var ms = new System.IO.MemoryStream();
-			try
+			if (_Formatter == null || _Formatter is Formatters.JsonLogEventFormatter)
+				return (_Formatter ?? Formatters.JsonLogEventFormatter.DefaultInstance).FormatToString(logEvent);
+			else
 			{
-				using (var writer = new System.IO.StreamWriter(new NonClosingWrapperStream(ms)))
+				using (var writer = Globals.TextWriterPool.Take())
 				{
-					_Formatter.FormatToTextWriter(logEvent, writer);
-					writer.Flush();
+					using (var jsonWriter = new JsonWriter(writer.Value, false))
+					{
+						jsonWriter.WriteJsonObject(_Formatter.FormatToString(logEvent));
+						jsonWriter.Flush();
+						return writer.Value.GetStringBuilder().ToString();
+					}
 				}
-				ms.Seek(0, System.IO.SeekOrigin.Begin);
-
-				return ms;
-			}
-			catch
-			{
-				ms?.Dispose();
-
-				throw;
 			}
 		}
 
-		private static void DisposeBatch(EventData[] batch)
+		private string LogEventsToJson(IEnumerable<LogEvent> logEvents)
 		{
-			for (int cnt = 0; cnt < batch.Length; cnt++)
+			using (var writer = Globals.TextWriterPool.Take())
 			{
-				batch[cnt].Dispose();
+				using (var jsonWriter = new JsonWriter(writer.Value, false))
+				{
+					if (_Formatter == null || _Formatter is Formatters.JsonLogEventFormatter)
+					{
+						var formatter = (_Formatter ?? Formatters.JsonLogEventFormatter.DefaultInstance);
+						jsonWriter.WriteArrayStart();
+						var doneOne = false;
+						foreach (var item in logEvents)
+						{
+							if (doneOne)
+								jsonWriter.WriteDelimiter();
+
+							formatter.FormatToTextWriter(item, writer.Value);
+
+							doneOne = true;
+						}
+						jsonWriter.WriteArrayEnd();
+						jsonWriter.Flush();
+					}
+					else
+						jsonWriter.WriteArray((from le in logEvents select _Formatter.FormatToString(le)));
+
+					jsonWriter.Flush();
+				}
+
+				return writer.Value.GetStringBuilder().ToString();
 			}
 		}
 
 		private void WriteOverSizedBatch(IEnumerable<LogEvent> logEvents)
 		{
-			var batch = (from le in logEvents select new EventData(LogEventToStream(le))).ToArray();
+			System.Threading.Tasks.Parallel.ForEach<LogEvent>(logEvents,
+				(item) =>
+				{
+					WriteEventInternal(item);
+				});
+		}
 
-			try
+		#endregion
+
+		#region Private Classes
+
+		private class EventHubSender
+		{
+
+			private ServiceBusConnectionStringBuilder _ConnectionString;
+
+			private HttpClient _HttpClient;
+
+			public EventHubSender(string eventHubConnectionString)
 			{
-				var client = _Client;
+				if (eventHubConnectionString == null) throw new ArgumentNullException(nameof(eventHubConnectionString));
 
-				System.Threading.Tasks.Parallel.ForEach<EventData>(batch,
-					(item) =>
-					{
-						client.Send(item);
-					});
+				var handler = new HttpClientHandler();
+				if (handler.SupportsAutomaticDecompression)
+					handler.AutomaticDecompression = System.Net.DecompressionMethods.Deflate | System.Net.DecompressionMethods.GZip;
+
+				_ConnectionString = new ServiceBusConnectionStringBuilder(eventHubConnectionString);
+				_HttpClient = new HttpClient(handler);
+				_HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("SharedAccessSignature", GenerateServiceBusAuthHeader());
 			}
-			finally
+
+			private string GenerateServiceBusAuthHeader()
 			{
-				DisposeBatch(batch);
+				//TODO: Renew token?
+				DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+				TimeSpan diff = DateTime.Now.ToUniversalTime() - origin;
+				uint tokenExpirationTime = Convert.ToUInt32(diff.TotalSeconds) + 20 * 60;
+
+				string url = _ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages";
+				string stringToSign = Uri.EscapeDataString(url) + "\n" + tokenExpirationTime;
+				var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_ConnectionString.SharedAccessKey));
+
+				string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
+				string token = String.Format(CultureInfo.InvariantCulture, "sr={0}&sig={1}&se={2}&skn={3}",
+						Uri.EscapeDataString(url), Uri.EscapeDataString(signature), tokenExpirationTime, _ConnectionString.SharedAccessKeyName);
+
+				return token;
+			}
+
+			public async Task SendJsonMessage(string messageBody)
+			{
+				var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", new StringContent(messageBody, System.Text.UTF8Encoding.UTF8, "application/json")).ConfigureAwait(false);
+				try
+				{
+					result.EnsureSuccessStatusCode();
+				}
+				catch (HttpRequestException hrex)
+				{
+					hrex.Data.Add("StatusCode", result.StatusCode);
+					throw;
+				}
+			}
+		}
+
+		private class ServiceBusConnectionStringBuilder
+		{
+			private static readonly char[] ConnectionStringPropertySeparator = new char[] { ';' };
+
+			public ServiceBusConnectionStringBuilder() : this(null)
+			{
+			}
+
+			public ServiceBusConnectionStringBuilder(string connectionString)
+			{
+				if (!String.IsNullOrEmpty(connectionString))
+					ParseConnectionString(connectionString);
+			}
+
+			public string EventHubPath { get; set; }
+			public string EventHubUrl { get; set; }
+			public string SharedAccessKey { get; set; }
+			public string SharedAccessKeyName { get; set; }
+
+			public override string ToString()
+			{
+				return $"Endpoint={ this.EventHubUrl.Replace("https://", "sb://") };SharedAccessKeyName={ this.SharedAccessKeyName };SharedAccessKey={ this.SharedAccessKey };EntityPath={ this.EventHubPath }";
+			}
+
+			private void ParseConnectionString(string connectionString)
+			{
+				var parts = connectionString.Split(ConnectionStringPropertySeparator);
+				foreach (var part in parts)
+				{
+					var index = part.IndexOf('=');
+					var key = part.Substring(0, index).ToLower();
+					var value = part.Substring(index + 1);
+					switch (key.ToLowerInvariant())
+					{
+						case "endpoint":
+							this.EventHubUrl = ParseEndpoint(value);
+							break;
+
+						case "sharedaccesskeyname":
+							this.SharedAccessKeyName = value;
+							break;
+
+						case "sharedaccesskey":
+							this.SharedAccessKey = value;
+							break;
+
+						case "entitypath":
+							this.EventHubPath = value;
+							break;
+					}
+				}
+			}
+
+			private string ParseEndpoint(string value)
+			{
+				var uri = new Uri(value);
+				var httpUri = "https://" + uri.Authority;
+				if (!httpUri.EndsWith("/") && !uri.PathAndQuery.StartsWith("/"))
+					httpUri += "/";
+				else if (httpUri.EndsWith("/") && uri.PathAndQuery.StartsWith("/"))
+					httpUri = httpUri.Trim('/');
+
+				httpUri = httpUri.Trim('/');
+				return httpUri;
 			}
 		}
 
 		#endregion
 
 	}
+
 }
 
 #endif

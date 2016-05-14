@@ -31,7 +31,7 @@ namespace ScribeSharp.Tests
 		[ExpectedException(typeof(System.ArgumentException))]
 		public void AzureEventHubLogWriter_Constructor_ThrowsOnEmptyConnectionString()
 		{
-			var writer = new AzureEventHubLogWriter(String.Empty, Formatters.JsonLogEventFormatter.DefaultInstance);
+			var writer = new AzureEventHubLogWriter(String.Empty);
 		}
 
 		[TestMethod]
