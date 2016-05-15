@@ -22,7 +22,7 @@ namespace ScribeSharp.Writers
 		private string _ConnectionString;
 		private string _TableName;
 		private ILogEventFormatter _LogEventFormatter;
-		
+
 		private IDictionary<string, string> _ColumnMappings;
 
 		private const string SourceColumn_SerialisedLogEvent = "FullDetails";
@@ -264,7 +264,19 @@ namespace ScribeSharp.Writers
 					if (retryCount >= maxRetries)
 						throw;
 				}
-				catch (TimeoutException) 
+				catch (TimeoutException)
+				{
+					retryCount++;
+					if (retryCount >= maxRetries)
+						throw;
+				}
+				catch (InvalidOperationException)
+				{
+					retryCount++;
+					if (retryCount >= maxRetries)
+						throw;
+				}
+				catch (System.Runtime.InteropServices.COMException)
 				{
 					retryCount++;
 					if (retryCount >= maxRetries)
@@ -571,7 +583,7 @@ namespace ScribeSharp.Writers
 				get { return (LogEvent)_Enumerator.Current; }
 			}
 
-			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification="Really, it's not that complex regardless of what the stats say, and it is reasonably efficient.")]
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Really, it's not that complex regardless of what the stats say, and it is reasonably efficient.")]
 			private object GetValueByName(string name)
 			{
 				switch (name)
@@ -611,7 +623,7 @@ namespace ScribeSharp.Writers
 						if (properties.ContainsKey(name))
 							return properties[name] ?? String.Empty;
 						else
-							return null;					
+							return null;
 				}
 			}
 		}

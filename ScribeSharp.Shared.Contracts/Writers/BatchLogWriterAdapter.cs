@@ -35,7 +35,7 @@ namespace ScribeSharp.Writers
 		}
 
 		/// <summary>
-		/// Pass the <paramref name="logEvent"/> to the inner log writer.
+		/// Passes the <paramref name="logEvent"/> to the inner log writer.
 		/// </summary>
 		/// <param name="logEvent">The event to log.</param>
 		public void Write(LogEvent logEvent)
