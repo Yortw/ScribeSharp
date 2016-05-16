@@ -58,7 +58,7 @@ namespace ScribeSharp.Writers
 			//TODO: This should use a pooled instance from the inner logger?.
 			var newLogEvent = new LogEvent();
 			logEvent.Clone(newLogEvent);
-			_Logger.WriteEventWithSource(newLogEvent, newLogEvent.Source, newLogEvent.SourceMethod);
+			_Logger.WriteEventWithSource(newLogEvent, newLogEvent.Source, newLogEvent.SourceMethod, , newLogEvent.SourceLineNumber);
 		}
 
 		#endregion
