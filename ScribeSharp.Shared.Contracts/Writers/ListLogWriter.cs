@@ -21,6 +21,15 @@ namespace ScribeSharp.Writers
 
 		#endregion
 
+		#region Events
+
+		/// <summary>
+		/// Raised whenever a <seealso cref="LogEvent"/> instance is added to the list by the writer.
+		/// </summary>
+		public event EventHandler<LogEventWrittenEventArguments> LogEventWritten;
+
+		#endregion
+
 		#region Constructors
 
 		/// <summary>
@@ -82,6 +91,13 @@ namespace ScribeSharp.Writers
 			var newEntry = _Pool.Take();
 			logEvent.Clone(newEntry);
 			_Events.Add(newEntry);
+
+			OnEventWritten(logEvent);
+		}
+
+		private void OnEventWritten(LogEvent logEvent)
+		{
+			LogEventWritten?.Invoke(this, new LogEventWrittenEventArguments(logEvent));
 		}
 
 		#endregion

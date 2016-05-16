@@ -30,6 +30,35 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		[TestCategory("ListLogWriter")]
 		[TestCategory("Writers")]
+		public void ListLogWriter_Write_RaisesLogEventWrittenEvent()
+		{
+			var list = new List<LogEvent>(10);
+			var logWriter = new ListLogWriter(list, list.Capacity);
+
+			LogEvent writtenEvent = null;
+
+			using (var signal = new System.Threading.ManualResetEvent(false))
+			{
+				logWriter.LogEventWritten += (sender, lea) =>
+				{
+					writtenEvent = lea.LogEvent;
+					signal.Set();
+				};
+
+				var logEvent = new LogEvent();
+				logEvent.EventName = "Test";
+				logWriter.Write(logEvent);
+				signal.WaitOne(1000);
+
+				Assert.AreEqual(1, list.Count);
+				Assert.IsNotNull(writtenEvent);
+				Assert.AreEqual(logEvent.EventName, writtenEvent.EventName);
+			}
+		}
+
+		[TestMethod]
+		[TestCategory("ListLogWriter")]
+		[TestCategory("Writers")]
 		public void ListLogWriter_Write_EnforcesCapacity()
 		{
 			var list = new List<LogEvent>(5);
