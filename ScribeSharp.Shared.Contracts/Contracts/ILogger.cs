@@ -9,7 +9,7 @@ namespace ScribeSharp
 	/// <summary>
 	/// Interface for components that can be used to write log entries. This is the primary interface used by client code.
 	/// </summary>
-	public interface ILogger
+	public interface ILogger : IFlushable
 	{
 		#region WriteEvent Overloads
 
@@ -130,6 +130,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
+		/// <param name="cloneEvent">A boolean indicating if a cloned copy of the <paramref name="logEvent"/> should be used. If the <see cref="LogEvent"/> instance provided is or might be used elsewhere (such as in the case of the <see cref="Writers.ForwardingLogWriter"/> then using a clone prevents concurrency issues.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		void WriteEventWithSource(LogEvent logEvent,
 #if SUPPORTS_CALLERATTRIBUTES
@@ -143,7 +144,8 @@ namespace ScribeSharp
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerLineNumber] 
 #endif
-			int sourceLineNumber = -1);
+			int sourceLineNumber = -1,
+			bool cloneEvent = false);
 
 		#endregion
 

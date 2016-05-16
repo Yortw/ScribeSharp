@@ -12,7 +12,7 @@ namespace ScribeSharp
 	/// <summary>
 	/// Used to write log events. Default implementation of <see cref="ILogger"/> and the primary class used by client code. 
 	/// </summary>
-	public class Logger : ILogger, IDisposable
+	public class Logger : ILogger, IFlushable, IDisposable
 	{
 		//TODO: Logger extension methods?
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
@@ -254,6 +254,7 @@ namespace ScribeSharp
 		/// <param name="source">A string containing the source to assign to <see cref="LogEvent.Source"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerFilePathAttribute.</param>
 		/// <param name="sourceMethod">A string containing the method name to assign to <see cref="LogEvent.SourceMethod"/> if it is not already set. If not supplied this parameter will be set by the compiler on systems that support System.Runtime.CompilerServices.CallerMemberNameAttribute.</param>
 		/// <param name="sourceLineNumber">The line number of the source code at which this method was called.</param>
+		/// <param name="cloneEvent">A boolean indicating if a cloned copy of the <paramref name="logEvent"/> should be used. If the <see cref="LogEvent"/> instance provided is or might be used elsewhere (such as in the case of the <see cref="Writers.ForwardingLogWriter"/> then using a clone prevents concurrency issues.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		public void WriteEventWithSource(LogEvent logEvent,
 #if SUPPORTS_CALLERATTRIBUTES
@@ -267,7 +268,8 @@ namespace ScribeSharp
 #if SUPPORTS_CALLERATTRIBUTES
 			[System.Runtime.CompilerServices.CallerLineNumber] 
 #endif
-			int sourceLineNumber = -1)
+			int sourceLineNumber = -1,
+			bool cloneEvent = false)
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
@@ -275,10 +277,27 @@ namespace ScribeSharp
 			{
 				if (!IsEnabled || !(_FirstChanceFilter?.ShouldLog(logEvent.EventName, logEvent.EventSeverity, logEvent.EventType, logEvent.Source, logEvent.SourceMethod) ?? true)) return;
 
-				if (logEvent.DateTime == DateTimeOffset.MinValue)
-					logEvent.DateTime = _LogClock.Now;
+				LogEvent eventToWrite = logEvent;
+				PooledObject<LogEvent> pooledLogEvent = null;
+				try
+				{
+					if (cloneEvent)
+					{
+						pooledLogEvent = _EntryPool.Take();
+						logEvent.Clone(pooledLogEvent.Value);
+						eventToWrite = pooledLogEvent.Value;
+					}
 
-				UnsafeWriteEvent(logEvent, source, sourceMethod, sourceLineNumber);
+					if (eventToWrite.DateTime == DateTimeOffset.MinValue)
+						eventToWrite.DateTime = _LogClock.Now;
+
+					UnsafeWriteEvent(eventToWrite, source, sourceMethod, sourceLineNumber);
+				}
+				finally
+				{
+					if (cloneEvent && pooledLogEvent != null)
+						pooledLogEvent.Dispose();
+				}
 			}
 			catch (LogException lex)
 			{
@@ -473,6 +492,14 @@ namespace ScribeSharp
 			{
 				_IsEnabled = value;
 			}
+		}
+
+		/// <summary>
+		/// Flushes the inner log writer, causing an immediate write of any pending log events, if possible.
+		/// </summary>
+		public void Flush()
+		{
+			(_LogWriter as IFlushable)?.Flush();
 		}
 
 		#endregion

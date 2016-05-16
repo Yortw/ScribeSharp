@@ -296,7 +296,7 @@ namespace ScribeSharp.Writers
 						WriteBatch(buffer, poolObjects, eventsRead);
 				}
 
-				_QueueEmptySignal?.WaitOne();
+				_QueueEmptySignal?.Set();
 			}
 		}
 

@@ -212,3 +212,4 @@ _Pvt_Extensions/
 ModelManifest.xml
 /ScribeSharp.zip
 /ScribeSharp.Tests/TestSecrets.cs
+/.nuget

@@ -11,13 +11,6 @@ namespace ScribeSharp.ContextProviders
 	public sealed class GuidEventInstanceIdLogEntryContextProvider : ContextProviderBase
 	{
 
-		#region Fields
-
-		private string _PropertyName;
-		private string _Version;
-
-		#endregion
-
 		#region Constructors
 
 		/// <summary>

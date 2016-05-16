@@ -9,7 +9,7 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// Writes events to multiple child <see cref="ILogWriter"/> implementations.
 	/// </summary>
-	public sealed class AggregateLogWriter : LogWriterBase, IDisposable
+	public sealed class AggregateLogWriter : LogWriterBase, IFlushable, IDisposable
 	{
 		#region Fields
 
@@ -92,6 +92,28 @@ namespace ScribeSharp.Writers
 			foreach (var writer in _Writers)
 			{
 				(writer as IDisposable)?.Dispose();
+			}
+		}
+
+		#endregion
+
+		#region IFlushable
+
+		/// <summary>
+		/// Flushes all inner log writers that support the <see cref="IFlushable"/> interface.
+		/// </summary>
+		public void Flush()
+		{
+			for (int cnt = 0; cnt < _Writers.Count; cnt++)
+			{
+				var flushable = _Writers[cnt] as IFlushable;
+				if (flushable != null)
+				{
+					lock (flushable)
+					{
+						flushable.Flush();
+					}
+				}
 			}
 		}
 
