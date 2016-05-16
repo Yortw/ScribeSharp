@@ -124,19 +124,7 @@ namespace ScribeSharp.Tests
 		[TestMethod]
 		[TestCategory("AsyncQueueLogWriter")]
 		[TestCategory("Writers")]
-		public void AggregateLogWriter_RequiresSynchronisation_IsTrueIfChildRequires()
-		{
-			var child = new MockLogWriter();
-			child.SetRequiresSynchronisation(true);
-			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero, null);
-
-			Assert.AreEqual(true, logWriter.RequiresSynchronization);
-		}
-
-		[TestMethod]
-		[TestCategory("AsyncQueueLogWriter")]
-		[TestCategory("Writers")]
-		public void AggregateLogWriter_RequiresSynchronisation_IsFalseIfChildDoesNotRequires()
+		public void AggregateLogWriter_RequiresSynchronisation_IsFalse()
 		{
 			var child = new MockLogWriter();
 			var logWriter = new AsyncQueueLogWriter(child, 10, TimeSpan.Zero, null);

@@ -87,9 +87,9 @@ namespace ScribeSharp.Writers
 #endif
 		}
 
-#endregion
+		#endregion
 
-#region Overrides
+		#region Overrides
 
 		/// <summary>
 		/// Queues the <paramref name="logEvent"/> for writing to the child log writers.
@@ -135,13 +135,13 @@ namespace ScribeSharp.Writers
 		{
 			get
 			{
-				return _LogWriter?.RequiresSynchronization ?? false;
+				return false;
 			}
 		}
 
-#endregion
+		#endregion
 
-#region Public Methods
+		#region Public Methods
 
 		/// <summary>
 		/// Disposes this instance and all internal resources.
@@ -220,9 +220,9 @@ namespace ScribeSharp.Writers
 			}
 		}
 
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 		private void WaitForBackgroundThreadToExit()
 		{
@@ -304,7 +304,15 @@ namespace ScribeSharp.Writers
 		{
 			try
 			{
-				_LogWriter.WriteBatch(buffer, eventsRead);
+				if(_LogWriter.RequiresSynchronization)
+				{
+					lock (_LogWriter)
+					{
+						_LogWriter.WriteBatch(buffer, eventsRead);
+					}
+				}
+				else
+					_LogWriter.WriteBatch(buffer, eventsRead);
 			}
 			catch (Exception ex) when (!ex.ShouldRethrowImmediately())
 			{
@@ -324,9 +332,9 @@ namespace ScribeSharp.Writers
 			if (_IsDisposed) throw new ObjectDisposedException(nameof(AsyncQueueLogWriter));
 		}
 
-#endregion
+		#endregion
 
-#region Event Handlers
+		#region Event Handlers
 
 #if SUPPORTS_APPDOMAINS
 
@@ -347,7 +355,7 @@ namespace ScribeSharp.Writers
 
 #endif
 
-#endregion
+		#endregion
 
 	}
 }

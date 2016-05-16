@@ -606,7 +606,7 @@ namespace ScribeSharp
 			{
 				if (_LogWriter.RequiresSynchronization)
 				{
-					lock (this)
+					lock (_LogWriter)
 					{
 						_LogWriter.Write(logEvent);
 					}
