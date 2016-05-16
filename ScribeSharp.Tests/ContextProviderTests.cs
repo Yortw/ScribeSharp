@@ -430,6 +430,50 @@ namespace ScribeSharp.Tests
 
 		#endregion
 
+		#region GuidEventInstanceIdLogEntryContextProvider Tests
+
+		#region Constructor Tests
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(GuidEventInstanceIdLogEntryContextProvider))]
+		public void GuidEventInstanceIdLogEntryContextProvider_Constructor_ConstructsOk()
+		{
+			var provider = new GuidEventInstanceIdLogEntryContextProvider();
+		}
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(GuidEventInstanceIdLogEntryContextProvider))]
+		public void GuidEventInstanceIdLogEntryContextProvider_Constructor_ConstructsOkWithNullFilter()
+		{
+			var provider = new GuidEventInstanceIdLogEntryContextProvider(null);
+		}
+
+		#endregion
+
+		#region AddProperties Tests
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(GuidEventInstanceIdLogEntryContextProvider))]
+		public void GuidEventInstanceIdLogEntryContextProvider_AddProperties_AddsProperty()
+		{
+			var provider = new GuidEventInstanceIdLogEntryContextProvider();
+			var logEvent = new LogEvent()
+			{
+				EventName = "Test event",
+				Properties = new Dictionary<string, object>()
+			};
+			provider.AddProperties(logEvent, null);
+			Assert.IsTrue(logEvent.Properties.ContainsKey("Event Instance ID"));
+			System.Guid.Parse(logEvent.Properties["Event Instance ID"].ToString());
+		}
+
+		#endregion
+
+		#endregion
+
 		#region LogCallContextLogEventContextProvider Tests
 
 		#region Constructor Tests

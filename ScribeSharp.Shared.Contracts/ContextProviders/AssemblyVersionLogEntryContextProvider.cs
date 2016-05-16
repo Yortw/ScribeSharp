@@ -30,7 +30,7 @@ namespace ScribeSharp.ContextProviders
 		/// </summary>
 		/// <param name="assembly">A reference to a <see cref="System.Reflection.Assembly"/> whose version should be written as a property.</param>
 		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to determine if the property should be added or not.</param>
-		public AssemblyVersionLogEntryContextProvider(System.Reflection.Assembly assembly, ILogEventFilter filter) : this(assembly, null, null) { }
+		public AssemblyVersionLogEntryContextProvider(System.Reflection.Assembly assembly, ILogEventFilter filter) : this(assembly, null, filter) { }
 		/// <summary>
 		/// Full constructor.
 		/// </summary>

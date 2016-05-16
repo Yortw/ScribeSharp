@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Clocks\LocalSystemClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clocks\MinTimeClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clocks\UtcSystemClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\GuidEventInstanceIdLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\AssemblyVersionLogEntryContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextProviders\LogCallContextLogEventContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\IBatchLogWriter.cs" />
