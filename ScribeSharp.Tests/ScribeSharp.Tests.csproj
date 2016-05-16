@@ -121,6 +121,7 @@
     <Compile Include="TestSecrets.cs" />
     <Compile Include="TextLogWriterTests.cs" />
     <Compile Include="ToStringRendererTests.cs" />
+    <Compile Include="TraceLogWriterTests.cs" />
     <Compile Include="TypeRendererMapTests.cs" />
     <Compile Include="XmlLogEventFormatterTests.cs" />
     <Compile Include="XmlPropertyRendererTests.cs" />

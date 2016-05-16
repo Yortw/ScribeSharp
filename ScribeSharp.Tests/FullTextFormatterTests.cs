@@ -211,6 +211,26 @@ namespace ScribeSharp.Tests
 			Assert.IsTrue(result.Contains(exceptionData));
 		}
 
+
+		[TestMethod]
+		[TestCategory("FullTextFormatter")]
+		[TestCategory("Formatters")]
+		public void FullTextFormatter_FormatToString_FormatsPropertiesToOwnLines()
+		{
+			var rendererMap = new ScribeSharp.PropertyRenderers.TypeRendererMap(new KeyValuePair<Type, IPropertyRenderer>(typeof(Exception), new PropertyRenderers.ExceptionAsXmlRenderer()));
+			var formatter = new FullTextLogEventFormatter(rendererMap);
+			var logEvent = new LogEvent()
+			{
+				EventName = "Test log event.",
+				Properties = new Dictionary<string, object>()
+			};
+			logEvent.Properties.Add("Property 1", "Value 1");
+			logEvent.Properties.Add("Property 2", "Value 2");
+
+			var result = formatter.FormatToString(logEvent);
+			Assert.IsTrue(result.Trim().EndsWith(Environment.NewLine + "Property 1: Value 1" + Environment.NewLine + "Property 2: Value 2"));
+		}
+
 		#endregion
 
 		#region FormatToTextWriter Tests

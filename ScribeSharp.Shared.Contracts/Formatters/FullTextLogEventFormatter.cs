@@ -61,7 +61,7 @@ namespace ScribeSharp.Formatters
 				{
 					writer.Write(property.Key);
 					writer.Write(": ");
-					writer.Write(property.Value);
+					writer.WriteLine(property.Value);
 				}
 			}
 

@@ -26,7 +26,7 @@ namespace ScribeSharp.Writers
 		/// <summary>
 		/// Raised whenever a <seealso cref="LogEvent"/> instance is added to the list by the writer.
 		/// </summary>
-		public event EventHandler<LogEventWrittenEventArguments> LogEventWritten;
+		public event EventHandler<LogEventWrittenEventArgs> LogEventWritten;
 
 		#endregion
 
@@ -97,7 +97,7 @@ namespace ScribeSharp.Writers
 
 		private void OnEventWritten(LogEvent logEvent)
 		{
-			LogEventWritten?.Invoke(this, new LogEventWrittenEventArguments(logEvent));
+			LogEventWritten?.Invoke(this, new LogEventWrittenEventArgs(logEvent));
 		}
 
 		#endregion
@@ -110,6 +110,7 @@ namespace ScribeSharp.Writers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_Pool", Justification = "It is disposed, CA just can't tell.")]
 		public void Dispose()
 		{
+			this.LogEventWritten = null;
 			_Pool?.Dispose();
 		}
 

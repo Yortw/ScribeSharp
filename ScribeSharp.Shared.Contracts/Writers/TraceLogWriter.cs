@@ -31,9 +31,9 @@ namespace ScribeSharp.Writers
 			_LogEventFormatter = eventFormatter ?? SimpleLogEventFormatter.DefaultInstance;
 		}
 
-#endregion
+		#endregion
 
-#region Overrides
+		#region Overrides
 
 		/// <summary>
 		/// Writes the supplied <see cref="LogEvent"/> to <see cref="System.Diagnostics.Trace"/>.
@@ -46,22 +46,26 @@ namespace ScribeSharp.Writers
 		{
 			if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
 
+			var formattedMessage = _LogEventFormatter.FormatToString(logEvent) ?? String.Empty;
+			if (formattedMessage.Contains("{") || formattedMessage.Contains("}"))
+				formattedMessage = formattedMessage.Replace("{", "{{").Replace("}", "}}");
+
 			switch (logEvent.EventSeverity)
 			{
 				case LogEventSeverity.Information:
-					System.Diagnostics.Trace.TraceInformation(_LogEventFormatter.FormatToString(logEvent));
+					System.Diagnostics.Trace.TraceInformation(formattedMessage);
 					break;
 
 				case LogEventSeverity.Error:
-					System.Diagnostics.Trace.TraceError(_LogEventFormatter.FormatToString(logEvent));
+					System.Diagnostics.Trace.TraceError(formattedMessage);
 					break;
 
 				case LogEventSeverity.Warning:
-					System.Diagnostics.Trace.TraceWarning(_LogEventFormatter.FormatToString(logEvent));
+					System.Diagnostics.Trace.TraceWarning(formattedMessage);
 					break;
 
 				default:
-					System.Diagnostics.Trace.TraceWarning(_LogEventFormatter.FormatToString(logEvent), logEvent.EventSeverity.ToString());
+					System.Diagnostics.Trace.Write(formattedMessage, logEvent.EventSeverity.ToString());
 					break;
 			}
 		}

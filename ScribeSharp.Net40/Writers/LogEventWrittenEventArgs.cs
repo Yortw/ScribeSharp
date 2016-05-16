@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Events arguments for the <see cref="ListLogWriter.LogEventWritten"/> event.
 	/// </summary>
-	public class LogEventWrittenEventArguments : System.EventArgs
+	public class LogEventWrittenEventArgs : System.EventArgs
 	{
 		private readonly LogEvent logEvent;
 
@@ -12,7 +12,7 @@
 		/// </summary>
 		/// <param name="logEvent">The <see cref="LogEvent"/> instance that was written.</param>
 		/// <seealso cref="LogEvent"/>
-		public LogEventWrittenEventArguments(LogEvent logEvent)
+		public LogEventWrittenEventArgs(LogEvent logEvent)
 		{
 			this.logEvent = logEvent;
 		}
@@ -20,7 +20,7 @@
 		/// <summary>
 		/// The <see cref="LogEvent"/> instance that was written.
 		/// </summary>
-		/// <seealso cref="LogEventWrittenEventArguments(LogEvent)"/>
+		/// <seealso cref="LogEventWrittenEventArgs(LogEvent)"/>
 		public LogEvent LogEvent
 		{
 			get
