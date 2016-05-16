@@ -39,7 +39,11 @@ namespace ScribeSharp.ContextProviders
 		/// <param name="filter">A <see cref="ILogEventFilter"/> instance used to determine if the property should be added or not.</param>
 		public AssemblyVersionLogEntryContextProvider(System.Reflection.Assembly assembly, string propertyName, ILogEventFilter filter) : base(filter)
 		{
+			if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
 			var name = assembly.GetName();
+			_PropertyName = propertyName;
+
 			if (String.IsNullOrEmpty(_PropertyName))
 				_PropertyName = name.Name;
 

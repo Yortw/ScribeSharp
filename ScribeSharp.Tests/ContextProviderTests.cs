@@ -148,6 +148,78 @@ namespace ScribeSharp.Tests
 
 		#endregion
 
+		#region AssemblyVersionLogEntryContextProvider Tests
+
+		#region Constructor Tests
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(AssemblyVersionLogEntryContextProvider))]
+		[TestCategory("ApiQualityTests")]
+		public void AssemblyVersionLogEntryContextProvider_Constructor_ConstructsOk()
+		{
+			var provider = new AssemblyVersionLogEntryContextProvider(typeof(AssemblyVersionLogEntryContextProvider).Assembly);
+		}
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(AssemblyVersionLogEntryContextProvider))]
+		[TestCategory("ApiQualityTests")]
+		[ExpectedException(typeof(System.ArgumentNullException))]
+		public void AssemblyVersionLogEntryContextProvider_Constructor_ThrowsOnNullAssembly()
+		{
+			var provider = new AssemblyVersionLogEntryContextProvider(null);
+		}
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(AssemblyVersionLogEntryContextProvider))]
+		[TestCategory("ApiQualityTests")]
+		public void AssemblyVersionLogEntryContextProvider_Constructor_ConstructsOkWithNullFilter()
+		{
+			var provider = new AssemblyVersionLogEntryContextProvider(typeof(AssemblyVersionLogEntryContextProvider).Assembly, null);
+		}
+
+		#endregion
+
+		#region AddProperties Tests
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(AssemblyVersionLogEntryContextProvider))]
+		public void AssemblyVersionLogEntryContextProvider_AddProperties_AddsPropertyWithSpecifiedName()
+		{
+			var assembly = typeof(AssemblyVersionLogEntryContextProvider).Assembly;
+			var provider = new AssemblyVersionLogEntryContextProvider(assembly, "ScribeSharp Version", null);
+			var logEvent = new LogEvent()
+			{
+				EventName = "Test event",
+				Properties = new Dictionary<string, object>()
+			};
+			provider.AddProperties(logEvent, null);
+			Assert.AreEqual(assembly.GetName().Version.ToString(), logEvent.Properties["ScribeSharp Version"]);
+		}
+
+		[TestMethod]
+		[TestCategory("ContextProviders")]
+		[TestCategory(nameof(AssemblyVersionLogEntryContextProvider))]
+		public void AssemblyVersionLogEntryContextProvider_AddProperties_AddsPropertyWithAssemblyName()
+		{
+			var assembly = typeof(AssemblyVersionLogEntryContextProvider).Assembly;
+			var provider = new AssemblyVersionLogEntryContextProvider(assembly, null);
+			var logEvent = new LogEvent()
+			{
+				EventName = "Test event",
+				Properties = new Dictionary<string, object>()
+			};
+			provider.AddProperties(logEvent, null);
+			Assert.AreEqual(assembly.GetName().Version.ToString(), logEvent.Properties[assembly.GetName().Name]);
+		}
+
+		#endregion
+
+		#endregion
+
 		#region ClrVersionLogEntryContextProvider Tests
 
 		#region Constructor Tests
