@@ -85,7 +85,7 @@ namespace ScribeSharp.Infrastructure
 		public void WriteDateTimeOffset(DateTimeOffset value)
 		{
 			_Writer.Write("\"");
-			_Writer.Write(value.ToString("o"));
+			_Writer.Write(value.ToString("O"));
 			_Writer.Write("\"");
 		}
 
@@ -97,7 +97,7 @@ namespace ScribeSharp.Infrastructure
 		public void WriteDateTime(DateTime value)
 		{
 			_Writer.Write("\"");
-			_Writer.Write(value.ToString("o"));
+			_Writer.Write(value.ToString("O"));
 			_Writer.Write("\"");
 		}
 

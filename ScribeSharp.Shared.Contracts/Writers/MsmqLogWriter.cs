@@ -46,6 +46,19 @@ namespace ScribeSharp.Writers
 		/// <summary>
 		/// Partial constructor.
 		/// </summary>
+		/// <param name="queuePath">The path to the queue to send to.</param>
+		/// <param name="createQueueIfNotFound">A boolean indicating if the queue should be created if it does not already exist.</param>
+		/// <param name="formatter">Either null, or a <see cref="ILogEventFormatter"/> implementation used to format log entries before placing them in the queue. If null, the the log event or collection of log events is set as the message body and the MSMQ formatter associated with the queue is used.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="queuePath"/> is null.</exception>
+		/// <exception cref="System.ArgumentException">Thrown if <paramref name="queuePath"/> is empty or whitespace.</exception>
+		/// <exception cref="System.Messaging.MessageQueueException">Thrown if the queue does not exist, cannot be created, MSMQ is not installed etc.</exception>
+		public MsmqLogWriter(string queuePath, bool createQueueIfNotFound, ILogEventFormatter formatter) : this(GetOrCreateQueue(queuePath, createQueueIfNotFound), formatter)
+		{
+		}
+
+		/// <summary>
+		/// Partial constructor.
+		/// </summary>
 		/// <param name="queue">A pre-configured <see cref="System.Messaging.MessageQueue"/> instance that will be used to send log events to.</param>
 		public MsmqLogWriter(System.Messaging.MessageQueue queue) : this(queue, null)
 		{

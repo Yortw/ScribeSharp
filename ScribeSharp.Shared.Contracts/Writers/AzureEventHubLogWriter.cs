@@ -16,6 +16,9 @@ namespace ScribeSharp.Writers
 	/// <summary>
 	/// Sends events to an Azure event hub for processing in the cloud.
 	/// </summary>
+	/// <remarks>
+	/// <para>Note that while the log writer supports sending the event hub data using gzip compression and an appropriate content-encoding header, event hub does not decompress the data when received. This makes it unsuitable for use with anything that does not decompress the data itself (such as Azure Stream Analytics).</para>
+	/// </remarks>
 	public sealed class AzureEventHubLogWriter : LogWriterBase, IBatchLogWriter, IDisposable
 	{
 
@@ -32,7 +35,7 @@ namespace ScribeSharp.Writers
 		/// Partial constructor. Sends log events as Json.
 		/// </summary>
 		/// <param name="connectionString"></param>
-		public AzureEventHubLogWriter(string connectionString) : this(connectionString, null, true)
+		public AzureEventHubLogWriter(string connectionString) : this(connectionString, null, false)
 		{
 		}
 
@@ -44,7 +47,7 @@ namespace ScribeSharp.Writers
 		/// <param name="formatter">An <see cref="ILogEventFormatter"/> implementation used to format events before sending to Azure. If null then <see cref="Formatters.JsonLogEventFormatter.DefaultInstance"/> is used.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="connectionString"/> is null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="connectionString"/> is empty or contains only whitespace.</exception>
-		public AzureEventHubLogWriter(string connectionString, ILogEventFormatter formatter) : this(connectionString, formatter, true)
+		public AzureEventHubLogWriter(string connectionString, ILogEventFormatter formatter) : this(connectionString, formatter, false)
 		{
 		}
 
@@ -188,7 +191,6 @@ namespace ScribeSharp.Writers
 							doneOne = true;
 						}
 						jsonWriter.WriteArrayEnd();
-						jsonWriter.Flush();
 					}
 					else
 						jsonWriter.WriteArray((from le in logEvents select _Formatter.FormatToString(le)));
@@ -283,7 +285,8 @@ namespace ScribeSharp.Writers
 
 					using (var content = new StreamContent(ms))
 					{
-						content.Headers.ContentEncoding.Add("gzip");
+						if (_UseCompression)
+							content.Headers.ContentEncoding.Add("gzip");
 
 						var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", content).ConfigureAwait(false);
 						try
@@ -297,17 +300,6 @@ namespace ScribeSharp.Writers
 						}
 					}
 				}
-
-				//var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", new StringContent(messageBody, System.Text.UTF8Encoding.UTF8, "application/json")).ConfigureAwait(false);
-				//try
-				//{
-				//	result.EnsureSuccessStatusCode();
-				//}
-				//catch (HttpRequestException hrex)
-				//{
-				//	hrex.Data.Add("StatusCode", result.StatusCode);
-				//	throw;
-				//}
 			}
 
 			#endregion

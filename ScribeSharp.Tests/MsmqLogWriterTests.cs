@@ -76,6 +76,15 @@ namespace ScribeSharp.Tests
 			var writer = new MsmqLogWriter(new System.Messaging.MessageQueue(_TestQueuePath), Formatters.JsonLogEventFormatter.DefaultInstance);
 		}
 
+		[TestMethod]
+		[TestCategory("Writers")]
+		[TestCategory("ApiQualityTests")]
+		[TestCategory("MsmqLogWriter")]
+		public void MsmqLogWriter_Constructor_ConstructsOkWithQueuePathAndFormatter()
+		{
+			var writer = new MsmqLogWriter(_TestQueuePath, true, Formatters.JsonLogEventFormatter.DefaultInstance);
+		}
+
 		#endregion
 
 		#region Write Tests
