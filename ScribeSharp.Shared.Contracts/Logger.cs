@@ -619,7 +619,7 @@ namespace ScribeSharp
 		private void UnsafeWriteEvent(LogEvent logEvent, string source, string sourceMethod, int sourceLineNumber)
 		{
 			if (String.IsNullOrEmpty(logEvent.Source))
-				logEvent.Source = _Source ?? source;
+				logEvent.Source = String.IsNullOrEmpty(source) ? _Source : source; 
 
 			if (String.IsNullOrEmpty(logEvent.SourceMethod))
 				logEvent.SourceMethod = sourceMethod;
