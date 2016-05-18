@@ -26,6 +26,9 @@ namespace ScribeSharp.Infrastructure
 
 		private bool _NeedsDelimiter;
 
+		private int _ObjectGraphWriteDepth;
+		private const int MaxObjectGraphWriteDepth = 256;
+
 		private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, IList<System.Reflection.PropertyInfo>> TypeProperties = new System.Collections.Concurrent.ConcurrentDictionary<Type, IList<System.Reflection.PropertyInfo>>();
 
 		#endregion
@@ -596,33 +599,39 @@ namespace ScribeSharp.Infrastructure
 
 		private void WriteJsonObject<T>(string name, T value, Type type)
 		{
-			var properties = GetTypeProperties(type);
-			if (!Utils.Any(properties)) return;
-
-			if (!String.IsNullOrEmpty(name))
-				WritePropertyName(name);
-
-			if (value == null)
+			if (_ObjectGraphWriteDepth < MaxObjectGraphWriteDepth)
 			{
-				WriteNull();
-				return;
+				var properties = GetTypeProperties(type);
+				if (!Utils.Any(properties)) return;
+
+				if (!String.IsNullOrEmpty(name))
+					WritePropertyName(name);
+
+				if (value == null)
+				{
+					WriteNull();
+					return;
+				}
+
+				_ObjectGraphWriteDepth++;
+
+				if (value is IDictionary)
+					WriteDictionary((IDictionary)value);
+				else
+				{
+					WriteObjectStart();
+
+					for (int cnt = 0; cnt < properties.Count; cnt++)
+					{
+						var property = properties[cnt];
+						WriteJsonProperty(property.Name, property.GetValue(value, null));
+					}
+
+					WriteObjectEnd();
+				}
+
+				_ObjectGraphWriteDepth--;
 			}
-
-			if (value is IDictionary)
-			{
-				WriteDictionary((IDictionary)value);
-				return;
-			}
-
-			WriteObjectStart();
-
-			for (int cnt = 0; cnt < properties.Count; cnt++)
-			{
-				var property = properties[cnt];
-				WriteJsonProperty(property.Name, property.GetValue(value, null));
-			}
-
-			WriteObjectEnd();
 		}
 
 		#endregion
@@ -714,7 +723,7 @@ namespace ScribeSharp.Infrastructure
 			if (!TypeProperties.TryGetValue(type, out retVal))
 			{
 				retVal = new List<PropertyInfo>(
-					(from pi 
+					(from pi
 					 in type.GetProperties()
 					 where pi.GetIndexParameters().Length <= 0
 					 select pi)
