@@ -112,7 +112,7 @@ namespace ScribeSharp.Writers
 				int partCnt = 1;
 				while (startIndex < message.Length)
 				{ 
-					int partSize = Math.Min(32000, message.Length - startIndex);
+					int partSize = Math.Min(30000, message.Length - startIndex);
 					_Log.WriteEntry(String.Format(System.Globalization.CultureInfo.InvariantCulture, Properties.Resources.SplitEventEntryPrefix, partCnt.ToString(System.Globalization.CultureInfo.InvariantCulture)) + Environment.NewLine +  message.Substring(startIndex, partSize), LogEventToWindowsEventType(logEvent), logEvent.GetPropertyOrDefault("EventId", 0), logEvent.GetPropertyOrDefault<short>("CategoryId", LogEventToWindowsEventCategory(logEvent)), logEvent.GetPropertyOrDefault<byte[]>("RawData", null));
 					startIndex += partSize;
 					partCnt++;
