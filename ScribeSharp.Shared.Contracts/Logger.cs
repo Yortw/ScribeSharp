@@ -600,10 +600,11 @@ namespace ScribeSharp
 				var eventProperties = (logEvent.Properties = logEvent.Properties ?? new Dictionary<string, object>((properties?.Length ?? 1) + (_ContextProviders?.Length ?? 0)));
 				foreach (var property in properties)
 				{
+					renderer = null;
 					if (property.Value != null)
 					{
 						if (hasRenderers)
-							renderer = _RendererMap.GetRenderer(property.GetType());
+							renderer = _RendererMap.GetRenderer(property.Value.GetType());
 						else if (_DefaultExceptionRenderer != null && property.Value is Exception)
 							renderer = _DefaultExceptionRenderer;
 					}
