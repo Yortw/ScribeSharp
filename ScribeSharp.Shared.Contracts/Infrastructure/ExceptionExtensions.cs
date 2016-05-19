@@ -82,6 +82,17 @@ namespace ScribeSharp
 			if (ex.InnerException != null)
 				ExceptionToXml(ex.InnerException, writer);
 
+			var aggregateException = ex as AggregateException;
+			if (aggregateException != null && (aggregateException?.InnerExceptions?.Count ?? 0) > 0)
+			{
+				writer.WriteStartElement("InnerExceptions");
+				for (int cnt = 0; cnt < aggregateException.InnerExceptions.Count; cnt++)
+				{
+					ExceptionToXml(aggregateException.InnerExceptions[cnt], writer);
+				}
+				writer.WriteEndElement();
+			}
+
 			writer.WriteEndElement();
 			writer.Flush();
 		}
