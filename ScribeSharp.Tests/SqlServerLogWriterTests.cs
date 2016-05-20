@@ -94,7 +94,7 @@ namespace ScribeSharp.Tests
 		[TestCategory("Writers")]
 		public void SqlServerLogWriter_Constructor_ConstructsOkWithNullFormatter()
 		{
-			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", null, null);
+			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", null, null, true);
 		}
 
 		#endregion
@@ -152,7 +152,7 @@ namespace ScribeSharp.Tests
 			mapping.Add("Test Prop", "Data");
 			mapping.Add("FullDetails", "StructuredData");
 
-			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", mapping, Formatters.XmlLogEventFormatter.DefaultInstance);
+			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", mapping, Formatters.XmlLogEventFormatter.DefaultInstance, true);
 
 			writer.Write(new LogEvent()
 			{
@@ -271,7 +271,7 @@ namespace ScribeSharp.Tests
 			mapping.Add("Test Prop", "Data");
 			mapping.Add("FullDetails", "StructuredData");
 
-			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", mapping, Formatters.XmlLogEventFormatter.DefaultInstance);
+			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", mapping, Formatters.XmlLogEventFormatter.DefaultInstance, true);
 
 			var entryCount = 1000;
 			var events = new LogEvent[entryCount];
@@ -292,6 +292,49 @@ namespace ScribeSharp.Tests
 			var eventDoc = System.Xml.Linq.XDocument.Parse((string)data.Tables[0].Rows[0]["StructuredData"]);
 			Assert.IsNotNull(eventDoc);
 			Assert.IsNotNull((from n in eventDoc.Descendants() where n.Name == "LogEvent" select n).FirstOrDefault());
+		}
+
+#if !RUN_SQLWRITERINTEGRATIONTESTS
+		[Ignore]
+#endif
+		[TestMethod]
+		public void SqlServerLogWriter_WriteBatch_TruncatesOverSizeStrings()
+		{
+			TruncateTable();
+
+			var mapping = new Dictionary<string, string>();
+			mapping.Add("DateTime", "LogDate");
+			mapping.Add("EventName", "Event");
+			mapping.Add("EventType", "EventType");
+			mapping.Add("Source", "Source");
+			mapping.Add("SeverityLevel", "Severity");
+			mapping.Add("Test Prop", "Data");
+			mapping.Add("FullDetails", "StructuredData");
+
+			var writer = new SqlServerLogWriter(ConnectionString, "AuditTrail", mapping, Formatters.XmlLogEventFormatter.DefaultInstance, true);
+			var source = new string('A', 512);
+
+			var entryCount = 1000;
+			var events = new LogEvent[entryCount];
+			for (int cnt = 0; cnt < entryCount; cnt++)
+			{
+				events[cnt] = new LogEvent()
+				{
+					EventName = "Test event " + cnt.ToString(),
+					DateTime = DateTime.Now,
+					Source = source,
+					Properties = new Dictionary<string, object>() { { "Test Prop", "Test Value" } }
+				};
+			}
+
+			writer.WriteBatch(events, 10);
+
+			string truncatedSoruce = new string('A', 255);
+			var data = GetTableRows();
+			foreach (System.Data.DataRow row in data.Tables[0].Rows)
+			{
+				Assert.AreEqual(truncatedSoruce, (string)row["Source"]);
+			}
 		}
 
 		#endregion

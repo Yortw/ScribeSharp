@@ -22,11 +22,21 @@ namespace ScribeSharp.Writers
 		private string _ConnectionString;
 		private string _TableName;
 		private ILogEventFormatter _LogEventFormatter;
+		private bool _TruncateTextFields;
 
 		private IDictionary<string, string> _ColumnMappings;
+		private IDictionary<string, int> _ColumnLengths;
 
 		private const string SourceColumn_SerialisedLogEvent = "FullDetails";
 		private const string SourceColumn_LogSeverityLevel = "SeverityLevel";
+
+		private const string sqlGetColumnLengths = @"SELECT c.[Name], c.[max_length]
+FROM [sys].[columns] c
+	inner join [sys].[types] t on c.[system_type_id] = t.[system_type_id] 
+WHERE c.[object_id] = OBJECT_ID(@TableName)
+	AND t.[name] in ('varchar', 'nvarchar', 'char', 'nchar', 'varbinary', 'binary')
+	AND c.[max_length] > 0
+";
 
 		#region Sql Server Exception Constants
 
@@ -127,7 +137,7 @@ namespace ScribeSharp.Writers
 		/// <remarks>
 		/// <para>You can use "FullDetails" as a source column name to have the entire log event serialised into a single column. You can also use "SeverityLevel" to have the severity written as an integer rather than a string.</para>
 		/// </remarks>
-		public SqlServerLogWriter(string connectionString, string tableName) : this(connectionString, tableName, null)
+		public SqlServerLogWriter(string connectionString, string tableName) : this(connectionString, tableName, null, null, true)
 		{
 		}
 
@@ -142,7 +152,7 @@ namespace ScribeSharp.Writers
 		/// <remarks>
 		/// <para>You can use "FullDetails" as a source column name to have the entire log event serialised into a single column. You can also use "SeverityLevel" to have the severity written as an integer rather than a string.</para>
 		/// </remarks>
-		public SqlServerLogWriter(string connectionString, string tableName, IDictionary<string, string> columnMappings) : this(connectionString, tableName, columnMappings, null)
+		public SqlServerLogWriter(string connectionString, string tableName, IDictionary<string, string> columnMappings) : this(connectionString, tableName, columnMappings, null, true)
 		{
 		}
 
@@ -153,12 +163,13 @@ namespace ScribeSharp.Writers
 		/// <param name="tableName">Then name of the table to log to.</param>
 		/// <param name="columnMappings">An <see cref="IDictionary{TKey, TValue}"/> implementation where each key is a property name from the <see cref="LogEvent"/> class or it's <see cref="LogEvent.Properties"/> collection, and the value is the name of the column in the destination table. If null, only columns whose names match exactly to <see cref="LogEvent"/> properties or keys in the <see cref="LogEvent.Properties"/> dictionary will be written to the table.</param>
 		/// <param name="logEventFormatter">A <see cref="ILogEventFormatter"/> immplementation to use when serialising an entire <see cref="LogEvent"/> instance into the "FullDetails" column. If none is provided <see cref="Formatters.JsonLogEventFormatter.DefaultInstance"/> is used.</param>
+		/// <param name="truncateTextFields">If true, text values larger than the destination database column will be truncated before insert. This avoids sql errors and logs at least part of the message, but for over sized content results in truncated values being saved.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="connectionString"/> or <paramref name="tableName"/> are null.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if <paramref name="connectionString"/> or <paramref name="tableName"/> are empty or only contain whitespace.</exception>
 		/// <remarks>
 		/// <para>You can use "FullDetails" as a source column name to have the entire log event serialised into a single column. You can also use "SeverityLevel" to have the severity written as an integer rather than a string.</para>
 		/// </remarks>
-		public SqlServerLogWriter(string connectionString, string tableName, IDictionary<string, string> columnMappings, ILogEventFormatter logEventFormatter)
+		public SqlServerLogWriter(string connectionString, string tableName, IDictionary<string, string> columnMappings, ILogEventFormatter logEventFormatter, bool truncateTextFields)
 		{
 			if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 			if (String.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.PropertyCannotBeEmptyOrWhitespace, nameof(connectionString)));
@@ -169,6 +180,7 @@ namespace ScribeSharp.Writers
 			_TableName = tableName;
 			_ColumnMappings = columnMappings;
 			_LogEventFormatter = logEventFormatter;
+			_TruncateTextFields = truncateTextFields;
 		}
 
 		#endregion
@@ -213,7 +225,7 @@ namespace ScribeSharp.Writers
 				{
 					var sw = new System.Diagnostics.Stopwatch();
 					sw.Start();
-					bco.WriteToServer(new LogEventReader(logEvents.GetEnumerator(), _LogEventFormatter));
+					bco.WriteToServer(new LogEventReader(logEvents.GetEnumerator(), _LogEventFormatter, GetColumnLengths()));
 					sw.Stop();
 				}
 			});
@@ -234,7 +246,7 @@ namespace ScribeSharp.Writers
 				{
 					var sw = new System.Diagnostics.Stopwatch();
 					sw.Start();
-					bco.WriteToServer(new LogEventReader(new ArrayEnumerator<LogEvent>(logEvents, length), _LogEventFormatter));
+					bco.WriteToServer(new LogEventReader(new ArrayEnumerator<LogEvent>(logEvents, length), _LogEventFormatter, GetColumnLengths()));
 					sw.Stop();
 				}
 			});
@@ -243,6 +255,43 @@ namespace ScribeSharp.Writers
 		#endregion
 
 		#region Private Methods
+
+		private IDictionary<string, int> GetColumnLengths()
+		{
+			if (!_TruncateTextFields || _ColumnLengths != null) return _ColumnLengths;
+
+			var retVal = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+			using (var conn = new System.Data.SqlClient.SqlConnection(_ConnectionString))
+			{
+				conn.Open();
+				using (var command = new System.Data.SqlClient.SqlCommand(sqlGetColumnLengths, conn))
+				{
+					command.Parameters.AddWithValue("TableName", _TableName);
+					using (var reader = command.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							var sourceColumnName = GetSourceColumnName(reader["Name"].ToString());
+							if (!String.IsNullOrEmpty(sourceColumnName))
+								retVal.Add(sourceColumnName, (Int16)reader["max_length"]);
+						}
+					}
+				}
+			}
+			_ColumnLengths = retVal;
+			return retVal;
+		}
+
+		private string GetSourceColumnName(string destinationColumnName)
+		{
+			foreach (var kvp in _ColumnMappings)
+			{
+				if (String.Compare(kvp.Value, destinationColumnName, StringComparison.OrdinalIgnoreCase) == 0)
+					return kvp.Key;
+			}
+			return null;
+		}
 
 		private static void ExecuteWithRetries(Action<int> work)
 		{
@@ -334,7 +383,6 @@ namespace ScribeSharp.Writers
 		{
 			var retVal = new System.Data.SqlClient.SqlBulkCopy(_ConnectionString, useTableLock ? System.Data.SqlClient.SqlBulkCopyOptions.TableLock : System.Data.SqlClient.SqlBulkCopyOptions.Default);
 			retVal.DestinationTableName = _TableName;
-
 			if (_ColumnMappings != null)
 			{
 				foreach (var kvp in _ColumnMappings)
@@ -356,6 +404,7 @@ namespace ScribeSharp.Writers
 			private bool _IsClosed;
 			private IEnumerator _Enumerator;
 			private ILogEventFormatter _LogEventFormatter;
+			private IDictionary<string, int> _ColumnLengths;
 
 			private static List<string> OrderedFields = new List<string>
 			{
@@ -372,10 +421,11 @@ namespace ScribeSharp.Writers
 				SourceColumn_LogSeverityLevel
 			};
 
-			public LogEventReader(IEnumerator enumerator, ILogEventFormatter logEventFormatter)
+			public LogEventReader(IEnumerator enumerator, ILogEventFormatter logEventFormatter, IDictionary<string, int> columnLengths)
 			{
 				if (enumerator == null) throw new ArgumentNullException(nameof(enumerator));
 
+				_ColumnLengths = columnLengths;
 				_Enumerator = enumerator;
 				_LogEventFormatter = logEventFormatter ?? Formatters.JsonLogEventFormatter.DefaultInstance;
 			}
@@ -592,7 +642,7 @@ namespace ScribeSharp.Writers
 						return CurrentEvent.DateTime.DateTime;
 
 					case nameof(LogEvent.EventName):
-						return CurrentEvent.EventName ?? String.Empty;
+						return Truncate(nameof(LogEvent.EventName), CurrentEvent.EventName ?? String.Empty);
 
 					case nameof(LogEvent.EventSeverity):
 						return CurrentEvent.EventSeverity;
@@ -604,16 +654,16 @@ namespace ScribeSharp.Writers
 						return CurrentEvent.Exception;
 
 					case nameof(LogEvent.Source):
-						return CurrentEvent.Source ?? String.Empty;
+						return Truncate(nameof(LogEvent.Source), CurrentEvent.Source ?? String.Empty);
 
 					case nameof(LogEvent.SourceLineNumber):
 						return CurrentEvent.SourceLineNumber;
 
 					case nameof(LogEvent.SourceMethod):
-						return CurrentEvent.SourceMethod;
+						return Truncate(nameof(LogEvent.SourceMethod), CurrentEvent.SourceMethod);
 
 					case SourceColumn_SerialisedLogEvent:
-						return _LogEventFormatter.FormatToString(CurrentEvent);
+						return Truncate(SourceColumn_SerialisedLogEvent, _LogEventFormatter.FormatToString(CurrentEvent));
 
 					case SourceColumn_LogSeverityLevel:
 						return Convert.ToInt32(CurrentEvent.EventSeverity, System.Globalization.CultureInfo.InvariantCulture);
@@ -621,10 +671,24 @@ namespace ScribeSharp.Writers
 					default:
 						var properties = CurrentEvent.Properties;
 						if (properties.ContainsKey(name))
-							return properties[name] ?? String.Empty;
+						{
+							 var retVal = properties[name] ?? String.Empty;
+							string retValStr = retVal as string; 
+							if (retVal is string)
+								return Truncate(name, retValStr);
+							else
+								return retVal;
+						}
 						else
 							return null;
 				}
+			}
+
+			private object Truncate(string columnName, string value)
+			{
+				if (_ColumnLengths == null || !_ColumnLengths.ContainsKey(columnName)) return value;
+
+				return value.Substring(0, Math.Min(value.Length, _ColumnLengths[columnName]));
 			}
 		}
 
