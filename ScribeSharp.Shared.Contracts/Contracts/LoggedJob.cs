@@ -73,6 +73,21 @@ namespace ScribeSharp
 			}
 		}
 
+		/// <summary>
+		/// Returns the unique id of this job.
+		/// </summary>
+		public string Id { get { return _JobId; } }
+
+		/// <summary>
+		/// Returns the human readable name of this job.
+		/// </summary>
+		public string Name { get { return _JobId; } }
+		
+		/// <summary>
+		/// Returns the length of time this job has currently been running, or how long it ran for if it has already completed.
+		/// </summary>
+		public TimeSpan Duration { get { return _Stopwatch.Elapsed; } }
+
 		#endregion
 
 		#region Public Methods

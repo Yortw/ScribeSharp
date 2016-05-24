@@ -281,22 +281,37 @@ namespace ScribeSharp.Writers
 					else
 						ms.Write(bytes, 0, bytes.Length);
 
-					ms.Seek(0, System.IO.SeekOrigin.Begin);
-
-					using (var content = new StreamContent(ms))
+					int retries = 0, maxRetries = 5;
+					while (retries < maxRetries)
 					{
-						if (_UseCompression)
-							content.Headers.ContentEncoding.Add("gzip");
+						ms.Seek(0, System.IO.SeekOrigin.Begin);
 
-						var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", content).ConfigureAwait(false);
-						try
+						using (var content = new StreamContent(ms))
 						{
-							result.EnsureSuccessStatusCode();
-						}
-						catch (HttpRequestException hrex)
-						{
-							hrex.Data.Add("StatusCode", result.StatusCode);
-							throw;
+							if (_UseCompression)
+								content.Headers.ContentEncoding.Add("gzip");
+
+							var result = await _HttpClient.PostAsync(_ConnectionString.EventHubUrl + "/" + _ConnectionString.EventHubPath + "/messages", content).ConfigureAwait(false);
+							if (((int)result.StatusCode >= 500 && (int)result.StatusCode < 600) || (int)result.StatusCode == 429)
+							{
+								retries++;
+								if (retries < maxRetries)
+								{
+									await TaskEx.Delay(250 * (retries + 1)).ConfigureAwait(false);
+									continue;
+								}
+							}
+
+							try
+							{
+								result.EnsureSuccessStatusCode();
+								break;
+							}
+							catch (HttpRequestException hrex)
+							{
+								hrex.Data.Add("StatusCode", result.StatusCode);
+								throw;
+							}
 						}
 					}
 				}
@@ -314,7 +329,7 @@ namespace ScribeSharp.Writers
 			private string GenerateServiceBusAuthHeader()
 			{
 				DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-				_AuthHeaderLastGenerated = DateTime.Now.ToUniversalTime();
+				_AuthHeaderLastGenerated = DateTime.UtcNow;
 				TimeSpan diff = _AuthHeaderLastGenerated - origin;
 				uint tokenExpirationTime = Convert.ToUInt32(diff.TotalSeconds) + 20 * 60;
 
