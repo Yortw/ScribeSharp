@@ -81,7 +81,7 @@ namespace ScribeSharp
 		/// <summary>
 		/// Returns the human readable name of this job.
 		/// </summary>
-		public string Name { get { return _JobId; } }
+		public string Name { get { return _JobName; } }
 		
 		/// <summary>
 		/// Returns the length of time this job has currently been running, or how long it ran for if it has already completed.
@@ -131,7 +131,7 @@ namespace ScribeSharp
 			_ParentPool = parentPool;
 			_Stopwatch = new System.Diagnostics.Stopwatch();
 			_Logger = logger;
-			_JobId = jobId;
+			_JobId = jobId ?? Guid.NewGuid().ToString();
 			_JobName = jobName;
 			_MaxExpectedDuration = maxExpectedDuration;
 			_Properties = GetExtendedProperties(properties,
