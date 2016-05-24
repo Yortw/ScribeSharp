@@ -154,7 +154,7 @@
     <value>Job Name</value>
   </data>
   <data name="JobStartedEventMessage" xml:space="preserve">
-    <value>{0} ({1} started.</value>
+    <value>{0} ({1}) started.</value>
   </data>
   <data name="ParentJobIdPropertyName" xml:space="preserve">
     <value>Parent Job ID</value>

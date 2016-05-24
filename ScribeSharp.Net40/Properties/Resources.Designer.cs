@@ -169,7 +169,7 @@ namespace ScribeSharp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} ({1} started..
+        ///   Looks up a localized string similar to {0} ({1}) started..
         /// </summary>
         internal static string JobStartedEventMessage {
             get {
