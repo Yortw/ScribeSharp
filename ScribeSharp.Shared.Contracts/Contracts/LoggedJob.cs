@@ -139,7 +139,7 @@ namespace ScribeSharp
 				new KeyValuePair<string, object>(Properties.Resources.JobIdPropertyName, jobId)
 			).ToArray();
 
-			_Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
+			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobStartedEventMessage, jobName, jobId),
 				eventSeverity: LogEventSeverity.Information,
 				eventType: LogEventType.Start,
 				properties: _Properties
@@ -244,7 +244,7 @@ namespace ScribeSharp
 			else if (_Cancelled || (_Stopwatch.Elapsed > _MaxExpectedDuration && _MaxExpectedDuration != TimeSpan.Zero))
 				severity = LogEventSeverity.Warning;
 
-			_Logger.WriteEventWithSource(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
+			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
 				eventSeverity: severity,
 				eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
 				properties: GetExtendedProperties(
