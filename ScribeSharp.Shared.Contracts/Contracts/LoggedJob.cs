@@ -236,26 +236,30 @@ namespace ScribeSharp
 		/// </summary>
 		public void Dispose()
 		{
-			_Stopwatch.Stop();
+			//If we've been 'reset' and returned to a pool, we don't need to log anything when we're disposed.
+			if (_Logger != null)
+			{
+				_Stopwatch.Stop();
 
-			var severity = LogEventSeverity.Information;
-			if (_Exception != null)
-				severity = LogEventSeverity.Error;
-			else if (_Cancelled || (_Stopwatch.Elapsed > _MaxExpectedDuration && _MaxExpectedDuration != TimeSpan.Zero))
-				severity = LogEventSeverity.Warning;
+				var severity = LogEventSeverity.Information;
+				if (_Exception != null)
+					severity = LogEventSeverity.Error;
+				else if (_Cancelled || (_Stopwatch.Elapsed > _MaxExpectedDuration && _MaxExpectedDuration != TimeSpan.Zero))
+					severity = LogEventSeverity.Warning;
 
-			_Logger.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
-				eventSeverity: severity,
-				eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
-				properties: GetExtendedProperties(
-					_Properties,
-					new KeyValuePair<string, object>("Exception", _Exception),
-					new KeyValuePair<string, object>("Duration", _Stopwatch.Elapsed),
-					new KeyValuePair<string, object>("Outcome", _Exception != null ? Properties.Resources.FailedOutcome : (_Cancelled ? Properties.Resources.CancelledOutcome : Properties.Resources.CompletedOutcome))
-				).ToArray()
-			);
+				_Logger?.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
+					eventSeverity: severity,
+					eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
+					properties: GetExtendedProperties(
+						_Properties,
+						new KeyValuePair<string, object>("Exception", _Exception),
+						new KeyValuePair<string, object>("Duration", _Stopwatch.Elapsed),
+						new KeyValuePair<string, object>("Outcome", _Exception != null ? Properties.Resources.FailedOutcome : (_Cancelled ? Properties.Resources.CancelledOutcome : Properties.Resources.CompletedOutcome))
+					).ToArray()
+				);
 
-			_ParentPool?.Add(this);
+				_ParentPool?.Add(this);
+			}
 		}
 
 		#endregion
