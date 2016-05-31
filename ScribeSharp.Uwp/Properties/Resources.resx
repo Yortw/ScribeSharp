@@ -117,7 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ArgumentOutOfRangeMessage" xml:space="preserve">
+    <value>{0} cannot be less than {1} or more than {2}.</value>
+  </data>
+  <data name="CancelledOutcome" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="CompletedOutcome" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="DateTimeChangedLogEventText" xml:space="preserve">
+    <value>System date/time changed. New time is {0}</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Error occurred: {0}</value>
+  </data>
+  <data name="FailedOutcome" xml:space="preserve">
+    <value>Failed</value>
+  </data>
   <data name="GenericLogExceptionMessage" xml:space="preserve">
     <value>Unexpected error in logging system.</value>
+  </data>
+  <data name="GenericLogWriterExceptionMessage" xml:space="preserve">
+    <value>Error writing log event to output location.</value>
+  </data>
+  <data name="JobFailureEventMessage" xml:space="preserve">
+    <value>{0} ({1}) failed; {2}.</value>
+  </data>
+  <data name="JobFinishedEventMessage" xml:space="preserve">
+    <value>{0} completed.</value>
+  </data>
+  <data name="JobIdPropertyName" xml:space="preserve">
+    <value>Job ID</value>
+  </data>
+  <data name="JobNamePropertyName" xml:space="preserve">
+    <value>Job Name</value>
+  </data>
+  <data name="JobStartedEventMessage" xml:space="preserve">
+    <value>{0} started.</value>
+  </data>
+  <data name="ParentJobIdPropertyName" xml:space="preserve">
+    <value>Parent Job ID</value>
+  </data>
+  <data name="PropertyCannotBeEmpty" xml:space="preserve">
+    <value>{0} cannot be empty.</value>
+  </data>
+  <data name="PropertyCannotBeEmptyOrWhitespace" xml:space="preserve">
+    <value>{0} cannot be empty or only white space.</value>
+  </data>
+  <data name="PropertyCannotBeNull" xml:space="preserve">
+    <value>{0} cannot be null.</value>
+  </data>
+  <data name="SplitEventEntryPrefix" xml:space="preserve">
+    <value>Split Event, Part {0}</value>
   </data>
 </root>

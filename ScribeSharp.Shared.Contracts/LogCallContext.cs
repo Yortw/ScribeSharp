@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if SUPPORTS_REMOTING
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
@@ -183,3 +185,5 @@ namespace ScribeSharp
 
 	}
 }
+
+#endif

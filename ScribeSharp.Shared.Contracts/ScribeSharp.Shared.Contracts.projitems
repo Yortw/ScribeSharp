@@ -114,6 +114,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Writers\FilteringLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ForwardingLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\ListLogWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Writers\LogEventWrittenEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\LogWriterBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\MsmqLogWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Writers\SqlServerLogWriter.cs" />
