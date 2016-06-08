@@ -15,11 +15,13 @@ namespace ScribeSharp
 	/// <para>Call the <see cref="SetFailure(Exception)"/> method to record exceptions/failures that occur.</para>
 	/// <para>Use the <see cref="Logger"/> property to log events and have them include the job details.</para>
 	/// </remarks>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification="Really there is no 'value' based equality for this type, reference equality is correct.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Really there is no 'value' based equality for this type, reference equality is correct.")]
 	public sealed class LoggedJob : IDisposable
 	{
 
 		#region Fields
+
+#if !CONTRACTS_ONLY
 
 		private ILogger _Logger;
 		private ILogger _JobLogger;
@@ -33,6 +35,8 @@ namespace ScribeSharp
 		private bool _Cancelled;
 		private TimeSpan _MaxExpectedDuration;
 
+#endif
+
 		#endregion
 
 		#region Constructors
@@ -42,6 +46,9 @@ namespace ScribeSharp
 		/// </summary>
 		public LoggedJob()
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#endif
 		}
 
 		#endregion
@@ -55,6 +62,10 @@ namespace ScribeSharp
 		{
 			get
 			{
+#if CONTRACTS_ONLY
+				BaitExceptionHelper.Throw();
+				return null;
+#else
 				if (_JobLogger == null)
 				{
 					var list = new List<ILogEventContextProvider>(2);
@@ -70,23 +81,57 @@ namespace ScribeSharp
 				}
 
 				return _JobLogger;
+#endif
 			}
 		}
 
 		/// <summary>
 		/// Returns the unique id of this job.
 		/// </summary>
-		public string Id { get { return _JobId; } }
+		public string Id
+		{
+			get
+			{
+#if CONTRACTS_ONLY
+				BaitExceptionHelper.Throw();
+				return null;
+#else
+				return _JobId;
+#endif
+			}
+		}
 
 		/// <summary>
 		/// Returns the human readable name of this job.
 		/// </summary>
-		public string Name { get { return _JobName; } }
-		
+		public string Name
+		{
+			get
+			{
+#if CONTRACTS_ONLY
+				BaitExceptionHelper.Throw();
+				return null;
+#else
+				return _JobName;
+#endif
+			}
+		}
+
 		/// <summary>
 		/// Returns the length of time this job has currently been running, or how long it ran for if it has already completed.
 		/// </summary>
-		public TimeSpan Duration { get { return _Stopwatch.Elapsed; } }
+		public TimeSpan Duration
+		{
+			get
+			{
+#if CONTRACTS_ONLY
+				BaitExceptionHelper.Throw();
+				return TimeSpan.Zero;
+#else
+				return _Stopwatch.Elapsed;
+#endif
+			}
+		}
 
 		#endregion
 
@@ -128,6 +173,9 @@ namespace ScribeSharp
 
 			if (String.IsNullOrWhiteSpace(jobId)) jobId = Guid.NewGuid().ToString();
 
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_ParentPool = parentPool;
 			_Stopwatch = new System.Diagnostics.Stopwatch();
 			_Logger = logger;
@@ -146,6 +194,7 @@ namespace ScribeSharp
 			);
 
 			_Stopwatch.Start();
+#endif
 		}
 
 		/// <summary>
@@ -160,6 +209,9 @@ namespace ScribeSharp
 		{
 			if (exception == null) throw new ArgumentNullException(nameof(exception));
 
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			if (_Exception == null)
 				_Exception = exception;
 
@@ -168,6 +220,7 @@ namespace ScribeSharp
 				eventType: LogEventType.Failure,
 				properties: GetExtendedProperties(_Properties, new KeyValuePair<string, object>("Exception", exception)).ToArray()
 			);
+#endif
 		}
 
 		/// <summary>
@@ -175,6 +228,9 @@ namespace ScribeSharp
 		/// </summary>
 		public void Reset()
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_Logger = null;
 			_JobLogger = null;
 			_JobName = null;
@@ -182,6 +238,7 @@ namespace ScribeSharp
 			_Exception = null;
 			_Properties = null;
 			_Stopwatch.Reset();
+#endif
 		}
 
 		/// <summary>
@@ -189,7 +246,11 @@ namespace ScribeSharp
 		/// </summary>
 		public void Cancel()
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_Cancelled = true;
+#endif
 		}
 
 		#region CreateChildJob Overloads
@@ -214,6 +275,10 @@ namespace ScribeSharp
 		/// <returns>A <see cref="LoggedJob"/> instance used to track the job and log related entries.</returns>
 		public LoggedJob CreateChildJob(string jobName, string jobId, params KeyValuePair<string, object>[] properties)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			var retVal = _ParentPool?.Take() ?? new LoggedJob();
 			IEnumerable<KeyValuePair<string, object>> allProperties = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>(Properties.Resources.ParentJobIdPropertyName, this._JobId) };
 			if (properties != null)
@@ -223,6 +288,7 @@ namespace ScribeSharp
 
 			retVal.Initialize(_Logger, jobName, jobId, allProperties, _ParentPool, TimeSpan.Zero);
 			return retVal;
+#endif
 		}
 
 		#endregion
@@ -236,6 +302,9 @@ namespace ScribeSharp
 		/// </summary>
 		public void Dispose()
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			//If we've been 'reset' and returned to a pool, we don't need to log anything when we're disposed.
 			if (_Logger != null)
 			{
@@ -260,6 +329,7 @@ namespace ScribeSharp
 
 				_ParentPool?.Add(this);
 			}
+#endif
 		}
 
 		#endregion

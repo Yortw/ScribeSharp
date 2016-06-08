@@ -11,7 +11,11 @@ namespace ScribeSharp
 	public static class ExceptionExtensions
 	{
 
+#if !CONTRACTS_ONLY
+
 		private static System.Collections.Concurrent.ConcurrentDictionary<Type, List<System.Reflection.PropertyInfo>> s_PropertyCache = new System.Collections.Concurrent.ConcurrentDictionary<Type, List<System.Reflection.PropertyInfo>>();
+
+		#endif
 
 		/// <summary>
 		/// Returns a string containing an XML representation of the exception.
@@ -30,6 +34,7 @@ namespace ScribeSharp
 
 		private static void ExceptionToXml(Exception ex, System.Xml.XmlWriter writer)
 		{
+#if !CONTRACTS_ONLY
 			writer.WriteStartElement("Exception");
 
 			writer.WriteAttributeString("Type", ex.GetType().FullName);
@@ -95,10 +100,15 @@ namespace ScribeSharp
 
 			writer.WriteEndElement();
 			writer.Flush();
+#endif
 		}
 
 		private static List<System.Reflection.PropertyInfo> GetProperties(Type type)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			List<System.Reflection.PropertyInfo> retVal = null;
 			if (!s_PropertyCache.TryGetValue(type, out retVal))
 			{
@@ -111,6 +121,8 @@ namespace ScribeSharp
 			}
 
 			return retVal;
+
+#endif
 		}
 
 		/// <summary>
@@ -120,6 +132,11 @@ namespace ScribeSharp
 		/// <returns>True if the exception should be rethrown immediately, else false.</returns>
 		public static bool ShouldRethrowImmediately(this Exception exception)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return false;
+#else
+
 			return
 #if !NETFX_CORE
 				exception is StackOverflowException
@@ -127,6 +144,8 @@ namespace ScribeSharp
 				|| exception is AccessViolationException || 
 #endif
 				exception is OutOfMemoryException;
+
+#endif
 		}
 	}
 }

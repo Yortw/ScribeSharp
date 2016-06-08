@@ -34,7 +34,9 @@ namespace ScribeSharp.ContextProviders
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent, ITypeRendererMap rendererMap)
 		{
+#if !CONTRACTS_ONLY
 			AddProperty(logEvent.Properties, "Entry Assembly Name", _AssemblyName ?? (_AssemblyName = Assembly.GetEntryAssembly()?.FullName ?? String.Empty), rendererMap);
+#endif
 		}
 	}
 }

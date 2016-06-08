@@ -11,16 +11,24 @@ namespace ScribeSharp.PropertyRenderers
 	public sealed class TypeRendererMap : IMutableTypeRendererMap
 	{
 
+#if !CONTRACTS_ONLY
+
 		private System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer> _KnownRenderers;
 		private System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer> _CachedRenderers;
+
+#endif
 
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
 		public TypeRendererMap() : this(null)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_KnownRenderers = new System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer>();
 			_CachedRenderers = new System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer>();
+#endif
 		}
 
 		/// <summary>
@@ -28,6 +36,9 @@ namespace ScribeSharp.PropertyRenderers
 		/// </summary>
 		public TypeRendererMap(params KeyValuePair<Type, IPropertyRenderer>[] renderers) 
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_KnownRenderers = new System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer>();
 			_CachedRenderers = new System.Collections.Concurrent.ConcurrentDictionary<Type, IPropertyRenderer>();
 
@@ -39,6 +50,7 @@ namespace ScribeSharp.PropertyRenderers
 					_CachedRenderers.TryAdd(kvp.Key, kvp.Value);
 				}
 			}
+#endif
 		}
 
 		/// <summary>
@@ -48,9 +60,14 @@ namespace ScribeSharp.PropertyRenderers
 		/// <returns>A <see cref="IPropertyRenderer"/> reference, or null if no renderer could be found.</returns>
 		public IPropertyRenderer GetRenderer<T>()
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			if (_KnownRenderers.Count == 0) return null;
 
 			return GetRenderer(typeof(T));
+#endif
 		}
 
 		/// <summary>
@@ -61,6 +78,10 @@ namespace ScribeSharp.PropertyRenderers
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="type"/> is null.</exception>
 		public IPropertyRenderer GetRenderer(Type type)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			if (type == null) throw new ArgumentNullException(nameof(type));
 			if (_KnownRenderers.Count == 0) return null;
 
@@ -74,6 +95,7 @@ namespace ScribeSharp.PropertyRenderers
 			}
 
 			return retVal;
+#endif
 		}
 
 		/// <summary>
@@ -84,12 +106,17 @@ namespace ScribeSharp.PropertyRenderers
 		/// <returns>A boolean indicating if the item was added (true), or false if it was not added because a renderer is already loaded for this type.</returns>
 		public bool AddRenderer(Type type, IPropertyRenderer renderer)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return false;
+#else
 			if (type == null) throw new ArgumentNullException(nameof(type));
 			if (renderer == null) throw new ArgumentNullException(nameof(renderer));
 
 			var retVal = _KnownRenderers.TryAdd(type, renderer);
 			_CachedRenderers.TryAdd(type, renderer);
 			return retVal;			
+#endif
 		}
 		/// <summary>
 		/// Removes the renderer for the given type from the map.
@@ -98,23 +125,37 @@ namespace ScribeSharp.PropertyRenderers
 		/// <returns>A boolean indicating if the item was removed (true), or false if it was not removed because a renderer was not found for that type.</returns>
 		public bool RemoveRenderer(Type type)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return false;
+#else
 			if (type == null) throw new ArgumentNullException(nameof(type));
 
 			IPropertyRenderer removedValue = null;
 			var retVal = _KnownRenderers.TryRemove(type, out removedValue);
 			_CachedRenderers.TryRemove(type, out removedValue);
 			return retVal;
+#endif
 		}
 
 		private IPropertyRenderer GetFromCache(Type type)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			IPropertyRenderer retVal = null;
 			_CachedRenderers.TryGetValue(type, out retVal);
 			return retVal;
+#endif
 		}
 
 		private IPropertyRenderer LookupByType(Type type)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			var originalType = type;
 			IPropertyRenderer retVal = null;
 			while (type != null && !_KnownRenderers.TryGetValue(type, out retVal))
@@ -136,6 +177,7 @@ namespace ScribeSharp.PropertyRenderers
 			}
 
 			return retVal;
+#endif
 		}
 	}
 }

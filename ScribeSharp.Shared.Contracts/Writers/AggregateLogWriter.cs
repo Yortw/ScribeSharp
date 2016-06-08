@@ -158,7 +158,9 @@ namespace ScribeSharp.Writers
 
 		private void WriteParallel(LogEvent logEvent)
 		{
+#if !CONTRACTS_ONLY
 			Parallel.For(0, _Writers.Count, (index) => _Writers[index].Write(logEvent));
+#endif
 		}
 
 		#endregion

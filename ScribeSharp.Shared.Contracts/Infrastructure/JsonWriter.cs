@@ -29,7 +29,11 @@ namespace ScribeSharp.Infrastructure
 		private int _ObjectGraphWriteDepth;
 		private const int MaxObjectGraphWriteDepth = 256;
 
+#if !CONTRACTS_ONLY
+
 		private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, IList<System.Reflection.PropertyInfo>> TypeProperties = new System.Collections.Concurrent.ConcurrentDictionary<Type, IList<System.Reflection.PropertyInfo>>();
+
+#endif
 
 		#endregion
 
@@ -718,6 +722,10 @@ namespace ScribeSharp.Infrastructure
 
 		private static IList<System.Reflection.PropertyInfo> GetTypeProperties(Type type)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			IList<System.Reflection.PropertyInfo> retVal = null;
 
 			if (!TypeProperties.TryGetValue(type, out retVal))
@@ -732,6 +740,7 @@ namespace ScribeSharp.Infrastructure
 			}
 
 			return retVal;
+#endif
 		}
 
 		#endregion

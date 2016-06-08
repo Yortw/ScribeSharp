@@ -63,8 +63,12 @@ namespace ScribeSharp
 		{
 			if (stringBuilder == null) throw new ArgumentNullException(nameof(stringBuilder));
 
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_MaxCapacity = stringBuilder.MaxCapacity;
 			_DefaultCapacity = stringBuilder.Capacity;
+#endif
 		}
 
 		/// <summary>
@@ -78,8 +82,12 @@ namespace ScribeSharp
 		{
 			if (stringBuilder == null) throw new ArgumentNullException(nameof(stringBuilder));
 
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			_MaxCapacity = stringBuilder.MaxCapacity;
 			_DefaultCapacity = stringBuilder.Capacity;
+#endif
 		}
 
 		/// <summary>
@@ -97,11 +105,11 @@ namespace ScribeSharp
 			_DefaultCapacity = defaultCapacity;
 		}
 
-		#endregion
+#endregion
 
-		#region Overrides
+#region Overrides
 
-#if !NETFX_CORE
+#if !NETFX_CORE && !CONTRACTS_ONLY
 		/// <summary>
 		/// Does NOT close the text writer or underlying <see cref="System.Text.StringBuilder"/>, but instead resets it so it can be reused.
 		/// </summary>
@@ -132,9 +140,9 @@ namespace ScribeSharp
 				base.Dispose();
 		}
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		private void ResetStringBuilder()
 		{
@@ -146,7 +154,7 @@ namespace ScribeSharp
 				_StringBuilder.Capacity = _DefaultCapacity;
 		}
 
-		#endregion
+#endregion
 
 	}
 }

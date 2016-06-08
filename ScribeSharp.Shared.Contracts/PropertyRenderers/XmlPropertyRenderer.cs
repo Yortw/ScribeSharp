@@ -9,8 +9,12 @@ namespace ScribeSharp.PropertyRenderers
 	/// </summary>
   public sealed class XmlPropertyRenderer : IPropertyRenderer
 	{
+#if !CONTRACTS_ONLY
+
 		private System.Xml.Serialization.XmlSerializer _Serialiser;
 		private System.Xml.Serialization.XmlSerializerNamespaces _EmptyNamespaces;
+
+#endif
 
 		/// <summary>
 		/// Full constructor.
@@ -19,11 +23,15 @@ namespace ScribeSharp.PropertyRenderers
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="sourceType"/> is null.</exception>
 		public XmlPropertyRenderer(Type sourceType)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			if (sourceType == null) throw new ArgumentNullException(nameof(sourceType));
 
 			_Serialiser = new System.Xml.Serialization.XmlSerializer(sourceType, (string)null);
 			_EmptyNamespaces = new System.Xml.Serialization.XmlSerializerNamespaces();
 			_EmptyNamespaces.Add(String.Empty, String.Empty);
+#endif
 		}
 
 		/// <summary>
@@ -33,11 +41,15 @@ namespace ScribeSharp.PropertyRenderers
 		/// <exception cref="System.ArgumentNullException">Thrown if <paramref name="serializer"/> is null.</exception>
 		public XmlPropertyRenderer(System.Xml.Serialization.XmlSerializer serializer)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 			if (serializer == null) throw new ArgumentNullException(nameof(serializer));
 
 			_Serialiser = serializer;
 			_EmptyNamespaces = new System.Xml.Serialization.XmlSerializerNamespaces();
 			_EmptyNamespaces.Add(String.Empty, String.Empty);
+#endif
 		}
 
 		/// <summary>
@@ -47,6 +59,10 @@ namespace ScribeSharp.PropertyRenderers
 		/// <returns>A string containing an XML representation of <paramref name="value"/>.</returns>
 		public object RenderValue(object value)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+			return null;
+#else
 			if (value == null) return null;
 
 			using (var pooledWriter = Globals.TextWriterPool.Take())
@@ -56,6 +72,7 @@ namespace ScribeSharp.PropertyRenderers
 				pooledWriter.Value.Flush();
 				return pooledWriter.Value.GetStringBuilder().ToString();
 			}
+#endif
 		}
 	}
 }

@@ -63,7 +63,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PoolSharp, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PoolSharp.2.0.0\lib\net40\PoolSharp.dll</HintPath>
+      <HintPath>..\packages\PoolSharp.2.0.1\lib\net40\PoolSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

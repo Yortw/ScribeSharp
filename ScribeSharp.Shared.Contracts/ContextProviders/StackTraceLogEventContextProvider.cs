@@ -32,12 +32,16 @@ namespace ScribeSharp.ContextProviders
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent, ITypeRendererMap rendererMap)
 		{
+#if CONTRACTS_ONLY
+			BaitExceptionHelper.Throw();
+#else
 #if NETFX_CORE
 			var stacktrace = new System.Diagnostics.StackTrace(new Exception(), true);
 #else
 			var stacktrace = new System.Diagnostics.StackTrace(true);
 #endif
 			AddProperty(logEvent.Properties, "Stacktrace", stacktrace.ToString(), rendererMap);
+#endif
 		}
 	}
 }

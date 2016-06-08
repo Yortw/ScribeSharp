@@ -134,7 +134,7 @@ namespace ScribeSharp.Infrastructure
 			_Stream.Write(buffer, offset, count);
 		}
 
-#if !NETFX_CORE
+#if !NETFX_CORE && !CONTRACTS_ONLY
 		/// <summary>
 		/// Does nothing.
 		/// </summary>

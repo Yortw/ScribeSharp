@@ -21,5 +21,7 @@
     </metadata>
     <files>
         <file src="ScribeSharp.Net40\bin\Release\ScribeSharp.dll" target="lib\net40\ScribeSharp.dll" />
+        <file src="ScribeSharp.Bait\bin\Release\ScribeSharp.dll" target="lib\portable-net40+sl5+win8+wpa81+wp8\ScribeSharp.dll" />
+        <file src="ScribeSharp.Uwp\bin\Release\ScribeSharp.dll" target="lib\uap10.0\ScribeSharp.dll" />
     </files>
 </package>

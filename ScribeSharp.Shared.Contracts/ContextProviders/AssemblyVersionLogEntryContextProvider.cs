@@ -41,6 +41,8 @@ namespace ScribeSharp.ContextProviders
 		{
 			if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
+#if !CONTRACTS_ONLY
+
 			var name = assembly.GetName();
 			_PropertyName = propertyName;
 
@@ -48,11 +50,13 @@ namespace ScribeSharp.ContextProviders
 				_PropertyName = name.Name;
 
 			_Version = name.Version.ToString();
+
+#endif
 		}
 
-		#endregion
+#endregion
 
-		#region Overrides
+#region Overrides
 
 		/// <summary>
 		/// Adds a property containing the version of the assembly provided via the constructor. Uses either the property name specified in the constructor, or the assembly's 'simple' name if the provided name was null or empty.
@@ -65,7 +69,7 @@ namespace ScribeSharp.ContextProviders
 			AddProperty(logEvent.Properties, _PropertyName, _Version, rendererMap);
 		}
 
-		#endregion
+#endregion
 
 	}
 }

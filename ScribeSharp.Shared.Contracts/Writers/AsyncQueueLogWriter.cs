@@ -18,6 +18,7 @@ namespace ScribeSharp.Writers
 
 		#region Fields
 
+#if !CONTRACTS_ONLY
 		private static readonly TimeSpan InfiniteTimespan = TimeSpan.FromMilliseconds(-1);
 
 		private IBatchLogWriter _LogWriter;
@@ -40,6 +41,8 @@ namespace ScribeSharp.Writers
 		private System.Threading.Tasks.Task _BackgroundWriteTask;
 #endif
 
+#endif
+
 		#endregion
 
 		#region Constructors
@@ -58,6 +61,7 @@ namespace ScribeSharp.Writers
 		/// </remarks>
 		public AsyncQueueLogWriter(ILogWriter logWriter, int batchSize, TimeSpan writeTimeout, ILoggingErrorHandler errorHandler)
 		{
+#if !CONTRACTS_ONLY
 			if (logWriter == null) throw new ArgumentNullException(nameof(logWriter));
 			if (batchSize <= 0) throw new ArgumentOutOfRangeException(nameof(batchSize));
 
@@ -85,6 +89,8 @@ namespace ScribeSharp.Writers
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 #endif
+
+#endif
 		}
 
 		#endregion
@@ -100,6 +106,8 @@ namespace ScribeSharp.Writers
 		/// <param name="logEvent">A <see cref="LogEvent"/> instance to write.</param>
 		protected override void WriteEventInternal(LogEvent logEvent)
 		{
+#if !CONTRACTS_ONLY
+
 			try
 			{
 				if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
@@ -126,6 +134,8 @@ namespace ScribeSharp.Writers
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
 					throw wrappedException;
 			}
+
+#endif
 		}
 
 		/// <summary>
@@ -152,6 +162,7 @@ namespace ScribeSharp.Writers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_WriteBufferedEventsSignal", Justification = "It is disposed, CA just can't tell.")]
 		public void Dispose()
 		{
+#if !CONTRACTS_ONLY
 			if (!_IsDisposed)
 			{
 #if SUPPORTS_APPDOMAIN
@@ -175,6 +186,7 @@ namespace ScribeSharp.Writers
 
 				_LogEventPool?.Dispose();
 			}
+#endif
 		}
 
 		/// <summary>
@@ -182,6 +194,8 @@ namespace ScribeSharp.Writers
 		/// </summary>
 		public void Flush()
 		{
+#if !CONTRACTS_ONLY
+
 			try
 			{
 				StopWriteTimeoutTimer();
@@ -218,11 +232,15 @@ namespace ScribeSharp.Writers
 				if (_ErrorHandler.ReportError(wrappedException) == LoggingErrorPolicy.Rethrow)
 					throw wrappedException;
 			}
+
+#endif
 		}
 
 		#endregion
 
 		#region Private Methods
+
+#if !CONTRACTS_ONLY
 
 		private void WaitForBackgroundThreadToExit()
 		{
@@ -331,6 +349,8 @@ namespace ScribeSharp.Writers
 		{
 			if (_IsDisposed) throw new ObjectDisposedException(nameof(AsyncQueueLogWriter));
 		}
+
+#endif
 
 		#endregion
 
