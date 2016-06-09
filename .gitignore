@@ -213,3 +213,4 @@ ModelManifest.xml
 /ScribeSharp.zip
 /ScribeSharp.Tests/TestSecrets.cs
 /.nuget
+/secure-file/tools
