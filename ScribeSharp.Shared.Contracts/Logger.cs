@@ -17,11 +17,6 @@ namespace ScribeSharp
 		//TODO: Logger extension methods?
 		//TODO: Logger.WriteFormat? Message renderer separate to log event renderer/property renderer?
 
-		//TODO: Writers
-			//TODO: Sql writer
-			//TODO: Msmq writer
-			//TODO: Azure event hub writer
-
 		#region Fields
 
 		private readonly ILogEventPool _EntryPool;

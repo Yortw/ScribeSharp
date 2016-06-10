@@ -308,6 +308,9 @@ namespace ScribeSharp
 			//If we've been 'reset' and returned to a pool, we don't need to log anything when we're disposed.
 			if (_Logger != null)
 			{
+				var logger = _Logger;
+				_Logger = null;
+
 				_Stopwatch.Stop();
 
 				var severity = LogEventSeverity.Information;
@@ -315,8 +318,8 @@ namespace ScribeSharp
 					severity = LogEventSeverity.Error;
 				else if (_Cancelled || (_Stopwatch.Elapsed > _MaxExpectedDuration && _MaxExpectedDuration != TimeSpan.Zero))
 					severity = LogEventSeverity.Warning;
-
-				_Logger?.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
+				
+				logger?.WriteEvent(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.JobFinishedEventMessage, _JobName, _JobId),
 					eventSeverity: severity,
 					eventType: _Cancelled ? LogEventType.Canceled : LogEventType.Completed,
 					properties: GetExtendedProperties(
