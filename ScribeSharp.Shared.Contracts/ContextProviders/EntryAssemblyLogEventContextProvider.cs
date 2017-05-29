@@ -14,7 +14,9 @@ namespace ScribeSharp.ContextProviders
 	public sealed class EntryAssemblyLogEventContextProvider : ContextProviderBase
 	{
 
+#if !CONTRACTS_ONLY
 		private string _AssemblyName;
+#endif
 
 		/// <summary>
 		/// Default constructor.

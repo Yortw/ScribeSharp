@@ -4,15 +4,19 @@ using System.Text;
 
 namespace ScribeSharp
 {
+#pragma warning disable 1574
+
 	/// <summary>
 	/// A <see cref="System.IO.StringWriter"/> implementation that can be reused, reducing the number of allocations for both the writers and underlying string builders.
 	/// </summary>
 	/// <remarks>
-	/// <para>When the <see cref="Close()"/> or <see cref="Dispose(bool)"/> methods are called the underlying string builder is reset to a length of zero so it is ready to be used for a new string.</para>
+	/// <para>When the <see cref="System.IO.StringWriter.Close()"/> or <see cref="Dispose(bool)"/> methods are called the underlying string builder is reset to a length of zero so it is ready to be used for a new string.</para>
 	/// <para>If, when reset, the string builder capacity is over a specified maximum, it will be reset to a specified default size. This can help avoid keeping huge string builder buffers in memory.</para>
 	/// </remarks>
 	public class RecyclableStringWriter : System.IO.StringWriter
 	{
+
+#pragma warning restore 1574
 
 		#region Fields
 

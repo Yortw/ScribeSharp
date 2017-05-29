@@ -113,6 +113,7 @@ namespace ScribeSharp
 
 		#region Clone Methods
 
+#pragma warning disable 1574
 		/// <summary>
 		/// Creates a new <see cref="LogEvent"/> instance using values from this event.
 		/// </summary>
@@ -122,6 +123,7 @@ namespace ScribeSharp
 		/// </remarks>
 		/// <returns>A new <see cref="LogEvent"/> with the same values as this instance.</returns>
 		/// <seealso cref="ICloneable.Clone"/>
+#pragma warning restore 1574
 		public virtual LogEvent Clone()
 		{
 			var retVal = new LogEvent();

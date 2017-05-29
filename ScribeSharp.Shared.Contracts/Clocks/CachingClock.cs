@@ -12,6 +12,7 @@ namespace ScribeSharp
 		private DateTimeOffset _CachedTime;
 		private int _LastCheckedTimeTicks;
 		private int _CacheIntervalTicks;
+		private ILogClock _InnerClock;
 
 		/// <summary>
 		/// Full constructor.
@@ -23,6 +24,7 @@ namespace ScribeSharp
 			if (innerClock == null) throw new ArgumentNullException(nameof(innerClock));
 			if (cacheInterval.Ticks > Int32.MaxValue) throw new ArgumentOutOfRangeException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.ArgumentOutOfRangeMessage, "cacheInterval.Ticks", 1, Int32.MaxValue));
 
+			_InnerClock = innerClock;
 			_CacheIntervalTicks = Convert.ToInt32(cacheInterval.Ticks);
 			_CachedTime = innerClock.Now;
 			_LastCheckedTimeTicks = Environment.TickCount;
@@ -37,7 +39,7 @@ namespace ScribeSharp
 			{
 				if (Environment.TickCount - _LastCheckedTimeTicks >= _CacheIntervalTicks)
 				{
-					_CachedTime = DateTimeOffset.Now;
+					_CachedTime = _InnerClock.Now;
 					_LastCheckedTimeTicks = Environment.TickCount;
 				}
 

@@ -13,8 +13,12 @@ namespace ScribeSharp.ContextProviders
 
 		#region Fields
 
+		#if !CONTRACTS_ONLY
+
 		private string _PropertyName;
 		private string _Version;
+
+		#endif
 
 		#endregion
 
@@ -66,7 +70,9 @@ namespace ScribeSharp.ContextProviders
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		protected override void AddPropertiesCore(LogEvent logEvent, ITypeRendererMap rendererMap)
 		{
+#if !CONTRACTS_ONLY
 			AddProperty(logEvent.Properties, _PropertyName, _Version, rendererMap);
+#endif
 		}
 
 #endregion
