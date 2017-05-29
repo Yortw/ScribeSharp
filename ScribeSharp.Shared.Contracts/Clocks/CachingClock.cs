@@ -25,7 +25,7 @@ namespace ScribeSharp
 			if (cacheInterval.Ticks > Int32.MaxValue) throw new ArgumentOutOfRangeException(String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.ArgumentOutOfRangeMessage, "cacheInterval.Ticks", 1, Int32.MaxValue));
 
 			_InnerClock = innerClock;
-			_CacheIntervalTicks = Convert.ToInt32(cacheInterval.Ticks);
+			_CacheIntervalTicks = Convert.ToInt32(cacheInterval.Milliseconds); //Environment.TickCount is actually milliseconds, not 'ticks'
 			_CachedTime = innerClock.Now;
 			_LastCheckedTimeTicks = Environment.TickCount;
 		}
