@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>ScribeSharp</id>
-        <version>1.0.11</version>
+        <version>1.0.13</version>
         <title>Scribe Sharp</title>
         <authors>Yortw</authors>
         <owners>Yortw</owners>
@@ -17,10 +17,14 @@
                 <dependency id="Microsoft.Bcl.Build" version="1.0.21" />
                 <dependency id="Microsoft.Net.Http" version="2.2.29" />
             </group>
+            <group targetFramework=".NETFramework4.5">
+                <dependency id="PoolSharp" version="2.0.0" />
+            </group>
         </dependencies>
     </metadata>
     <files>
         <file src="ScribeSharp.Net40\bin\Release\ScribeSharp.dll" target="lib\net40\ScribeSharp.dll" />
+        <file src="ScribeSharp.Net45\bin\Release\ScribeSharp.dll" target="lib\net45\ScribeSharp.dll" />
         <file src="ScribeSharp.Bait\bin\Release\ScribeSharp.dll" target="lib\portable-net40+sl5+win8+wpa81+wp8\ScribeSharp.dll" />
         <file src="ScribeSharp.Uwp\bin\Release\ScribeSharp.dll" target="lib\uap10.0\ScribeSharp.dll" />
     </files>

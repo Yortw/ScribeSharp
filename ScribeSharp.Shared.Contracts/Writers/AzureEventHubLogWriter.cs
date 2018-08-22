@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_AZURESERVICEBUS
+#if SUPPORTS_AZURESERVICEBUS
 
 using System;
 using System.Collections.Generic;
@@ -297,7 +297,11 @@ namespace ScribeSharp.Writers
 								retries++;
 								if (retries < maxRetries)
 								{
+#if SUPPORTS_TASKEX
 									await TaskEx.Delay(250 * (retries + 1)).ConfigureAwait(false);
+#else
+									await Task.Delay(250 * (retries + 1)).ConfigureAwait(false);
+#endif
 									continue;
 								}
 							}
@@ -317,9 +321,9 @@ namespace ScribeSharp.Writers
 				}
 			}
 
-			#endregion
+#endregion
 
-			#region Private Methods
+#region Private Methods
 
 			private void SetAuthHeader()
 			{
@@ -349,9 +353,9 @@ namespace ScribeSharp.Writers
 				return DateTime.UtcNow.Subtract(_AuthHeaderLastGenerated).TotalMinutes > 15;
 			}
 
-			#endregion
+#endregion
 
-			#region Public Methods
+#region Public Methods
 
 			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_HttpClient")]
 			public void Dispose()
@@ -359,7 +363,7 @@ namespace ScribeSharp.Writers
 				_HttpClient?.Dispose();
 			}
 
-			#endregion
+#endregion
 
 		}
 
@@ -431,7 +435,7 @@ namespace ScribeSharp.Writers
 			}
 		}
 
-		#endregion
+#endregion
 
 	}
 
