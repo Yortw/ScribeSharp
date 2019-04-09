@@ -1,4 +1,4 @@
-﻿using PoolSharp;
+using PoolSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -209,6 +209,13 @@ namespace ScribeSharp.Writers
 				if ((_BackgroundWriteTask?.Status ?? System.Threading.Tasks.TaskStatus.Running) == System.Threading.Tasks.TaskStatus.Running)
 				{
 #endif
+
+						try
+						{
+							_WriteBufferedEventsSignal?.Set();
+						}
+						catch { }
+
 						lock (_BufferedLogEvents)
 						{
 							if (_QueueEmptySignal == null)
